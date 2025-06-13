@@ -1,0 +1,42 @@
+.list { display: flex; flex-direction: column; gap: 0.75rem; }
+
+.item {
+  display: flex; align-items: center; justify-content: space-between;
+  background-color: #f9fafb; padding: 1rem; border-radius: 0.5rem;
+  border: 1px solid #e5e7eb; transition: all 0.2s;
+}
+.item:hover {
+  border-color: #c7d2fe; box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.05);
+}
+
+.details { flex: 1; margin-right: 1rem; }
+.description { font-weight: 500; text-transform: capitalize; color: #1f2937; }
+.meta { display: flex; align-items: center; margin-top: 0.25rem; font-size: 0.75rem; color: #6b7280; }
+.date { margin-left: 0.75rem; }
+.actions { display: flex; align-items: center; }
+.amount { font-size: 1rem; font-weight: 600; color: #111827; margin-right: 1rem; }
+
+.deleteButton {
+  color: #9ca3af; padding: 0.5rem; border-radius: 9999px;
+  background: none; border: none; cursor: pointer; transition: all 0.2s;
+}
+.deleteButton:hover { color: #ef4444; background-color: #fee2e2; }
+
+.tag {
+  display: inline-flex; align-items: center; padding: 2px 10px;
+  border-radius: 9999px; font-size: 0.75rem; font-weight: 500;
+}
+.tagCafé { background-color: #dbeafe; color: #1e40af; }
+.tagSnacks { background-color: #d1fae5; color: #065f46; }
+.tagTransporte { background-color: #fef3c7; color: #92400e; }
+.tagOtro { background-color: #e5e7eb; color: #374151; }
+
+.stateContainer {
+  display: flex; flex-direction: column; justify-content: center;
+  align-items: center; padding: 3rem 0; text-align: center;
+  background-color: #f9fafb; border-radius: 0.5rem;
+}
+.stateContainer h3 { font-size: 1.125rem; font-weight: 600; color: #374151; }
+.stateContainer p { color: #6b7280; }
+.spinner { animation: spin 1s linear infinite; color: #4f46e5; }
+@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }

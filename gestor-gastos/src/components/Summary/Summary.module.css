@@ -1,0 +1,7 @@
+.box {
+  background-color: #eef2ff; border-left: 4px solid #4f46e5;
+  padding: 1rem; border-radius: 0.5rem;
+}
+.content { display: flex; justify-content: space-between; align-items: center; }
+.label { font-size: 1.125rem; font-weight: 600; color: #3730a3; }
+.total { font-size: 1.5rem; font-weight: 700; color: #312e81; }
