@@ -1,28 +1,41 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { PlusCircle } from 'lucide-react';
 import styles from './ExpenseForm.module.css';
+import type { Category, ExpenseFormData } from '../../types';
 
-const categories = ['Café', 'Snacks', 'Transporte', 'Otro'];
-
+// La interfaz de props se define aquí, en el componente que las usa
 interface ExpenseFormProps {
-    onAdd: (description: string, amount: string, category: string) => Promise<{ success: boolean; error?: string }>;
+    onAdd: (data: ExpenseFormData) => Promise<{ success: boolean; error?: string }>;
+    categories: Category[];
     isSubmitting: boolean;
 }
 
-export const ExpenseForm: React.FC<ExpenseFormProps> = ({ onAdd, isSubmitting }) => {
+export const ExpenseForm: React.FC<ExpenseFormProps> = ({ onAdd, categories, isSubmitting }) => {
     const [description, setDescription] = useState('');
     const [amount, setAmount] = useState('');
-    const [category, setCategory] = useState(categories[0]);
+    const [category, setCategory] = useState('');
     const [formError, setFormError] = useState('');
+    
+    // Este efecto asegura que la categoría seleccionada se actualice 
+    // si la lista de categorías cambia.
+    useEffect(() => {
+        if (categories.length > 0 && !category) {
+            setCategory(categories[0].name);
+        }
+    }, [categories, category]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        const result = await onAdd(description, amount, category);
+        const result = await onAdd({
+            description,
+            amount: parseFloat(amount) || 0,
+            category: category || categories[0]?.name || 'Otro'
+        });
         if (result.success) {
             setDescription('');
             setAmount('');
             setFormError('');
-            setCategory(categories[0]);
+            setCategory(categories[0]?.name || '');
         } else {
             setFormError(result.error || 'Ocurrió un error');
         }
@@ -45,8 +58,8 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({ onAdd, isSubmitting })
                 </div>
                 <div className={styles.formGroup}>
                     <label htmlFor="category" className={styles.label}>Categoría</label>
-                    <select id="category" value={category} onChange={(e) => setCategory(e.target.value)} className={styles.select}>
-                        {categories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
+                    <select id="category" value={category} onChange={(e) => setCategory(e.target.value)} className={styles.select} disabled={categories.length === 0}>
+                        {categories.map(cat => <option key={cat.id} value={cat.name}>{cat.name}</option>)}
                     </select>
                 </div>
                 <div className={styles.fullWidth}>

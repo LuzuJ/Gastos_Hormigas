@@ -1,61 +1,79 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { expensesService } from '../services/expensesService';
-import type { Expense, ChartData } from '../types';
+import { categoryService } from '../services/categoryService';
+import type { Expense, Category, ExpenseFormData } from '../types';
 
+// Define la "API pública" de nuestro hook para que otros componentes sepan qué esperar
 export interface ExpensesController {
-  expenses: Expense[];
-  loading: boolean;
-  error: string;
-  addExpense: (description: string, amount: string, category: string) => Promise<{ success: boolean; error?: string; }>;
-  deleteExpense: (expenseId: string) => Promise<void>;
-  totalExpensesToday: number;
-  chartData: ChartData[];
+    expenses: Expense[];
+    categories: Category[];
+    loading: boolean;
+    error: string;
+    addExpense: (data: ExpenseFormData) => Promise<{ success: boolean; error?: string; }>;
+    updateExpense: (expenseId: string, data: Partial<ExpenseFormData>) => Promise<{ success: boolean; error?: string; }>;
+    deleteExpense: (expenseId: string) => Promise<void>;
+    addCategory: (categoryName: string) => Promise<void>;
+    deleteCategory: (categoryId: string) => Promise<void>;
+    isEditing: Expense | null;
+    setIsEditing: React.Dispatch<React.SetStateAction<Expense | null>>;
+    totalExpensesToday: number;
 }
 
 export const useExpensesController = (userId: string | null): ExpensesController => {
     const [expenses, setExpenses] = useState<Expense[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string>('');
+    const [categories, setCategories] = useState<Category[]>([]);
+    const [isEditing, setIsEditing] = useState<Expense | null>(null);
 
     useEffect(() => {
         if (!userId) {
+            setExpenses([]);
+            setCategories([]);
             setLoading(false);
             return;
         }
 
         setLoading(true);
-        const unsubscribe = expensesService.onExpensesUpdate(userId, (data, err) => {
-            if (err) {
-                setError("No se pudieron cargar los datos.");
-            } else {
-                setExpenses(data || []);
-            }
+        const unsubscribeExpenses = expensesService.onExpensesUpdate(userId, (data, err) => {
+            if (err) setError("No se pudieron cargar los datos de gastos.");
+            else setExpenses(data || []);
             setLoading(false);
         });
 
-        return () => unsubscribe();
+        const unsubscribeCategories = categoryService.onCategoriesUpdate(userId, (data, err) => {
+            if (err) setError("No se pudieron cargar las categorías.");
+            else setCategories(data || []);
+        });
+
+        return () => {
+            unsubscribeExpenses();
+            unsubscribeCategories();
+        };
     }, [userId]);
     
-    const addExpense = useCallback(async (description: string, amount: string, category: string) => {
+    const addExpense = useCallback(async (data: ExpenseFormData) => {
         if (!userId) return { success: false, error: 'Usuario no autenticado.' };
-        if (!description.trim() || !amount) {
-            return { success: false, error: 'Por favor, ingresa una descripción y un monto.' };
-        }
-        const parsedAmount = parseFloat(amount);
-        if (isNaN(parsedAmount) || parsedAmount <= 0) {
-            return { success: false, error: 'Por favor, ingresa un monto válido y mayor a cero.' };
-        }
+        if (!data.description.trim() || !data.amount) return { success: false, error: 'Descripción y monto son requeridos.' };
+        if (data.amount <= 0) return { success: false, error: 'El monto debe ser mayor a cero.' };
 
         try {
-            await expensesService.addExpense(userId, { 
-                description: description.trim(), 
-                amount: parsedAmount,
-                category: category 
-            });
+            await expensesService.addExpense(userId, data);
             return { success: true };
         } catch (err) {
-            console.error("Error al agregar el gasto:", err);
-            return { success: false, error: "Ocurrió un error al guardar el gasto." };
+            console.error(err);
+            return { success: false, error: "Ocurrió un error al guardar." };
+        }
+    }, [userId]);
+    
+    const updateExpense = useCallback(async (expenseId: string, data: Partial<ExpenseFormData>) => {
+        if (!userId) return { success: false, error: 'Usuario no autenticado.' };
+        try {
+            await expensesService.updateExpense(userId, expenseId, data);
+            return { success: true };
+        } catch (err) {
+            console.error(err);
+            return { success: false, error: "Ocurrió un error al actualizar." };
         }
     }, [userId]);
 
@@ -64,42 +82,44 @@ export const useExpensesController = (userId: string | null): ExpensesController
         try {
             await expensesService.deleteExpense(userId, expenseId);
         } catch (err) {
-            console.error("Error al eliminar el gasto:", err);
+            console.error(err);
             setError("No se pudo eliminar el gasto.");
+        }
+    }, [userId]);
+    
+    const addCategory = useCallback(async (categoryName: string) => {
+        if (!userId || !categoryName.trim()) return;
+        try {
+            await categoryService.addCategory(userId, categoryName.trim());
+        } catch(err) {
+            console.error(err);
+            setError("No se pudo añadir la categoría.");
+        }
+    }, [userId]);
+
+    const deleteCategory = useCallback(async (categoryId: string) => {
+        if (!userId) return;
+        try {
+            await categoryService.deleteCategory(userId, categoryId);
+        } catch (err) {
+            console.error(err);
+            setError("No se pudo eliminar la categoría.");
         }
     }, [userId]);
 
     const totalExpensesToday = useMemo(() => {
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
+        const todayStart = new Date();
+        todayStart.setHours(0, 0, 0, 0);
 
         return expenses
-            .filter(expense => {
-                const expenseDate = expense.createdAt?.toDate();
-                if (!expenseDate) return false;
-                expenseDate.setHours(0,0,0,0);
-                return expenseDate.getTime() === today.getTime();
-            })
+            .filter(expense => (expense.createdAt?.toDate() ?? new Date(0)) >= todayStart)
             .reduce((total, expense) => total + expense.amount, 0);
     }, [expenses]);
-    
-    const chartData: ChartData[] = useMemo(() => {
-        const categoryColors: { [key: string]: string } = {
-            'Café': '#8884d8', 'Snacks': '#82ca9d', 'Transporte': '#ffc658',
-            'Otro': '#ff8042',
-        };
 
-        const grouped = expenses.reduce((acc, expense) => {
-            const category = expense.category || 'Otro';
-            if (!acc[category]) {
-                acc[category] = { name: category, total: 0, fill: categoryColors[category] || categoryColors['Otro'] };
-            }
-            acc[category].total += expense.amount;
-            return acc;
-          }, {} as { [key: string]: ChartData });
-
-        return Object.values(grouped);
-    }, [expenses]);
-    
-    return { expenses, loading, error, addExpense, deleteExpense, totalExpensesToday, chartData };
+    return { 
+        expenses, categories, loading, error, 
+        addExpense, updateExpense, deleteExpense,
+        addCategory, deleteCategory,
+        isEditing, setIsEditing, totalExpensesToday
+    };
 };

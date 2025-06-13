@@ -1,6 +1,12 @@
-import { Timestamp } from 'firebase/firestore';
+import type { Timestamp } from 'firebase/firestore';
 
-// Define cómo se ve un objeto de Gasto en nuestra app
+// Interfaz para las categorías personalizadas
+export interface Category {
+  id: string;
+  name: string;
+}
+
+// Interfaz para cada gasto
 export interface Expense {
   id: string;
   description: string;
@@ -9,9 +15,11 @@ export interface Expense {
   createdAt: Timestamp;
 }
 
-// Define la estructura de los datos para el gráfico
-export interface ChartData {
-  name: string;
-  total: number;
-  fill: string;
+export interface LayoutProps {
+    children: React.ReactNode;
+    currentPage: 'dashboard' | 'categories';
+    setCurrentPage: React.Dispatch<React.SetStateAction<'dashboard' | 'categories'>>;
 }
+
+// Tipo de dato para el formulario, omitiendo campos generados automáticamente
+export type ExpenseFormData = Omit<Expense, 'id' | 'createdAt'>;
