@@ -13,9 +13,12 @@ const firebaseConfig = {
   measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
 };
 
-// Inicializa Firebase
+// Se realiza una validación para asegurar que las variables de entorno se cargaron
+if (!firebaseConfig.apiKey) {
+    throw new Error("No se encontraron las variables de entorno de Firebase. Asegúrate de tener un archivo .env con el prefijo VITE_");
+}
+
 const app = initializeApp(firebaseConfig);
 
-// Exporta las instancias de los servicios que necesitarás
 export const auth = getAuth(app);
 export const db = getFirestore(app);
