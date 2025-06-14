@@ -10,7 +10,7 @@ interface EditModalProps {
 }
 
 export const EditExpenseModal: React.FC<EditModalProps> = ({ expense, categories, onClose, onSave }) => {
-    // Estado LOCAL para manejar los datos del formulario
+    // Estado LOCAL para manejar los datos del formulario. Se inicializa con los datos del gasto a editar.
     const [formData, setFormData] = useState<ExpenseFormData>({
         description: expense.description,
         amount: expense.amount,
@@ -19,7 +19,7 @@ export const EditExpenseModal: React.FC<EditModalProps> = ({ expense, categories
     
     const [error, setError] = useState('');
 
-    // Maneja los cambios en cada input del formulario
+    // Esta función se ejecuta cada vez que escribes en un campo del formulario.
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
         setFormData(prev => ({
@@ -28,7 +28,7 @@ export const EditExpenseModal: React.FC<EditModalProps> = ({ expense, categories
         }));
     };
 
-    // Se ejecuta al presionar "Guardar Cambios"
+    // Esta función se ejecuta al presionar "Guardar Cambios".
     const handleSave = async (e: React.FormEvent) => {
         e.preventDefault();
         setError(''); 
@@ -39,13 +39,13 @@ export const EditExpenseModal: React.FC<EditModalProps> = ({ expense, categories
         
         const result = await onSave(expense.id, formData);
         if (result.success) {
-            onClose(); 
+            onClose(); // Cierra el modal solo si se guardó con éxito.
         } else {
             setError(result.error || 'No se pudieron guardar los cambios.');
         }
     };
     
-    // Cierra el modal con la tecla "Escape"
+    // Efecto para que la tecla "Escape" cierre el modal.
     useEffect(() => {
         const handleKeyDown = (event: KeyboardEvent) => {
             if (event.key === 'Escape') {
@@ -61,7 +61,7 @@ export const EditExpenseModal: React.FC<EditModalProps> = ({ expense, categories
             <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
                 <h3>Editar Gasto</h3>
                 
-                {/* --- ESTE ES EL FORMULARIO QUE TE FALTA --- */}
+                {/* --- ESTE ES EL FORMULARIO COMPLETO QUE FALTABA --- */}
                 <form onSubmit={handleSave} className={styles.form}>
                     <div className={styles.formGroup}>
                         <label htmlFor="edit-description">Descripción</label>
