@@ -43,6 +43,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ userId }) => {
                 <ExpenseList 
                     expenses={expenses} 
                     onDelete={deleteExpense} 
+                    onEdit={setIsEditing}
                     loading={loading}
                 />
             </div>

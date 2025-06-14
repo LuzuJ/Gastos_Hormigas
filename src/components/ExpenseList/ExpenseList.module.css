@@ -1,34 +1,63 @@
-.list { display: flex; flex-direction: column; gap: 0.75rem; }
+.list { 
+  display: flex; 
+  flex-direction: column; 
+  gap: 0.75rem; 
+  padding: 0;
+  margin: 0;
+}
 
 .item {
-  display: flex; align-items: center; justify-content: space-between;
-  background-color: #f9fafb; padding: 1rem; border-radius: 0.5rem;
-  border: 1px solid #e5e7eb; transition: all 0.2s;
+  display: flex; 
+  align-items: center; 
+  justify-content: space-between;
+  background-color: white; 
+  padding: 1rem; 
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); 
+  transition: box-shadow 0.2s;
+  list-style-type: none; /* Asegura que no haya viñetas */
 }
-.item:hover {
-  border-color: #c7d2fe; box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.05);
+.item:hover { 
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1); 
 }
 
 .details { flex: 1; margin-right: 1rem; }
 .description { font-weight: 500; text-transform: capitalize; color: #1f2937; }
 .meta { display: flex; align-items: center; margin-top: 0.25rem; font-size: 0.75rem; color: #6b7280; }
 .date { margin-left: 0.75rem; }
-.actions { display: flex; align-items: center; }
+.actions { display: flex; align-items: center; gap: 0.5rem; /* Añade espacio entre botones */ }
 .amount { font-size: 1rem; font-weight: 600; color: #111827; margin-right: 1rem; }
 
-.deleteButton {
-  color: #9ca3af; padding: 0.5rem; border-radius: 9999px;
-  background: none; border: none; cursor: pointer; transition: all 0.2s;
+.actionButton {
+  color: #9ca3af; 
+  padding: 0.5rem; 
+  border-radius: 9999px;
+  background: none; 
+  border: none; 
+  cursor: pointer; 
+  transition: all 0.2s;
+  display: flex; /* Para centrar el ícono */
+  align-items: center;
+  justify-content: center;
 }
-.deleteButton:hover { color: #ef4444; background-color: #fee2e2; }
+.actionButton:hover { 
+  color: #4f46e5; 
+  background-color: #eef2ff; 
+}
+.deleteButton:hover { 
+  color: #ef4444; 
+  background-color: #fee2e2; 
+}
 
 .tag {
   display: inline-flex; align-items: center; padding: 2px 10px;
   border-radius: 9999px; font-size: 0.75rem; font-weight: 500;
 }
-.tagCafé { background-color: #dbeafe; color: #1e40af; }
-.tagSnacks { background-color: #d1fae5; color: #065f46; }
-.tagTransporte { background-color: #fef3c7; color: #92400e; }
+.tagAlimento { background-color: #dbeafe; color: #1e40af; }
+.tagTransporte { background-color: #d1fae5; color: #065f46; }
+.tagEntretenimiento { background-color: #fef3c7; color: #92400e; }
+.tagHogar { background-color: #ffedd5; color: #9a3412; }
+.tagSalud { background-color: #fee2e2; color: #991b1b; }
 .tagOtro { background-color: #e5e7eb; color: #374151; }
 
 .stateContainer {

@@ -42,3 +42,14 @@
 .button:hover:not(:disabled) { background-color: #4338ca; }
 .button:disabled { background-color: #a5b4fc; cursor: not-allowed; }
 .error { color: #ef4444; font-size: 0.875rem; margin-bottom: 1rem; }
+
+@media (min-width: 768px) {
+  .form {
+    grid-template-columns: repeat(6, 1fr); /* 6 columnas para más flexibilidad */
+  }
+  .formGroupDescription { grid-column: span 3; }
+  .formGroupAmount { grid-column: span 1; }
+  .formGroupCategory { grid-column: span 2; }
+  .formGroupCustom { grid-column: span 6; } /* Ocupa todo el ancho si aparece */
+  .fullWidth { grid-column: span 6; }
+}

@@ -6,11 +6,14 @@ import { DashboardPage } from './pages/DashboardPage';
 import { ManageCategoriesPage } from './pages/ManageCategoriesPage';
 import './index.css';
 
+// Define un tipo para las páginas para mayor seguridad
+export type Page = 'dashboard' | 'categories';
+
 export default function App() {
     const [userId, setUserId] = useState<string | null>(null);
     const [isAuthReady, setIsAuthReady] = useState<boolean>(false);
     const [authError, setAuthError] = useState<string | null>(null);
-    const [currentPage, setCurrentPage] = useState<'dashboard' | 'categories'>('dashboard');
+    const [currentPage, setCurrentPage] = useState<Page>('dashboard');
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, async (currentUser: User | null) => {
