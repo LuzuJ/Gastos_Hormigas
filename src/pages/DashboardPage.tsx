@@ -4,7 +4,6 @@ import { ExpenseList } from '../components/ExpenseList/ExpenseList';
 import { Summary } from '../components/Summary/Summary';
 import { EditExpenseModal } from '../components/modals/EditExpenseModal/EditExpenseModal';
 import { useExpensesController } from '../hooks/useExpensesController';
-import { Expense } from '../types';
 
 // Definimos las categorías por defecto que todos los usuarios tendrán
 const defaultCategories = [
@@ -21,7 +20,8 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ userId }) => {
     const { 
         expenses, categories, loading, error, 
         addExpense, updateExpense, deleteExpense,
-        isEditing, setIsEditing, totalExpensesToday
+        isEditing, setIsEditing, totalExpensesToday,
+        financials, totalExpensesMonth
     } = useExpensesController(userId);
 
     // Combinamos las categorías por defecto con las personalizadas del usuario
@@ -34,7 +34,11 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ userId }) => {
                 categories={allCategories}
                 isSubmitting={loading} 
             />
-            <Summary total={totalExpensesToday} />
+            <Summary 
+                totalToday={totalExpensesToday} 
+                totalMonth={totalExpensesMonth}
+                monthlyIncome={financials?.monthlyIncome || 0}
+            />
             
             {error && <p className="error-message">{error}</p>}
 
@@ -43,8 +47,8 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ userId }) => {
                 <ExpenseList 
                     expenses={expenses} 
                     onDelete={deleteExpense} 
-                    onEdit={setIsEditing}
                     loading={loading}
+                    onEdit={(expense) => setIsEditing(expense)} 
                 />
             </div>
             

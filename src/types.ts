@@ -15,6 +15,10 @@ export interface Expense {
   createdAt: Timestamp;
 }
 
+export interface Financials {
+  monthlyIncome: number;
+}
+
 export interface LayoutProps {
     children: React.ReactNode;
     currentPage: 'dashboard' | 'categories';

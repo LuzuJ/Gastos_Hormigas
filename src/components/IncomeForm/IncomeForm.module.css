@@ -1,0 +1,61 @@
+.card {
+  background-color: white;
+  padding: 1.5rem;
+  border-radius: 1rem;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05);
+}
+.header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+.icon {
+  color: #16a34a; /* green-600 */
+  margin-right: 0.75rem;
+}
+.header h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1f2937;
+}
+.display, .form {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.incomeValue {
+  font-size: 2.25rem;
+  font-weight: 700;
+  color: #16a34a;
+  margin: 0;
+}
+.editButton {
+  background-color: #f3f4f6;
+  color: #4b5563;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid #e5e7eb;
+  cursor: pointer;
+  font-weight: 600;
+}
+.input {
+  flex-grow: 1;
+  padding: 0.65rem 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  font-size: 1.25rem;
+}
+.button {
+  background-color: #4f46e5;
+  color: white;
+  padding: 0.65rem 1rem;
+  border-radius: 0.5rem;
+  border: none;
+  cursor: pointer;
+}
+.cancelButton {
+  background-color: #e5e7eb;
+  color: #4b5563;
+}

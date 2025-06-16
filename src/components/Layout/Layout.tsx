@@ -3,8 +3,8 @@ import styles from './Layout.module.css';
 
 // Interfaz que define las props que este componente espera recibir
 interface LayoutProps {
-  currentPage: 'dashboard' | 'categories';
-  setCurrentPage: (page: 'dashboard' | 'categories') => void;
+  currentPage: 'dashboard' | 'categories' | 'planning';
+  setCurrentPage: (page: 'dashboard' | 'categories' | 'planning') => void;
   children: ReactNode;
 }
 
@@ -30,6 +30,13 @@ export const Layout: React.FC<LayoutProps> = ({ currentPage, setCurrentPage, chi
           className={`${styles.navLink} ${currentPage === 'categories' ? styles.active : ''}`}
         >
           Categorías
+        </button>
+
+        <button
+          onClick={() => setCurrentPage('planning')}
+          className={`${styles.navLink} ${currentPage === 'planning' ? styles.active : ''}`}
+        >
+          Planificación
         </button>
       </nav>
 

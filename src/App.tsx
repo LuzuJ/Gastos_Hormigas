@@ -4,10 +4,11 @@ import { auth } from './config/firebase';
 import { Layout } from './components/Layout/Layout';
 import { DashboardPage } from './pages/DashboardPage';
 import { ManageCategoriesPage } from './pages/ManageCategoriesPage';
+import { PlanningPage } from './pages/PlanningPage';
 import './index.css';
 
 // Define un tipo para las páginas para mayor seguridad
-export type Page = 'dashboard' | 'categories';
+export type Page = 'dashboard' | 'categories' | 'planning';
 
 export default function App() {
     const [userId, setUserId] = useState<string | null>(null);
@@ -40,6 +41,7 @@ export default function App() {
         <Layout currentPage={currentPage} setCurrentPage={setCurrentPage}>
             {currentPage === 'dashboard' && <DashboardPage userId={userId} />}
             {currentPage === 'categories' && <ManageCategoriesPage userId={userId} />}
+            {currentPage === 'planning' && <PlanningPage userId={userId} />}
         </Layout>
     );
 }

@@ -1,12 +1,14 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { expensesService } from '../services/expensesService';
 import { categoryService } from '../services/categoryService';
-import type { Expense, Category, ExpenseFormData } from '../types';
+import { financialsService } from '../services/financialsService';
+import type { Expense, Category, ExpenseFormData, Financials } from '../types';
 
-// Define la "API pública" de nuestro hook para que otros componentes sepan qué esperar
+// La interfaz pública del hook vuelve a su versión anterior
 export interface ExpensesController {
     expenses: Expense[];
     categories: Category[];
+    financials: Financials | null;
     loading: boolean;
     error: string;
     addExpense: (data: ExpenseFormData) => Promise<{ success: boolean; error?: string; }>;
@@ -14,9 +16,11 @@ export interface ExpensesController {
     deleteExpense: (expenseId: string) => Promise<void>;
     addCategory: (categoryName: string) => Promise<void>;
     deleteCategory: (categoryId: string) => Promise<void>;
+    setMonthlyIncome: (income: number) => Promise<void>;
     isEditing: Expense | null;
     setIsEditing: React.Dispatch<React.SetStateAction<Expense | null>>;
     totalExpensesToday: number;
+    totalExpensesMonth: number;
 }
 
 export const useExpensesController = (userId: string | null): ExpensesController => {
@@ -25,11 +29,13 @@ export const useExpensesController = (userId: string | null): ExpensesController
     const [error, setError] = useState<string>('');
     const [categories, setCategories] = useState<Category[]>([]);
     const [isEditing, setIsEditing] = useState<Expense | null>(null);
+    const [financials, setFinancials] = useState<Financials | null>(null);
 
     useEffect(() => {
         if (!userId) {
             setExpenses([]);
             setCategories([]);
+            setFinancials(null);
             setLoading(false);
             return;
         }
@@ -46,17 +52,23 @@ export const useExpensesController = (userId: string | null): ExpensesController
             else setCategories(data || []);
         });
 
+        const unsubFinancials = financialsService.onFinancialsUpdate(userId, (data, err) => {
+            if (err) setError("No se pudieron cargar los datos financieros.");
+            else setFinancials(data);
+        });
+
         return () => {
             unsubscribeExpenses();
             unsubscribeCategories();
+            unsubFinancials();
         };
     }, [userId]);
     
+    // Todas las funciones de gastos y categorías se mantienen igual
     const addExpense = useCallback(async (data: ExpenseFormData) => {
         if (!userId) return { success: false, error: 'Usuario no autenticado.' };
         if (!data.description.trim() || !data.amount) return { success: false, error: 'Descripción y monto son requeridos.' };
         if (data.amount <= 0) return { success: false, error: 'El monto debe ser mayor a cero.' };
-
         try {
             await expensesService.addExpense(userId, data);
             return { success: true };
@@ -107,19 +119,40 @@ export const useExpensesController = (userId: string | null): ExpensesController
         }
     }, [userId]);
 
+    const setMonthlyIncome = useCallback(async (income: number) => {
+        if (!userId || income < 0) return;
+        try {
+            await financialsService.setMonthlyIncome(userId, income);
+        } catch(err) {
+            console.error(err);
+            setError("No se pudo guardar el ingreso mensual.");
+        }
+    }, [userId]);
+
     const totalExpensesToday = useMemo(() => {
         const todayStart = new Date();
         todayStart.setHours(0, 0, 0, 0);
-
         return expenses
             .filter(expense => (expense.createdAt?.toDate() ?? new Date(0)) >= todayStart)
             .reduce((total, expense) => total + expense.amount, 0);
     }, [expenses]);
 
+    const totalExpensesMonth = useMemo(() => {
+        const currentMonth = new Date().getMonth();
+        const currentYear = new Date().getFullYear();
+        return expenses
+            .filter(e => {
+                const expenseDate = e.createdAt?.toDate();
+                return expenseDate && expenseDate.getMonth() === currentMonth && expenseDate.getFullYear() === currentYear;
+            })
+            .reduce((sum, e) => sum + e.amount, 0);
+    }, [expenses]);
+
     return { 
         expenses, categories, loading, error, 
         addExpense, updateExpense, deleteExpense,
-        addCategory, deleteCategory,
-        isEditing, setIsEditing, totalExpensesToday
+        addCategory, deleteCategory, setMonthlyIncome,
+        isEditing, setIsEditing, totalExpensesToday,
+        financials, totalExpensesMonth
     };
 };
