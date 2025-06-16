@@ -2,23 +2,29 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import { expensesService } from '../services/expensesService';
 import { categoryService } from '../services/categoryService';
 import { financialsService } from '../services/financialsService';
-import type { Expense, Category, ExpenseFormData, Financials } from '../types';
+import { fixedExpenseService } from '../services/fixedExpenseService';
+import type { Expense, Category, ExpenseFormData, 
+    Financials, FixedExpense } from '../types';
 
 // La interfaz pública del hook vuelve a su versión anterior
 export interface ExpensesController {
     expenses: Expense[];
     categories: Category[];
     financials: Financials | null;
+    fixedExpenses: FixedExpense[];
     loading: boolean;
     error: string;
     addExpense: (data: ExpenseFormData) => Promise<{ success: boolean; error?: string; }>;
+    addFixedExpense: (data: Omit<FixedExpense, 'id'>) => Promise<void>;
     updateExpense: (expenseId: string, data: Partial<ExpenseFormData>) => Promise<{ success: boolean; error?: string; }>;
     deleteExpense: (expenseId: string) => Promise<void>;
     addCategory: (categoryName: string) => Promise<void>;
     deleteCategory: (categoryId: string) => Promise<void>;
     setMonthlyIncome: (income: number) => Promise<void>;
+    deleteFixedExpense: (id: string) => Promise<void>;
     isEditing: Expense | null;
     setIsEditing: React.Dispatch<React.SetStateAction<Expense | null>>;
+    totalFixedExpenses: number;
     totalExpensesToday: number;
     totalExpensesMonth: number;
 }
@@ -30,12 +36,14 @@ export const useExpensesController = (userId: string | null): ExpensesController
     const [categories, setCategories] = useState<Category[]>([]);
     const [isEditing, setIsEditing] = useState<Expense | null>(null);
     const [financials, setFinancials] = useState<Financials | null>(null);
+    const [fixedExpenses, setFixedExpenses] = useState<FixedExpense[]>([]);
 
     useEffect(() => {
         if (!userId) {
             setExpenses([]);
             setCategories([]);
             setFinancials(null);
+            setFixedExpenses([]);
             setLoading(false);
             return;
         }
@@ -57,10 +65,16 @@ export const useExpensesController = (userId: string | null): ExpensesController
             else setFinancials(data);
         });
 
+        const unsubFixedExpenses = fixedExpenseService.onFixedExpensesUpdate(userId, (data, err) => {
+            if (err) setError("No se pudieron cargar los gastos fijos.");
+            else setFixedExpenses(data || []);
+        });
+
         return () => {
             unsubscribeExpenses();
             unsubscribeCategories();
             unsubFinancials();
+            unsubFixedExpenses();
         };
     }, [userId]);
     
@@ -75,6 +89,16 @@ export const useExpensesController = (userId: string | null): ExpensesController
         } catch (err) {
             console.error(err);
             return { success: false, error: "Ocurrió un error al guardar." };
+        }
+    }, [userId]);
+
+    const addFixedExpense = useCallback(async (data: Omit<FixedExpense, 'id'>) => {
+        if (!userId) return;
+        try {
+            await fixedExpenseService.addFixedExpense(userId, data);
+        } catch (err) {
+            console.error(err);
+            setError("No se pudo añadir el gasto fijo.");
         }
     }, [userId]);
     
@@ -119,6 +143,16 @@ export const useExpensesController = (userId: string | null): ExpensesController
         }
     }, [userId]);
 
+    const deleteFixedExpense = useCallback(async (id: string) => {
+        if (!userId) return;
+        try {
+            await fixedExpenseService.deleteFixedExpense(userId, id);
+        } catch (err) {
+            console.error(err);
+            setError("No se pudo eliminar el gasto fijo.");
+        }
+    }, [userId]);
+
     const setMonthlyIncome = useCallback(async (income: number) => {
         if (!userId || income < 0) return;
         try {
@@ -129,6 +163,10 @@ export const useExpensesController = (userId: string | null): ExpensesController
         }
     }, [userId]);
 
+    const totalFixedExpenses = useMemo(() => {
+        return fixedExpenses.reduce((sum, expense) => sum + expense.amount, 0);
+    }, [fixedExpenses]);
+
     const totalExpensesToday = useMemo(() => {
         const todayStart = new Date();
         todayStart.setHours(0, 0, 0, 0);
@@ -137,22 +175,30 @@ export const useExpensesController = (userId: string | null): ExpensesController
             .reduce((total, expense) => total + expense.amount, 0);
     }, [expenses]);
 
+
     const totalExpensesMonth = useMemo(() => {
         const currentMonth = new Date().getMonth();
         const currentYear = new Date().getFullYear();
-        return expenses
+
+        const variableExpensesMonth = expenses
             .filter(e => {
                 const expenseDate = e.createdAt?.toDate();
                 return expenseDate && expenseDate.getMonth() === currentMonth && expenseDate.getFullYear() === currentYear;
             })
             .reduce((sum, e) => sum + e.amount, 0);
-    }, [expenses]);
+        
+        // Sumamos los gastos variables del mes + el total de gastos fijos
+        return variableExpensesMonth + totalFixedExpenses;
+    }, [expenses, totalFixedExpenses]);
+
+    
 
     return { 
         expenses, categories, loading, error, 
         addExpense, updateExpense, deleteExpense,
         addCategory, deleteCategory, setMonthlyIncome,
         isEditing, setIsEditing, totalExpensesToday,
-        financials, totalExpensesMonth
+        financials, totalExpensesMonth, totalFixedExpenses,
+        fixedExpenses, addFixedExpense, deleteFixedExpense
     };
 };

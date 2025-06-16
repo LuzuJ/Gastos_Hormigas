@@ -25,5 +25,13 @@ export interface LayoutProps {
     setCurrentPage: React.Dispatch<React.SetStateAction<'dashboard' | 'categories'>>;
 }
 
+export interface FixedExpense {
+  id: string;
+  description: string;
+  amount: number;
+  category: string;
+  dayOfMonth: number; // El día del mes que se cobra (ej. 1, 15, 30)
+}
+
 // Tipo de dato para el formulario, omitiendo campos generados automáticamente
 export type ExpenseFormData = Omit<Expense, 'id' | 'createdAt'>;

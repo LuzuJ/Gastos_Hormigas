@@ -21,7 +21,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ userId }) => {
         expenses, categories, loading, error, 
         addExpense, updateExpense, deleteExpense,
         isEditing, setIsEditing, totalExpensesToday,
-        financials, totalExpensesMonth
+        financials, totalExpensesMonth, totalFixedExpenses
     } = useExpensesController(userId);
 
     // Combinamos las categorías por defecto con las personalizadas del usuario
@@ -38,6 +38,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ userId }) => {
                 totalToday={totalExpensesToday} 
                 totalMonth={totalExpensesMonth}
                 monthlyIncome={financials?.monthlyIncome || 0}
+                fixedExpensesTotal={totalFixedExpenses}
             />
             
             {error && <p className="error-message">{error}</p>}
