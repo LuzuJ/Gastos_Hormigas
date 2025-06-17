@@ -4,6 +4,7 @@ import type { Timestamp } from 'firebase/firestore';
 export interface Category {
   id: string;
   name: string;
+  isDefault?: boolean; // Indica si es una categoría por defecto
 }
 
 // Interfaz para cada gasto

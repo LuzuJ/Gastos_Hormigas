@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useExpensesController } from '../hooks/useExpensesController';
-import { Trash2, PlusSquare } from 'lucide-react';
-import styles from './ManageCategoriesPage.module.css'; // Crearemos este archivo de estilos
+import { Trash2, PlusSquare, Lock } from 'lucide-react';
+import styles from './ManageCategoriesPage.module.css'; 
 
 interface ManageCategoriesPageProps {
   userId: string | null;
@@ -19,6 +19,10 @@ export const ManageCategoriesPage: React.FC<ManageCategoriesPageProps> = ({ user
             setNewCategoryName(''); // Limpiar el input después de añadir
         }
     };
+    
+    // Separamos las categorías en dos listas para la UI
+    const defaultCats = categories.filter(c => c.isDefault);
+    const customCats = categories.filter(c => !c.isDefault);
 
     return (
         <div className={styles.card}>
@@ -27,7 +31,7 @@ export const ManageCategoriesPage: React.FC<ManageCategoriesPageProps> = ({ user
                 Gestionar Mis Categorías
             </h2>
             <p className={styles.subtitle}>
-                Añade o elimina categorías personalizadas. Estas aparecerán en el formulario al registrar un nuevo gasto.
+                Añade categorías personalizadas para organizar mejor tus gastos.
             </p>
 
             {error && <p className="error-message">{error}</p>}
@@ -43,10 +47,22 @@ export const ManageCategoriesPage: React.FC<ManageCategoriesPageProps> = ({ user
                 <button type="submit" className={styles.button}>Añadir</button>
             </form>
 
-            <h3 className={styles.listTitle}>Categorías Personalizadas</h3>
+            {/* Mostramos primero las categorías por defecto */}
+            <h3 className={styles.listTitle}>Categorías por Defecto</h3>
             <ul className={styles.list}>
-                {categories.length > 0 ? (
-                    categories.map(cat => (
+                {defaultCats.map(cat => (
+                    <li key={cat.id} className={`${styles.listItem} ${styles.defaultItem}`}>
+                        <span>{cat.name}</span>
+                        <Lock size={16} aria-label="Categoría por defecto, no se puede eliminar" />
+                    </li>
+                ))}
+            </ul>
+
+            {/* Luego las personalizadas, con opción de eliminar */}
+            <h3 className={styles.listTitle}>Tus Categorías Personalizadas</h3>
+            <ul className={styles.list}>
+                {customCats.length > 0 ? (
+                    customCats.map(cat => (
                         <li key={cat.id} className={styles.listItem}>
                             <span>{cat.name}</span>
                             <button onClick={() => deleteCategory(cat.id)} className={styles.deleteButton} aria-label="Eliminar categoría">

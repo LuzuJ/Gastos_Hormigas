@@ -89,6 +89,14 @@
   border: 1px solid transparent;
 }
 
+.defaultItem {
+    color: #4b5563;
+}
+
+.defaultItem svg {
+    color: #9ca3af;
+}
+
 .deleteButton {
   background: none;
   border: none;

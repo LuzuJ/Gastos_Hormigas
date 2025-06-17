@@ -6,6 +6,7 @@ import { DashboardPage } from './pages/DashboardPage';
 import { ManageCategoriesPage } from './pages/ManageCategoriesPage';
 import { PlanningPage } from './pages/PlanningPage';
 import './index.css';
+import { categoryService } from './services/categoryService';
 
 // Define un tipo para las páginas para mayor seguridad
 export type Page = 'dashboard' | 'categories' | 'planning';
@@ -19,6 +20,12 @@ export default function App() {
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, async (currentUser: User | null) => {
             if (currentUser) {
+                // Si es un nuevo usuario, su metadata de creación será igual a la de último inicio de sesión
+                const isNewUser = currentUser.metadata.creationTime === currentUser.metadata.lastSignInTime;
+                if (isNewUser) {
+                    // Si es nuevo, creamos sus categorías por defecto
+                    await categoryService.initializeDefaultCategories(currentUser.uid);
+                }
                 setUserId(currentUser.uid);
                 setIsAuthReady(true);
             } else {
