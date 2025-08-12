@@ -1,77 +1,65 @@
 import React, { useState, useEffect } from 'react';
-import { onAuthStateChanged, signInAnonymously, type User } from 'firebase/auth';
+import { onAuthStateChanged, type User } from 'firebase/auth';
 import { auth } from './config/firebase';
 import { categoryService } from './services/categoryService';
 import { Layout, type Page } from './components/Layout/Layout';
 import { DashboardPage } from './pages/DashboardPage';
 import { ManageCategoriesPage } from './pages/ManageCategoriesPage';
 import { PlanningPage } from './pages/PlanningPage';
-import { RegistroPage } from './pages/RegistroPage'
-import { automationService } from './services/automationService'; 
+import { RegistroPage } from './pages/RegistroPage';
+import { automationService } from './services/automationService';
+import { LoginPage } from './pages/LoginPage';
 import './index.css';
-import { PAGE_ROUTES } from './constants'; // 1. Importamos las constantes
+import { PAGE_ROUTES } from './constants';
 
 export default function App() {
-    const [userId, setUserId] = useState<string | null>(null);
+    const [user, setUser] = useState<User | null>(null);
     const [isAuthReady, setIsAuthReady] = useState<boolean>(false);
-    const [isInitializing, setIsInitializing] = useState<boolean>(true);
-    const [authError, setAuthError] = useState<string | null>(null);
-    const [currentPage, setCurrentPage] = useState<Page>(PAGE_ROUTES.DASHBOARD); // 2. Usamos la constante
+    const [currentPage, setCurrentPage] = useState<Page>(PAGE_ROUTES.DASHBOARD);
 
     useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, async (currentUser: User | null) => {
-            if (currentUser) {
-                const isNewUser = currentUser.metadata.creationTime === currentUser.metadata.lastSignInTime;
-                
-                if (isNewUser) {
-                    setIsInitializing(true);
-                    await categoryService.initializeDefaultCategories(currentUser.uid);
-                    setIsInitializing(false);
-                } else {
-                    setIsInitializing(false);
-                }
-                
-                setUserId(currentUser.uid);
-                setIsAuthReady(true);
+        const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+            setUser(currentUser);
+            setIsAuthReady(true);
 
+            // La lógica de automatización solo debe correr si hay un usuario (sea anónimo o no)
+            if (currentUser) {
                 categoryService.onCategoriesUpdate(currentUser.uid, async (categories) => {
                     if (categories && categories.length > 0) {
                         await automationService.checkAndPostFixedExpenses(currentUser.uid, categories);
                     }
                 });
-            } else {
-                try {
-                    await signInAnonymously(auth);
-                } catch (error) {
-                    console.error("Error de autenticación anónima:", error);
-                    setAuthError("No se pudo conectar con el servicio de autenticación.");
-                    setIsAuthReady(true);
-                    setIsInitializing(false);
-                }
             }
         });
         return () => unsubscribe();
     }, []);
 
-    const renderPage = () => {
-        // 3. Usamos las constantes en el switch
-        switch (currentPage) {
-            case PAGE_ROUTES.DASHBOARD: return <DashboardPage userId={userId} />;
-            case PAGE_ROUTES.REGISTRO: return <RegistroPage userId={userId} />;
-            case PAGE_ROUTES.PLANNING: return <PlanningPage userId={userId} />;
-            case PAGE_ROUTES.ANALYSIS: return <ManageCategoriesPage userId={userId} />;
-            default: return <DashboardPage userId={userId} />;
-        }
-    };
-
-    if (!isAuthReady || isInitializing) {
-        return <div className="loading-screen">Preparando tu espacio...</div>;
+    if (!isAuthReady) {
+        return <div className="loading-screen">Cargando...</div>;
     }
-    if (authError) return <div className="loading-screen error">{authError}</div>;
-    
-    return (
-        <Layout currentPage={currentPage} setCurrentPage={setCurrentPage}>
-            {renderPage()}
-        </Layout>
-    );
+
+    // SI HAY CUALQUIER TIPO DE USUARIO (real o invitado), muestra la app.
+    if (user) {
+        const isGuest = user.isAnonymous;
+        const renderPage = () => {
+            switch (currentPage) {
+                // Pasamos el userId a todas las páginas
+                case PAGE_ROUTES.DASHBOARD: return <DashboardPage userId={user.uid} />;
+                case PAGE_ROUTES.REGISTRO: return <RegistroPage userId={user.uid} />;
+                // Pasamos isGuest a las páginas con funcionalidades restringidas
+                case PAGE_ROUTES.PLANNING: return <PlanningPage userId={user.uid} isGuest={isGuest} />;
+                case PAGE_ROUTES.ANALYSIS: return <ManageCategoriesPage userId={user.uid} isGuest={isGuest} />;
+                default: return <DashboardPage userId={user.uid} />;
+            }
+        };
+
+        return (
+            // Pasamos isGuest al Layout para mostrar botones diferentes
+            <Layout currentPage={currentPage} setCurrentPage={setCurrentPage} isGuest={isGuest}>
+                {renderPage()}
+            </Layout>
+        );
+    }
+
+    return <LoginPage />;
 }

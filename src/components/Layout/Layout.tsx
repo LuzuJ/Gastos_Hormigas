@@ -1,6 +1,8 @@
 import React, { type ReactNode } from 'react';
 import styles from './Layout.module.css';
-import { PAGE_ROUTES } from '../../constants'; // 1. Importamos las constantes
+import { authService } from '../../services/authService';
+import { PAGE_ROUTES } from '../../constants'; 
+import { LogOut } from 'lucide-react'; // Importa un ícono
 
 // 2. Derivamos el tipo Page directamente de las constantes para que siempre estén sincronizados
 export type Page = typeof PAGE_ROUTES[keyof typeof PAGE_ROUTES];
@@ -9,6 +11,7 @@ interface LayoutProps {
   currentPage: Page;
   setCurrentPage: (page: Page) => void;
   children: ReactNode;
+  isGuest?: boolean; 
 }
 
 export const Layout: React.FC<LayoutProps> = ({ currentPage, setCurrentPage, children }) => {
@@ -16,6 +19,9 @@ export const Layout: React.FC<LayoutProps> = ({ currentPage, setCurrentPage, chi
     <div className={styles.container}>
       <header className={styles.header}>
         <h1>Panel de Gastos</h1>
+        <button onClick={() => authService.signOut()} className={styles.logoutButton}>
+          <LogOut size={16} /> Cerrar Sesión
+        </button>
         <p>Tu centro de control para entender y mejorar tus finanzas.</p>
       </header>
 

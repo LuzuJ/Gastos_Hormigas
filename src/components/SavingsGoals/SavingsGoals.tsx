@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import styles from './SavingsGoals.module.css';
-import { Target, Trash2, Plus } from 'lucide-react';
+import { Target, Trash2, Plus, Lock } from 'lucide-react';
 import type { SavingsGoal, SavingsGoalFormData } from '../../types';
 import { AddFundsModal } from '../modals/AddFundsModal/AddFundsModal';
 
@@ -9,19 +9,20 @@ interface SavingsGoalsProps {
   onAdd: (data: SavingsGoalFormData) => Promise<{ success: boolean; error?: string; }>;
   onDelete: (id: string) => Promise<void>;
   onAddFunds: (id: string, amount: number) => Promise<{ success: boolean; error?: string; }>;
+  isGuest?: boolean; 
 }
 
-export const SavingsGoals: React.FC<SavingsGoalsProps> = ({ savingsGoals, onAdd, onDelete, onAddFunds }) => {
+export const SavingsGoals: React.FC<SavingsGoalsProps> = ({ savingsGoals, onAdd, onDelete, onAddFunds, isGuest }) => {
   const [name, setName] = useState('');
   const [targetAmount, setTargetAmount] = useState('');
   const [error, setError] = useState('');
-
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedGoal, setSelectedGoal] = useState<SavingsGoal | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    if (isGuest) return;
     const parsedAmount = parseFloat(targetAmount);
 
     if (!name.trim() || isNaN(parsedAmount) || parsedAmount <= 0) {
@@ -39,9 +40,15 @@ export const SavingsGoals: React.FC<SavingsGoalsProps> = ({ savingsGoals, onAdd,
   };
 
   const handleOpenModal = (goal: SavingsGoal) => {
+    if (isGuest) return;
     setSelectedGoal(goal);
     setIsModalOpen(true);
   };
+
+  const handleDelete = (goalId: string) => {
+    if (isGuest) return; 
+    onDelete(goalId);
+  }
 
   const handleSaveFunds = (amount: number) => {
     if (selectedGoal) {
@@ -65,11 +72,18 @@ export const SavingsGoals: React.FC<SavingsGoalsProps> = ({ savingsGoals, onAdd,
         <h3>Metas de Ahorro</h3>
       </div>
 
-      <form onSubmit={handleSubmit} className={styles.form}>
-        <input type="text" value={name} onChange={e => setName(e.target.value)} placeholder="Nombre (ej. Vacaciones)" className={styles.input}/>
-        <input type="number" value={targetAmount} onChange={e => setTargetAmount(e.target.value)} placeholder="Monto Objetivo" className={styles.input}/>
-        <button type="submit" className={styles.button}>Crear Meta</button>
-      </form> 
+      {isGuest ? (
+        <div className={styles.guestOverlay}>
+          <Lock size={18} />
+          <p>Crea una cuenta para añadir metas de ahorro.</p>
+        </div>
+      ) : (
+        <form onSubmit={handleSubmit} className={styles.form}>
+          <input type="text" value={name} onChange={e => setName(e.target.value)} placeholder="Nombre (ej. Vacaciones)" className={styles.input}/>
+          <input type="number" value={targetAmount} onChange={e => setTargetAmount(e.target.value)} placeholder="Monto Objetivo" className={styles.input}/>
+          <button type="submit" className={styles.button}>Crear Meta</button>
+        </form>
+      )}
       {error && <p className={styles.formError}>{error}</p>}
 
       <ul className={styles.list}>
@@ -88,8 +102,13 @@ export const SavingsGoals: React.FC<SavingsGoalsProps> = ({ savingsGoals, onAdd,
                   </span>
                 </div>
                 <div className={styles.actions}>
-                  <button onClick={() => handleOpenModal(goal)} className={styles.actionButton}><Plus size={16} /> Añadir</button>
-                  <button onClick={() => onDelete(goal.id)} className={`${styles.actionButton} ${styles.deleteButton}`}><Trash2 size={16} /></button>
+                  {/* 4. Deshabilitamos los botones si es invitado */}
+                  <button onClick={() => handleOpenModal(goal)} className={styles.actionButton} disabled={isGuest}>
+                    <Plus size={16} /> Añadir
+                  </button>
+                  <button onClick={() => handleDelete(goal.id)} className={`${styles.actionButton} ${styles.deleteButton}`} disabled={isGuest}>
+                    <Trash2 size={16} />
+                  </button>
                 </div>
               </li>
             );

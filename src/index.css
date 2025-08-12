@@ -21,3 +21,16 @@ body {
 * {
   box-sizing: border-box;
 }
+
+.export-button {
+  background-color: #16a34a; /* verde */
+  color: white;
+  border: none;
+  padding: 0.65rem 1.25rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}

@@ -3,7 +3,12 @@ import { useExpensesController } from '../hooks/useExpensesController';
 import styles from './ManageCategoriesPage.module.css'; // Estilos simplificados para la página
 import { CategoryItem } from '../components/CategoryItem/CategoryItem'; // Importamos el nuevo componente
 
-export const ManageCategoriesPage: React.FC<{ userId: string | null }> = ({ userId }) => {
+interface ManageCategoriesPageProps {
+    userId: string | null;
+    isGuest: boolean;
+}
+
+export const ManageCategoriesPage: React.FC<ManageCategoriesPageProps> = ({ userId, isGuest }) => {
     const { categories, expenses, addSubCategory, deleteSubCategory, deleteCategory, addCategory, updateCategoryBudget } = useExpensesController(userId);
     const [newCategoryName, setNewCategoryName] = useState('');
 
