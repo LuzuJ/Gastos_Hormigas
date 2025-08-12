@@ -5,6 +5,13 @@ export interface Category {
   id: string;
   name: string;
   isDefault?: boolean; // Indica si es una categoría por defecto
+  budget?: number;
+  subcategories: SubCategory[];
+}
+
+export interface SubCategory {
+  id: string;
+  name: string;
 }
 
 // Interfaz para cada gasto
@@ -12,7 +19,8 @@ export interface Expense {
   id: string;
   description: string;
   amount: number;
-  category: string;
+  categoryId: string;
+  subCategory: string;
   createdAt: Timestamp;
 }
 
@@ -31,8 +39,12 @@ export interface FixedExpense {
   description: string;
   amount: number;
   category: string;
-  dayOfMonth: number; // El día del mes que se cobra (ej. 1, 15, 30)
+  dayOfMonth: number; 
 }
 
-// Tipo de dato para el formulario, omitiendo campos generados automáticamente
-export type ExpenseFormData = Omit<Expense, 'id' | 'createdAt'>;
+export type ExpenseFormData = {
+  description: string;
+  amount: number;
+  categoryId: string;
+  subCategory: string;
+};

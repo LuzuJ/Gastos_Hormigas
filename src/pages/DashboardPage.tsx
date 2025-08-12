@@ -10,11 +10,20 @@ interface DashboardPageProps {
 }
 
 export const DashboardPage: React.FC<DashboardPageProps> = ({ userId }) => {
-    const { 
-        expenses, categories, loading, error, 
-        addExpense, updateExpense, deleteExpense,
-        isEditing, setIsEditing, totalExpensesToday,
-        financials, totalExpensesMonth, totalFixedExpenses
+     const { 
+        expenses, 
+        categories, 
+        loading, 
+        error, 
+        addExpense, 
+        updateExpense, 
+        deleteExpense,
+        isEditing, 
+        setIsEditing, 
+        totalExpensesToday,
+        financials, 
+        totalExpensesMonth, 
+        totalFixedExpenses
     } = useExpensesController(userId);
 
     return (
@@ -37,6 +46,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ userId }) => {
                 <h2 className="section-title">Registro de Gastos</h2>
                 <ExpenseList 
                     expenses={expenses} 
+                    categories={categories}
                     onDelete={deleteExpense} 
                     loading={loading}
                     onEdit={(expense) => setIsEditing(expense)} 

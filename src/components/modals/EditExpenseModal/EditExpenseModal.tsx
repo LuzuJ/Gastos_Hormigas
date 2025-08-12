@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styles from './EditExpenseModal.module.css';
-import type { Expense, ExpenseFormData, Category } from '../../../types';
+import type { Expense, ExpenseFormData, Category, SubCategory } from '../../../types';
 
 interface EditModalProps {
   expense: Expense;
@@ -10,13 +10,32 @@ interface EditModalProps {
 }
 
 export const EditExpenseModal: React.FC<EditModalProps> = ({ expense, categories, onClose, onSave }) => {
-    const [formData, setFormData] = useState<ExpenseFormData>({
+    const [formData, setFormData] = useState<Partial<ExpenseFormData>>({
         description: expense.description,
         amount: expense.amount,
-        category: expense.category,
+        categoryId: expense.categoryId,
+        subCategory: expense.subCategory,
     });
     
+    const [availableSubCategories, setAvailableSubCategories] = useState<SubCategory[]>([]);
     const [error, setError] = useState('');
+
+    useEffect(() => {
+        const category = categories.find(c => c.id === formData.categoryId);
+        setAvailableSubCategories(category?.subcategories || []);
+    }, [formData.categoryId, categories]);
+
+    const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const newCategoryId = e.target.value;
+        const category = categories.find(c => c.id === newCategoryId);
+        const subcategories = category?.subcategories || [];
+        setAvailableSubCategories(subcategories);
+        setFormData(prev => ({
+            ...prev,
+            categoryId: newCategoryId,
+            subCategory: subcategories[0]?.name || ''
+        }));
+    };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
@@ -28,17 +47,13 @@ export const EditExpenseModal: React.FC<EditModalProps> = ({ expense, categories
 
     const handleSave = async (e: React.FormEvent) => {
         e.preventDefault();
-        setError(''); 
-        if (!formData.description.trim() || formData.amount <= 0) {
-            setError('Por favor, ingresa una descripción y un monto válido.');
-            return;
-        }
-        
-        const result = await onSave(expense.id, formData);
-        if (result.success) {
-            onClose(); 
+        // Aseguramos que formData sea del tipo correcto antes de guardar
+        if (formData.description && formData.amount && formData.categoryId && formData.subCategory) {
+            const result = await onSave(expense.id, formData as ExpenseFormData);
+            if (result.success) onClose();
+            else setError(result.error || 'No se pudieron guardar los cambios.');
         } else {
-            setError(result.error || 'No se pudieron guardar los cambios.');
+            setError('Todos los campos son requeridos.');
         }
     };
     
@@ -65,8 +80,14 @@ export const EditExpenseModal: React.FC<EditModalProps> = ({ expense, categories
                     </div>
                     <div className={styles.formGroup}>
                         <label htmlFor="edit-category">Categoría</label>
-                        <select id="edit-category" name="category" value={formData.category} onChange={handleChange}>
-                            {categories.map(cat => <option key={cat.id} value={cat.name}>{cat.name}</option>)}
+                        <select id="edit-category" name="categoryId" value={formData.categoryId} onChange={handleCategoryChange}>
+                            {categories.map(cat => <option key={cat.id} value={cat.id}>{cat.name}</option>)}
+                        </select>
+                    </div>
+                    <div className={styles.formGroup}>
+                        <label htmlFor="edit-subCategory">Subcategoría</label>
+                        <select id="edit-subCategory" name="subCategory" value={formData.subCategory} onChange={handleChange} disabled={availableSubCategories.length === 0}>
+                            {availableSubCategories.map(sub => <option key={sub.id} value={sub.name}>{sub.name}</option>)}
                         </select>
                     </div>
                     {error && <p className={styles.error}>{error}</p>}

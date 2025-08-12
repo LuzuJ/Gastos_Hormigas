@@ -20,6 +20,9 @@ export interface ExpensesController {
     deleteExpense: (expenseId: string) => Promise<void>;
     addCategory: (categoryName: string) => Promise<void>;
     deleteCategory: (categoryId: string) => Promise<void>;
+    addSubCategory: (categoryId: string, subCategoryName: string) => Promise<void>; 
+    deleteSubCategory: (categoryId: string, subCategoryId: string) => Promise<void>; 
+    updateCategoryBudget: (categoryId: string, budget: number) => Promise<void>;
     setMonthlyIncome: (income: number) => Promise<void>;
     deleteFixedExpense: (id: string) => Promise<void>;
     isEditing: Expense | null;
@@ -55,9 +58,12 @@ export const useExpensesController = (userId: string | null): ExpensesController
             setLoading(false);
         });
 
-        const unsubscribeCategories = categoryService.onCategoriesUpdate(userId, (data, err) => {
-            if (err) setError("No se pudieron cargar las categorías.");
-            else setCategories(data || []);
+         const unsubCategories = categoryService.onCategoriesUpdate(userId, (data) => {
+            setCategories(data || []);
+        });
+
+        const unsubscribeCategories = categoryService.onCategoriesUpdate(userId, (data) => {
+            setCategories(data || []);
         });
 
         const unsubFinancials = financialsService.onFinancialsUpdate(userId, (data, err) => {
@@ -75,6 +81,7 @@ export const useExpensesController = (userId: string | null): ExpensesController
             unsubscribeCategories();
             unsubFinancials();
             unsubFixedExpenses();
+            unsubCategories();
         };
     }, [userId]);
     
@@ -99,6 +106,16 @@ export const useExpensesController = (userId: string | null): ExpensesController
         } catch (err) {
             console.error(err);
             setError("No se pudo añadir el gasto fijo.");
+        }
+    }, [userId]);
+
+    const updateCategoryBudget = useCallback(async (categoryId: string, budget: number) => {
+        if (!userId || budget < 0) return;
+        try {
+            await categoryService.updateCategoryBudget(userId, categoryId, budget);
+        } catch (err) {
+            console.error(err);
+            setError("No se pudo actualizar el presupuesto.");
         }
     }, [userId]);
     
@@ -191,7 +208,25 @@ export const useExpensesController = (userId: string | null): ExpensesController
         return variableExpensesMonth + totalFixedExpenses;
     }, [expenses, totalFixedExpenses]);
 
-    
+    const addSubCategory = useCallback(async (categoryId: string, subCategoryName: string) => {
+        if (!userId || !subCategoryName.trim()) return;
+        try {
+            await categoryService.addSubCategory(userId, categoryId, subCategoryName.trim());
+        } catch(err) {
+            console.error(err);
+            setError("No se pudo añadir la subcategoría.");
+        }
+    }, [userId]);
+
+    const deleteSubCategory = useCallback(async (categoryId: string, subCategoryId: string) => {
+        if (!userId) return;
+        try {
+            await categoryService.deleteSubCategory(userId, categoryId, subCategoryId);
+        } catch (err) {
+            console.error(err);
+            setError("No se pudo eliminar la subcategoría.");
+        }
+    }, [userId]);
 
     return { 
         expenses, categories, loading, error, 
@@ -199,6 +234,7 @@ export const useExpensesController = (userId: string | null): ExpensesController
         addCategory, deleteCategory, setMonthlyIncome,
         isEditing, setIsEditing, totalExpensesToday,
         financials, totalExpensesMonth, totalFixedExpenses,
-        fixedExpenses, addFixedExpense, deleteFixedExpense
+        fixedExpenses, addFixedExpense, deleteFixedExpense,
+        addSubCategory, deleteSubCategory, updateCategoryBudget
     };
 };
