@@ -1,22 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import styles from './EditExpenseModal.module.css';
 import type { Expense, ExpenseFormData, Category, SubCategory } from '../../../types';
+import { expenseFormSchema } from '../../../schemas'; // 1. Importamos el esquema
 
 interface EditModalProps {
   expense: Expense;
   categories: Category[];
   onClose: () => void;
   onSave: (id: string, data: Partial<ExpenseFormData>) => Promise<{ success: boolean; error?: string; }>;
+  onAddSubCategory: (categoryId: string, subCategoryName: string) => Promise<void>;
+
 }
 
 export const EditExpenseModal: React.FC<EditModalProps> = ({ expense, categories, onClose, onSave }) => {
-    const [formData, setFormData] = useState<Partial<ExpenseFormData>>({
+    const [formData, setFormData] = useState({
         description: expense.description,
         amount: expense.amount,
         categoryId: expense.categoryId,
         subCategory: expense.subCategory,
     });
-    
+
     const [availableSubCategories, setAvailableSubCategories] = useState<SubCategory[]>([]);
     const [error, setError] = useState('');
 
@@ -29,7 +32,6 @@ export const EditExpenseModal: React.FC<EditModalProps> = ({ expense, categories
         const newCategoryId = e.target.value;
         const category = categories.find(c => c.id === newCategoryId);
         const subcategories = category?.subcategories || [];
-        setAvailableSubCategories(subcategories);
         setFormData(prev => ({
             ...prev,
             categoryId: newCategoryId,
@@ -37,26 +39,37 @@ export const EditExpenseModal: React.FC<EditModalProps> = ({ expense, categories
         }));
     };
 
+    // Un solo manejador para todos los inputs
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
-        setFormData(prev => ({
-            ...prev,
-            [name]: name === 'amount' ? parseFloat(value) || 0 : value 
-        }));
+        setFormData(prev => ({ ...prev, [name]: value }));
     };
 
     const handleSave = async (e: React.FormEvent) => {
         e.preventDefault();
-        // Aseguramos que formData sea del tipo correcto antes de guardar
-        if (formData.description && formData.amount && formData.categoryId && formData.subCategory) {
-            const result = await onSave(expense.id, formData as ExpenseFormData);
-            if (result.success) onClose();
-            else setError(result.error || 'No se pudieron guardar los cambios.');
+        setError('');
+
+        // 2. Usamos Zod para validar los datos del formulario
+        const validationResult = expenseFormSchema.safeParse({
+          ...formData,
+          amount: formData.amount, // Dejamos que Zod convierta el string a número
+        });
+
+        // 3. Si la validación falla, mostramos el error específico y detenemos la ejecución
+        if (!validationResult.success) {
+            setError(validationResult.error.issues[0].message);
+            return;
+        }
+
+        // 4. Si la validación es exitosa, llamamos a onSave con los datos limpios
+        const result = await onSave(expense.id, validationResult.data);
+        if (result.success) {
+            onClose();
         } else {
-            setError('Todos los campos son requeridos.');
+            setError(result.error || 'No se pudieron guardar los cambios.');
         }
     };
-    
+
     useEffect(() => {
         const handleKeyDown = (event: KeyboardEvent) => {
             if (event.key === 'Escape') onClose();

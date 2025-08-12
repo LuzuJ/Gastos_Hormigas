@@ -7,13 +7,14 @@ import { DashboardPage } from './pages/DashboardPage';
 import { ManageCategoriesPage } from './pages/ManageCategoriesPage';
 import { PlanningPage } from './pages/PlanningPage';
 import './index.css';
+import { PAGE_ROUTES } from './constants'; // 1. Importamos las constantes
 
 export default function App() {
     const [userId, setUserId] = useState<string | null>(null);
     const [isAuthReady, setIsAuthReady] = useState<boolean>(false);
     const [isInitializing, setIsInitializing] = useState<boolean>(true);
     const [authError, setAuthError] = useState<string | null>(null);
-    const [currentPage, setCurrentPage] = useState<Page>('dashboard');
+    const [currentPage, setCurrentPage] = useState<Page>(PAGE_ROUTES.DASHBOARD); // 2. Usamos la constante
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, async (currentUser: User | null) => {
@@ -21,11 +22,11 @@ export default function App() {
                 const isNewUser = currentUser.metadata.creationTime === currentUser.metadata.lastSignInTime;
                 
                 if (isNewUser) {
-                    setIsInitializing(true); // Empezamos a inicializar
+                    setIsInitializing(true);
                     await categoryService.initializeDefaultCategories(currentUser.uid);
-                    setIsInitializing(false); // Terminamos de inicializar
+                    setIsInitializing(false);
                 } else {
-                    setIsInitializing(false); // No es usuario nuevo, no hay nada que inicializar
+                    setIsInitializing(false);
                 }
                 
                 setUserId(currentUser.uid);
@@ -45,10 +46,11 @@ export default function App() {
     }, []);
 
     const renderPage = () => {
+        // 3. Usamos las constantes en el switch
         switch (currentPage) {
-            case 'dashboard': return <DashboardPage userId={userId} />;
-            case 'planning': return <PlanningPage userId={userId} />;
-            case 'analysis': return <ManageCategoriesPage userId={userId} />; // Aquí se renderiza la página correcta
+            case PAGE_ROUTES.DASHBOARD: return <DashboardPage userId={userId} />;
+            case PAGE_ROUTES.PLANNING: return <PlanningPage userId={userId} />;
+            case PAGE_ROUTES.ANALYSIS: return <ManageCategoriesPage userId={userId} />;
             default: return <DashboardPage userId={userId} />;
         }
     };

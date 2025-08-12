@@ -1,8 +1,9 @@
 import React, { type ReactNode } from 'react';
 import styles from './Layout.module.css';
+import { PAGE_ROUTES } from '../../constants'; // 1. Importamos las constantes
 
-// Definimos un tipo para las páginas para que sea más seguro
-export type Page = 'dashboard' | 'planning' | 'analysis';
+// 2. Derivamos el tipo Page directamente de las constantes para que siempre estén sincronizados
+export type Page = typeof PAGE_ROUTES[keyof typeof PAGE_ROUTES];
 
 interface LayoutProps {
   currentPage: Page;
@@ -18,22 +19,23 @@ export const Layout: React.FC<LayoutProps> = ({ currentPage, setCurrentPage, chi
         <p>Tu centro de control para entender y mejorar tus finanzas.</p>
       </header>
 
+      {/* 3. Usamos las constantes en los botones de navegación */}
       <nav className={styles.mainNav}>
         <button
-          onClick={() => setCurrentPage('dashboard')}
-          className={`${styles.navLink} ${currentPage === 'dashboard' ? styles.active : ''}`}
+          onClick={() => setCurrentPage(PAGE_ROUTES.DASHBOARD)}
+          className={`${styles.navLink} ${currentPage === PAGE_ROUTES.DASHBOARD ? styles.active : ''}`}
         >
           Dashboard
         </button>
         <button
-          onClick={() => setCurrentPage('planning')}
-          className={`${styles.navLink} ${currentPage === 'planning' ? styles.active : ''}`}
+          onClick={() => setCurrentPage(PAGE_ROUTES.PLANNING)}
+          className={`${styles.navLink} ${currentPage === PAGE_ROUTES.PLANNING ? styles.active : ''}`}
         >
           Planificación
         </button>
         <button
-          onClick={() => setCurrentPage('analysis')}
-          className={`${styles.navLink} ${currentPage === 'analysis' ? styles.active : ''}`}
+          onClick={() => setCurrentPage(PAGE_ROUTES.ANALYSIS)}
+          className={`${styles.navLink} ${currentPage === PAGE_ROUTES.ANALYSIS ? styles.active : ''}`}
         >
           Análisis por Categoría
         </button>

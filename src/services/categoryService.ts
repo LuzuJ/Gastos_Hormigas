@@ -4,12 +4,16 @@ import {
     query, writeBatch, getDocs, updateDoc, type DocumentData, type Unsubscribe
 } from 'firebase/firestore';
 import type { Category, SubCategory } from '../types';
+import { FIRESTORE_PATHS } from '../constants';
 
 const appId = import.meta.env.VITE_FIREBASE_PROJECT_ID || 'default-app';
 type CategoriesCallback = (data: Category[]) => void;
 
-const getCategoriesCollectionRef = (userId: string) => collection(db, `artifacts/${appId}/users/${userId}/categories`);
-const getSubCategoriesCollectionRef = (userId: string, categoryId: string) => collection(db, `artifacts/${appId}/users/${userId}/categories/${categoryId}/subcategories`);
+const getCategoriesCollectionRef = (userId: string) => 
+    collection(db, FIRESTORE_PATHS.ARTIFACTS, appId, FIRESTORE_PATHS.USERS, userId, FIRESTORE_PATHS.CATEGORIES);
+
+const getSubCategoriesCollectionRef = (userId: string, categoryId: string) => 
+    collection(db, FIRESTORE_PATHS.ARTIFACTS, appId, FIRESTORE_PATHS.USERS, userId, FIRESTORE_PATHS.CATEGORIES, categoryId, FIRESTORE_PATHS.SUBCATEGORIES);
 
 // Definimos las categorías y subcategorías que se crearán para nuevos usuarios
 const defaultCategoriesStructure = [
@@ -74,7 +78,12 @@ export const categoryService = {
         return addDoc(getSubCategoriesCollectionRef(userId, categoryId), { name: subCategoryName });
     },
     deleteSubCategory: (userId: string, categoryId: string, subCategoryId: string) => {
-        const subCategoryDocRef = doc(db, `artifacts/${appId}/users/${userId}/categories/${categoryId}/subcategories/${subCategoryId}`);
+        const subCategoryDocRef = doc(db, 
+            FIRESTORE_PATHS.ARTIFACTS, appId, 
+            FIRESTORE_PATHS.USERS, userId, 
+            FIRESTORE_PATHS.CATEGORIES, categoryId, 
+            FIRESTORE_PATHS.SUBCATEGORIES, subCategoryId
+        );
         return deleteDoc(subCategoryDocRef);
     }
 };

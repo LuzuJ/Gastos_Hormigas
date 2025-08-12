@@ -5,12 +5,14 @@ import {
     type QuerySnapshot, type DocumentData
 } from 'firebase/firestore';
 import type { Expense, ExpenseFormData } from '../types';
+import { FIRESTORE_PATHS } from '../constants'; // 1. Importamos las constantes
 
 const appId = import.meta.env.VITE_FIREBASE_PROJECT_ID || 'default-app';
 type ExpensesCallback = (data: Expense[], error?: Error) => void;
 
+// 2. Usamos las constantes para construir la ruta
 const getExpensesCollectionRef = (userId: string) => {
-    return collection(db, `artifacts/${appId}/users/${userId}/expenses`);
+    return collection(db, FIRESTORE_PATHS.ARTIFACTS, appId, FIRESTORE_PATHS.USERS, userId, FIRESTORE_PATHS.EXPENSES);
 };
 
 export const expensesService = {
@@ -29,11 +31,12 @@ export const expensesService = {
         return addDoc(getExpensesCollectionRef(userId), { ...expenseData, createdAt: serverTimestamp() });
     },
     updateExpense: (userId: string, expenseId: string, expenseData: Partial<ExpenseFormData>) => {
-        const expenseDocRef = doc(db, `artifacts/${appId}/users/${userId}/expenses`, expenseId);
+        // 3. También las usamos para obtener la referencia a un documento específico
+        const expenseDocRef = doc(db, FIRESTORE_PATHS.ARTIFACTS, appId, FIRESTORE_PATHS.USERS, userId, FIRESTORE_PATHS.EXPENSES, expenseId);
         return updateDoc(expenseDocRef, expenseData);
     },
     deleteExpense: (userId: string, expenseId: string) => {
-        const expenseDocRef = doc(db, `artifacts/${appId}/users/${userId}/expenses`, expenseId);
+        const expenseDocRef = doc(db, FIRESTORE_PATHS.ARTIFACTS, appId, FIRESTORE_PATHS.USERS, userId, FIRESTORE_PATHS.EXPENSES, expenseId);
         return deleteDoc(expenseDocRef);
     }
 };

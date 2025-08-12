@@ -4,12 +4,14 @@ import {
     query, type QuerySnapshot, type DocumentData
 } from 'firebase/firestore';
 import type { FixedExpense } from '../types';
+import { FIRESTORE_PATHS } from '../constants'; // 1. Importamos las constantes
 
 const appId = import.meta.env.VITE_FIREBASE_PROJECT_ID || 'default-app';
 type FixedExpensesCallback = (data: FixedExpense[], error?: Error) => void;
 
+// 2. Usamos las constantes para construir la ruta
 const getFixedExpensesCollectionRef = (userId: string) => {
-    return collection(db, `artifacts/${appId}/users/${userId}/fixedExpenses`);
+    return collection(db, FIRESTORE_PATHS.ARTIFACTS, appId, FIRESTORE_PATHS.USERS, userId, FIRESTORE_PATHS.FIXED_EXPENSES);
 };
 
 export const fixedExpenseService = {
@@ -29,7 +31,8 @@ export const fixedExpenseService = {
     },
 
     deleteFixedExpense: (userId: string, fixedExpenseId: string) => {
-        const fixedExpenseDocRef = doc(db, `artifacts/${appId}/users/${userId}/fixedExpenses`, fixedExpenseId);
+        // 3. Y finalmente aquí también
+        const fixedExpenseDocRef = doc(db, FIRESTORE_PATHS.ARTIFACTS, appId, FIRESTORE_PATHS.USERS, userId, FIRESTORE_PATHS.FIXED_EXPENSES, fixedExpenseId);
         return deleteDoc(fixedExpenseDocRef);
     },
 };

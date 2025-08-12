@@ -52,4 +52,6 @@
   .formGroupCategory { grid-column: span 2; }
   .formGroupCustom { grid-column: span 6; } /* Ocupa todo el ancho si aparece */
   .fullWidth { grid-column: span 6; }
+  .formGroupSubCategory { grid-column: span 2; } /* Ajusta el grid */
+  .formGroupNewSubCategory { grid-column: span 6; } /* Ocupa todo el ancho */
 }

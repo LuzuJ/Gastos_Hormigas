@@ -4,6 +4,7 @@ import { ExpenseList } from '../components/ExpenseList/ExpenseList';
 import { Summary } from '../components/Summary/Summary';
 import { EditExpenseModal } from '../components/modals/EditExpenseModal/EditExpenseModal';
 import { useExpensesController } from '../hooks/useExpensesController';
+import { ExpenseChart } from '../components/ExpenseChart/ExpenseChart';
 
 interface DashboardPageProps {
   userId: string | null;
@@ -19,17 +20,20 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ userId }) => {
         updateExpense, 
         deleteExpense,
         isEditing, 
+        addSubCategory,
         setIsEditing, 
         totalExpensesToday,
         financials, 
         totalExpensesMonth, 
-        totalFixedExpenses
+        totalFixedExpenses,
+        monthlyExpensesByCategory
     } = useExpensesController(userId);
 
     return (
         <div>
             <ExpenseForm 
                 onAdd={addExpense} 
+                onAddSubCategory={addSubCategory}
                 categories={categories}
                 isSubmitting={loading} 
             />
@@ -41,6 +45,8 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ userId }) => {
             />
             
             {error && <p className="error-message">{error}</p>}
+
+            <ExpenseChart data={monthlyExpensesByCategory} />
 
             <div style={{marginTop: '2rem'}}>
                 <h2 className="section-title">Registro de Gastos</h2>
@@ -59,6 +65,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ userId }) => {
                     categories={categories}
                     onClose={() => setIsEditing(null)}
                     onSave={updateExpense}
+                    onAddSubCategory={addSubCategory}
                 />
             )}
         </div>

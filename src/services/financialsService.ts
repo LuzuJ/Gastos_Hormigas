@@ -1,13 +1,14 @@
 import { db } from '../config/firebase';
 import { doc, onSnapshot, setDoc, type DocumentData } from 'firebase/firestore';
 import type { Financials } from '../types';
+import { FIRESTORE_PATHS } from '../constants'; // 1. Importamos las constantes
 
 const appId = import.meta.env.VITE_FIREBASE_PROJECT_ID || 'default-app';
 type FinancialsCallback = (data: Financials | null, error?: Error) => void;
 
-// A diferencia de los gastos, solo tendremos UN documento para los datos financieros
+// 2. Usamos las constantes para la ruta del documento
 const getFinancialsDocRef = (userId: string) => {
-    return doc(db, `artifacts/${appId}/users/${userId}/financials`, 'summary');
+    return doc(db, FIRESTORE_PATHS.ARTIFACTS, appId, FIRESTORE_PATHS.USERS, userId, FIRESTORE_PATHS.FINANCIALS, FIRESTORE_PATHS.FINANCIALS_SUMMARY_DOC);
 };
 
 export const financialsService = {
@@ -17,7 +18,6 @@ export const financialsService = {
             if (snapshot.exists()) {
                 callback(snapshot.data() as Financials);
             } else {
-                // Si no existe, devuelve null para que la UI sepa que no hay datos
                 callback(null);
             }
         }, (error) => {
@@ -28,7 +28,6 @@ export const financialsService = {
 
     setMonthlyIncome: (userId: string, income: number) => {
         const financialsDocRef = getFinancialsDocRef(userId);
-        // Usamos setDoc con { merge: true } para crear o actualizar el documento sin sobreescribir otros campos
         return setDoc(financialsDocRef, { monthlyIncome: income }, { merge: true });
     },
 };
