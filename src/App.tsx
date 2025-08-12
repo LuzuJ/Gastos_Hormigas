@@ -34,7 +34,11 @@ export default function App() {
                 setUserId(currentUser.uid);
                 setIsAuthReady(true);
 
-                await automationService.checkAndPostFixedExpenses(currentUser.uid);
+                categoryService.onCategoriesUpdate(currentUser.uid, async (categories) => {
+                    if (categories && categories.length > 0) {
+                        await automationService.checkAndPostFixedExpenses(currentUser.uid, categories);
+                    }
+                });
             } else {
                 try {
                     await signInAnonymously(auth);
