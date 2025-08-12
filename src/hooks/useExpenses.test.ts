@@ -57,7 +57,10 @@ describe('Hook useExpenses', () => {
 
   it('debería llamar a expensesService.addExpense con los datos correctos', async () => {
     const { result } = renderHook(() => useExpenses('test-user-id'));
-    const newExpense: ExpenseFormData = { description: 'Cena', amount: 30, categoryId: 'cat-1', subCategory: 'Restaurante' };
+    const newExpense: ExpenseFormData = {
+      description: 'Cena', amount: 30, categoryId: 'cat-1', subCategory: 'Restaurante',
+      createdAt: Timestamp.now()
+    };
 
     await act(async () => {
       await result.current.addExpense(newExpense);

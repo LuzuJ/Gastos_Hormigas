@@ -6,7 +6,8 @@ import { Layout, type Page } from './components/Layout/Layout';
 import { DashboardPage } from './pages/DashboardPage';
 import { ManageCategoriesPage } from './pages/ManageCategoriesPage';
 import { PlanningPage } from './pages/PlanningPage';
-import { RegistroPage } from './pages/RegistroPage'; 
+import { RegistroPage } from './pages/RegistroPage'
+import { automationService } from './services/automationService'; 
 import './index.css';
 import { PAGE_ROUTES } from './constants'; // 1. Importamos las constantes
 
@@ -32,6 +33,8 @@ export default function App() {
                 
                 setUserId(currentUser.uid);
                 setIsAuthReady(true);
+
+                await automationService.checkAndPostFixedExpenses(currentUser.uid);
             } else {
                 try {
                     await signInAnonymously(auth);

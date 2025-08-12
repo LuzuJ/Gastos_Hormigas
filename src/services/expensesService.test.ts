@@ -5,7 +5,8 @@ import {
   doc, 
   addDoc, 
   deleteDoc, 
-  updateDoc
+  updateDoc,
+  Timestamp
 } from 'firebase/firestore';
 import type { ExpenseFormData } from '../types';
 
@@ -41,6 +42,7 @@ describe('Servicio expensesService', () => {
       amount: 75.50,
       categoryId: 'cat-1',
       subCategory: 'Restaurante',
+      createdAt: new Timestamp(0, 0)
     };
 
     await expensesService.addExpense(userId, expenseData);

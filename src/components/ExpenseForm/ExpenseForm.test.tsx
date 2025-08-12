@@ -24,7 +24,9 @@ const mockCategories: Category[] = [
 describe('Componente ExpenseForm', () => {
 
   it('debería renderizar todos los campos del formulario', () => {
-    render(<ExpenseForm onAdd={vi.fn()} categories={mockCategories} isSubmitting={false} />);
+    render(<ExpenseForm onAdd={vi.fn()} categories={mockCategories} isSubmitting={false} onAddSubCategory={function (categoryId: string, subCategoryName: string): Promise<void> {
+      throw new Error('Function not implemented.');
+    } } expenses={[]} />);
 
     // CORRECCIÓN: Usamos /^categoría$/i para una coincidencia exacta.
     // El ^ significa "inicio de la cadena" y $ significa "fin de la cadena".
@@ -36,7 +38,9 @@ describe('Componente ExpenseForm', () => {
   });
 
   it('debería permitir al usuario escribir en los campos de descripción y monto', () => {
-    render(<ExpenseForm onAdd={vi.fn()} categories={mockCategories} isSubmitting={false} />);
+    render(<ExpenseForm onAdd={vi.fn()} categories={mockCategories} isSubmitting={false} onAddSubCategory={function (categoryId: string, subCategoryName: string): Promise<void> {
+      throw new Error('Function not implemented.');
+    } } expenses={[]} />);
 
     const descriptionInput = screen.getByLabelText(/descripción/i);
     const amountInput = screen.getByLabelText(/monto/i);
@@ -49,7 +53,9 @@ describe('Componente ExpenseForm', () => {
   });
 
   it('debería mostrar un error de validación si se envía el formulario vacío', async () => {
-    render(<ExpenseForm onAdd={vi.fn()} categories={mockCategories} isSubmitting={false} />);
+    render(<ExpenseForm onAdd={vi.fn()} categories={mockCategories} isSubmitting={false} onAddSubCategory={function (categoryId: string, subCategoryName: string): Promise<void> {
+      throw new Error('Function not implemented.');
+    } } expenses={[]} />);
 
     const submitButton = screen.getByRole('button', { name: /agregar gasto/i });
     fireEvent.click(submitButton);
@@ -60,7 +66,9 @@ describe('Componente ExpenseForm', () => {
 
   it('debería llamar a la función onAdd con los datos correctos al enviar el formulario válido', () => {
     const handleAdd = vi.fn().mockResolvedValue({ success: true }); // Mockeamos la función
-    render(<ExpenseForm onAdd={handleAdd} categories={mockCategories} isSubmitting={false} />);
+    render(<ExpenseForm onAdd={handleAdd} categories={mockCategories} isSubmitting={false} onAddSubCategory={function (categoryId: string, subCategoryName: string): Promise<void> {
+      throw new Error('Function not implemented.');
+    } } expenses={[]} />);
 
     // Simulamos el llenado del formulario
     fireEvent.change(screen.getByLabelText(/descripción/i), { target: { value: 'Almuerzo' } });

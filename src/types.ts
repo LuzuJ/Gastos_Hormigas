@@ -40,6 +40,7 @@ export interface FixedExpense {
   amount: number;
   category: string;
   dayOfMonth: number; 
+  lastPostedMonth?: string; // Formato "YYYY-MM", ej: "2025-07"
 }
 
 export type ExpenseFormData = {
@@ -47,6 +48,7 @@ export type ExpenseFormData = {
   amount: number;
   categoryId: string;
   subCategory: string;
+  createdAt: Timestamp;
 };
 
 export interface SavingsGoal {

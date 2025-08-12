@@ -1,7 +1,8 @@
 import { db } from '../config/firebase';
 import {
     collection, onSnapshot, addDoc, doc, deleteDoc,
-    query, type QuerySnapshot, type DocumentData
+    query, type QuerySnapshot, type DocumentData, 
+    updateDoc, getDocs
 } from 'firebase/firestore';
 import type { FixedExpense } from '../types';
 import { FIRESTORE_PATHS } from '../constants'; // 1. Importamos las constantes
@@ -35,4 +36,14 @@ export const fixedExpenseService = {
         const fixedExpenseDocRef = doc(db, FIRESTORE_PATHS.ARTIFACTS, appId, FIRESTORE_PATHS.USERS, userId, FIRESTORE_PATHS.FIXED_EXPENSES, fixedExpenseId);
         return deleteDoc(fixedExpenseDocRef);
     },
+    getFixedExpensesOnce: async (userId: string) => {
+        const snapshot = await getDocs(getFixedExpensesCollectionRef(userId));
+        return snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as FixedExpense));
+    },
+
+    // Actualiza un gasto fijo específico (para marcarlo como registrado)
+    updateFixedExpense: (userId: string, goalId: string, data: Partial<FixedExpense>) => {
+        const fixedExpenseDocRef = doc(db, FIRESTORE_PATHS.ARTIFACTS, appId, FIRESTORE_PATHS.USERS, userId, FIRESTORE_PATHS.FIXED_EXPENSES, goalId);
+        return updateDoc(fixedExpenseDocRef, data);
+    }
 };

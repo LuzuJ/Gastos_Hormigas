@@ -2,7 +2,7 @@ import { db } from '../config/firebase';
 import {
     collection, addDoc, onSnapshot, doc,
     deleteDoc, query, serverTimestamp, updateDoc,
-    type QuerySnapshot, type DocumentData
+    type QuerySnapshot, type DocumentData, Timestamp
 } from 'firebase/firestore';
 import type { Expense, ExpenseFormData } from '../types';
 import { FIRESTORE_PATHS } from '../constants'; // 1. Importamos las constantes
@@ -27,8 +27,10 @@ export const expensesService = {
             callback([], error);
         });
     },
-    addExpense: (userId: string, expenseData: ExpenseFormData) => {
-        return addDoc(getExpensesCollectionRef(userId), { ...expenseData, createdAt: serverTimestamp() });
+    addExpense: (userId: string, expenseData: ExpenseFormData, expenseDate?: Timestamp) => {
+        return addDoc(getExpensesCollectionRef(userId), 
+        { ...expenseData, 
+            createdAt: expenseDate || serverTimestamp() });
     },
     updateExpense: (userId: string, expenseId: string, expenseData: Partial<ExpenseFormData>) => {
         // 3. También las usamos para obtener la referencia a un documento específico
