@@ -14,6 +14,7 @@ interface DashboardPageProps {
 export const DashboardPage: React.FC<DashboardPageProps> = ({ userId }) => {
      const {
         categories, 
+        expenses,
         addExpense, 
         savingsGoals,
         addSubCategory,
@@ -35,6 +36,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ userId }) => {
                     onAddSubCategory={addSubCategory}
                     categories={categories}
                     isSubmitting={false}
+                    expenses={expenses}
                 />
                 <ExpenseChart data={monthlyExpensesByCategory} />
                 <MonthlyTrendChart data={monthlyExpensesTrend} />

@@ -1,20 +1,21 @@
-// src/components/ExpenseForm/ExpenseForm.tsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { PlusCircle } from 'lucide-react';
 import styles from './ExpenseForm.module.css';
-import type { Category, ExpenseFormData, SubCategory } from '../../types';
+import type { Category, Expense, ExpenseFormData, SubCategory } from '../../types';
+import { BudgetProgressBar } from '../BudgetProgressBar/BudgetProgressBar';
 import { expenseFormSchema } from '../../schemas';
 
 interface ExpenseFormProps {
     onAdd: (data: ExpenseFormData) => Promise<{ success: boolean; error?: string }>;
     onAddSubCategory: (categoryId: string, subCategoryName: string) => Promise<void>; // <-- Nueva prop
     categories: Category[];
+    expenses: Expense[];
     isSubmitting: boolean;
 }
 
 const ADD_NEW_SUBCATEGORY_VALUE = '--add-new--';
 
-export const ExpenseForm: React.FC<ExpenseFormProps> = ({ onAdd, onAddSubCategory, categories, isSubmitting }) => {
+export const ExpenseForm: React.FC<ExpenseFormProps> = ({ onAdd, onAddSubCategory, categories, expenses, isSubmitting }) => {
     const [description, setDescription] = useState('');
     const [amount, setAmount] = useState('');
     const [selectedCategoryId, setSelectedCategoryId] = useState('');
@@ -104,6 +105,32 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({ onAdd, onAddSubCategor
             setFormError(result.error || 'Ocurrió un error inesperado.'); 
         }
     };
+    const budgetInfo = useMemo(() => {
+        if (!selectedCategoryId) return null;
+
+        const category = categories.find(c => c.id === selectedCategoryId);
+        // Si la categoría no tiene presupuesto, no mostramos nada
+        if (!category || !category.budget) return null;
+
+        const currentMonth = new Date().getMonth();
+        const currentYear = new Date().getFullYear();
+
+        // Calculamos lo gastado este mes en la categoría seleccionada
+        const spent = expenses
+            .filter(e => {
+                const expenseDate = e.createdAt?.toDate();
+                return e.categoryId === selectedCategoryId &&
+                       expenseDate &&
+                       expenseDate.getMonth() === currentMonth &&
+                       expenseDate.getFullYear() === currentYear;
+            })
+            .reduce((sum, e) => sum + e.amount, 0);
+
+        return {
+            budget: category.budget,
+            spent: spent,
+        };
+    }, [selectedCategoryId, categories, expenses]);
 
     return (
         <div className={styles.card}>
@@ -145,6 +172,12 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({ onAdd, onAddSubCategor
                         />
                     </div>
                 )}
+                {budgetInfo && (
+                        <div className={`${styles.fullWidth} ${styles.budgetTracker}`}>
+                            <label className={styles.label}>Progreso del Presupuesto para "{categories.find(c=>c.id === selectedCategoryId)?.name}"</label>
+                            <BudgetProgressBar spent={budgetInfo.spent} budget={budgetInfo.budget} />
+                        </div>
+                    )}
                 <div className={styles.fullWidth}>
                    {formError && <p className={styles.error}>{formError}</p>}
                     <button type="submit" disabled={isSubmitting} className={styles.button}>

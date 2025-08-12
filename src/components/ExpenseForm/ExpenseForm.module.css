@@ -56,3 +56,8 @@
   .formGroupNewSubCategory { grid-column: span 2; }
   .fullWidth { grid-column: span 2; }
 }
+.budgetTracker {
+    margin-top: 0.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid #f3f4f6; /* Una línea sutil de separación */
+}

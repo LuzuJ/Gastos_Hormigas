@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { ChevronDown, ChevronRight, Edit, Plus, Trash2 } from 'lucide-react';
-import styles from './CategoryItem.module.css'; // Usaremos un nuevo archivo de estilos
+import { ChevronDown, ChevronRight, Edit, PiggyBank, Plus, Tag, Trash2 } from 'lucide-react';
+import styles from './CategoryItem.module.css';
 import type { Category, Expense } from '../../types';
 import { BudgetProgressBar } from '../BudgetProgressBar/BudgetProgressBar';
 
@@ -39,8 +39,7 @@ export const CategoryItem: React.FC<CategoryItemProps> = ({
       setIsEditingBudget(false);
     }
   };
-
-  return (
+return (
     <div className={styles.categoryCard}>
       <header className={styles.categoryHeader} onClick={() => setIsOpen(!isOpen)}>
         <div className={styles.categoryInfo}>
@@ -52,42 +51,49 @@ export const CategoryItem: React.FC<CategoryItemProps> = ({
 
       {isOpen && (
         <div className={styles.categoryContent}>
-          <h4>Subcategorías</h4>
-          <ul className={styles.subCategoryList}>
-            {category.subcategories.map(sub => (
-              <li key={sub.id}>
-                {sub.name}
-                <button onClick={() => onDeleteSubCategory(category.id, sub.id)} className={styles.deleteSubButton}>
-                  <Trash2 size={14} />
-                </button>
-              </li>
-            ))}
-          </ul>
-
-          <form onSubmit={handleAddSubCategory} className={styles.addSubCategoryForm}>
-            <input type="text" value={newSubCategory} onChange={e => setNewSubCategory(e.target.value)} placeholder="Nueva subcategoría"/>
-            <button type="submit"><Plus size={16}/></button>
-          </form>
-
-          <h4>Presupuesto Mensual</h4>
-          {isEditingBudget ? (
-            <div className={styles.budgetForm}>
-              <input type="number" value={budgetInput} onChange={e => setBudgetInput(e.target.value)} placeholder="0.00"/>
-              <button onClick={handleBudgetSave}>Guardar</button>
-              <button onClick={() => setIsEditingBudget(false)}>Cancelar</button>
+          
+          <div className={styles.contentGrid}>
+            {/* Columna Izquierda: Subcategorías */}
+            <div>
+              <h4 className={styles.sectionTitle}><Tag size={16} /> Subcategorías</h4>
+              <ul className={styles.subCategoryList}>
+                {category.subcategories.map(sub => (
+                  <li key={sub.id}>
+                    {sub.name}
+                    <button onClick={() => onDeleteSubCategory(category.id, sub.id)} className={styles.deleteSubButton}>
+                      <Trash2 size={14} />
+                    </button>
+                  </li>
+                ))}
+              </ul>
+              <form onSubmit={handleAddSubCategory} className={styles.addSubCategoryForm}>
+                <input type="text" value={newSubCategory} onChange={e => setNewSubCategory(e.target.value)} placeholder="Nueva subcategoría"/>
+                <button type="submit" className={styles.buttonPrimary}><Plus size={16}/></button>
+              </form>
             </div>
-          ) : (
-            <div className={styles.budgetDisplay}>
-              <span>{category.budget ? `$${category.budget.toFixed(2)}` : 'Sin presupuesto'}</span>
-              <button onClick={() => setIsEditingBudget(true)} className={styles.editBudgetButton} aria-label="editar presupuesto"><Edit size={14}/></button>
+
+            {/* Columna Derecha: Presupuesto */}
+            <div>
+              <h4 className={styles.sectionTitle}><PiggyBank size={16} /> Presupuesto Mensual</h4>
+              {isEditingBudget ? (
+                <div className={styles.budgetForm}>
+                  <input type="number" value={budgetInput} onChange={e => setBudgetInput(e.target.value)} placeholder="0.00"/>
+                  <button onClick={handleBudgetSave} className={`${styles.button} ${styles.buttonPrimary}`}>Guardar</button>
+                  <button onClick={() => setIsEditingBudget(false)} className={`${styles.button} ${styles.buttonSecondary}`}>Cancelar</button>
+                </div>
+              ) : (
+                <div className={styles.budgetDisplay}>
+                  <span className={styles.budgetValue}>{category.budget ? `$${category.budget.toFixed(2)}` : 'Sin presupuesto'}</span>
+                  <button onClick={() => setIsEditingBudget(true)} className={styles.editBudgetButton} aria-label="editar presupuesto"><Edit size={14}/></button>
+                </div>
+              )}
+              {category.budget && (
+                <BudgetProgressBar spent={totalAmount} budget={category.budget} />
+              )}
             </div>
-          )}
+          </div>
 
-          {category.budget && (
-            <BudgetProgressBar spent={totalAmount} budget={category.budget} />
-          )}
-
-          <h4 className={styles.expensesTitle}>Gastos en esta Categoría</h4>
+          <h4 className={`${styles.sectionTitle} ${styles.expensesTitle}`}>Gastos en esta Categoría</h4>
           {categoryExpenses.length > 0 ? (
             <ul className={styles.expenseList}>
               {categoryExpenses.map(expense => (
@@ -97,7 +103,7 @@ export const CategoryItem: React.FC<CategoryItemProps> = ({
                 </li>
               ))}
             </ul>
-          ) : <p className={styles.noExpenses}>No hay gastos registrados.</p>}
+          ) : <p className={styles.noExpenses}>No hay gastos registrados en esta categoría.</p>}
 
           {!category.isDefault && (
              <div className={styles.deleteCategoryContainer}>
