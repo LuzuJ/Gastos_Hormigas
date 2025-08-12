@@ -2,12 +2,14 @@ import { useState, useEffect, useMemo } from 'react';
 import { useExpenses } from './useExpenses';
 import { useCategories } from './useCategories';
 import { useFinancials } from './useFinancials';
+import { useSavingsGoals } from './useSavingsGoals';
 
 export const useExpensesController = (userId: string | null) => {
     // 1. Usamos nuestros nuevos hooks especializados
     const { expenses, ...expenseActions } = useExpenses(userId);
     const { categories, ...categoryActions } = useCategories(userId);
     const { financials, fixedExpenses, totalFixedExpenses, ...financialsActions } = useFinancials(userId);
+    const { savingsGoals, ...savingsGoalActions } = useSavingsGoals(userId);
 
     // 2. El estado de carga y error se puede manejar aquí o en cada hook individual
     // Por simplicidad, lo manejamos aquí por ahora, asumiendo que todos cargan juntos.
@@ -61,7 +63,44 @@ export const useExpensesController = (userId: string | null) => {
         name,
         value,
     }));
-}, [expenses, categories]);
+    }, [expenses, categories]);
+
+    const monthlyExpensesTrend = useMemo(() => {
+        const trendData: { [key: string]: number } = {};
+        const today = new Date();
+        const monthNames = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
+
+        // Filtramos gastos de los últimos 6 meses
+        for (let i = 5; i >= 0; i--) {
+            const date = new Date(today.getFullYear(), today.getMonth() - i, 1);
+            const monthName = monthNames[date.getMonth()];
+            const year = date.getFullYear().toString().slice(-2);
+            const key = `${monthName} '${year}`;
+            trendData[key] = 0; // Inicializamos el mes
+        }
+
+        expenses.forEach(expense => {
+            const expenseDate = expense.createdAt?.toDate();
+            if (expenseDate) {
+                const sixMonthsAgo = new Date(today.getFullYear(), today.getMonth() - 5, 1);
+                if (expenseDate >= sixMonthsAgo) {
+                    const monthName = monthNames[expenseDate.getMonth()];
+                    const year = expenseDate.getFullYear().toString().slice(-2);
+                    const key = `${monthName} '${year}`;
+                    if (trendData[key] !== undefined) {
+                        trendData[key] += expense.amount;
+                    }
+                }
+            }
+        });
+
+        return Object.entries(trendData).map(([name, total]) => ({
+            name,
+            total,
+        }));
+    }, [expenses]);
+
+
 
     // 4. Devolvemos una interfaz idéntica a la anterior
     return {
@@ -69,13 +108,16 @@ export const useExpensesController = (userId: string | null) => {
         categories,
         financials,
         fixedExpenses,
+        savingsGoals,
         loading,
         error,
         totalFixedExpenses,
+        monthlyExpensesTrend,
         totalExpensesMonth,
         monthlyExpensesByCategory,
         ...expenseActions,
         ...categoryActions,
         ...financialsActions,
+        ...savingsGoalActions,
     };
 };

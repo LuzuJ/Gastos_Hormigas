@@ -1,0 +1,101 @@
+import React, { useState } from 'react';
+import styles from './SavingsGoals.module.css';
+import { Target, Trash2, Plus } from 'lucide-react';
+import type { SavingsGoal, SavingsGoalFormData } from '../../types';
+import { AddFundsModal } from '../modals/AddFundsModal/AddFundsModal';
+
+interface SavingsGoalsProps {
+  savingsGoals: SavingsGoal[];
+  onAdd: (data: SavingsGoalFormData) => Promise<{ success: boolean; error?: string; }>;
+  onDelete: (id: string) => Promise<void>;
+  onAddFunds: (id: string, amount: number) => Promise<{ success: boolean; error?: string; }>;
+}
+
+export const SavingsGoals: React.FC<SavingsGoalsProps> = ({ savingsGoals, onAdd, onDelete, onAddFunds }) => {
+  const [name, setName] = useState('');
+  const [targetAmount, setTargetAmount] = useState('');
+  const [error, setError] = useState('');
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedGoal, setSelectedGoal] = useState<SavingsGoal | null>(null);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    const parsedAmount = parseFloat(targetAmount);
+
+    if (!name.trim() || isNaN(parsedAmount) || parsedAmount <= 0) {
+      setError('Por favor, ingresa un nombre válido.');
+      return;
+    }
+
+    const result = await onAdd({ name, targetAmount: parsedAmount });
+    if (result.success) {
+      setName('');
+      setTargetAmount('');
+    } else {
+      setError(result.error || 'No se pudo crear la meta.');
+    }
+  };
+
+  const handleOpenModal = (goal: SavingsGoal) => {
+    setSelectedGoal(goal);
+    setIsModalOpen(true);
+  };
+
+  const handleSaveFunds = (amount: number) => {
+    if (selectedGoal) {
+      onAddFunds(selectedGoal.id, amount);
+    } 
+  };
+
+  return (
+    <>
+      {isModalOpen && selectedGoal && (
+        <AddFundsModal
+          goalName={selectedGoal.name}
+          onClose={() => setIsModalOpen(false)}
+          onSave={handleSaveFunds}
+        />
+      )}
+    
+    <div className={styles.card}>
+      <div className={styles.header}>
+        <Target className={styles.icon} />
+        <h3>Metas de Ahorro</h3>
+      </div>
+
+      <form onSubmit={handleSubmit} className={styles.form}>
+        <input type="text" value={name} onChange={e => setName(e.target.value)} placeholder="Nombre (ej. Vacaciones)" className={styles.input}/>
+        <input type="number" value={targetAmount} onChange={e => setTargetAmount(e.target.value)} placeholder="Monto Objetivo" className={styles.input}/>
+        <button type="submit" className={styles.button}>Crear Meta</button>
+      </form> 
+      {error && <p className={styles.formError}>{error}</p>}
+
+      <ul className={styles.list}>
+          {savingsGoals.length === 0 && <p className={styles.emptyMessage}>Aún no tienes metas de ahorro. ¡Crea una!</p>}
+          {savingsGoals.map(goal => {
+            const progress = goal.targetAmount > 0 ? (goal.currentAmount / goal.targetAmount) * 100 : 0;
+            return (
+              <li key={goal.id} className={styles.listItem}>
+                <div className={styles.goalInfo}>
+                  <span className={styles.goalName}>{goal.name}</span>
+                  <div className={styles.progressBar}>
+                    <div className={styles.progressFill} style={{ width: `${progress}%` }} />
+                  </div>
+                  <span className={styles.goalAmount}>
+                    ${goal.currentAmount.toFixed(2)} / ${goal.targetAmount.toFixed(2)}
+                  </span>
+                </div>
+                <div className={styles.actions}>
+                  <button onClick={() => handleOpenModal(goal)} className={styles.actionButton}><Plus size={16} /> Añadir</button>
+                  <button onClick={() => onDelete(goal.id)} className={`${styles.actionButton} ${styles.deleteButton}`}><Trash2 size={16} /></button>
+                </div>
+              </li>
+            );
+        })}
+      </ul>
+    </div>
+    </>
+  );
+};

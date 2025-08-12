@@ -1,0 +1,20 @@
+.chartContainer {
+  background-color: white;
+  padding: 1.5rem;
+  border-radius: 16px;
+  box-shadow: 0 8px 16px -4px rgba(0, 0, 0, 0.05);
+}
+
+.title {
+  margin-top: 0;
+  margin-bottom: 2rem;
+  text-align: center;
+  font-weight: 600;
+  color: #374151;
+}
+
+.emptyState {
+  text-align: center;
+  color: #6b7280;
+  padding: 3rem 0;
+}

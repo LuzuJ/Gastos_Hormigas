@@ -28,6 +28,12 @@ export const Layout: React.FC<LayoutProps> = ({ currentPage, setCurrentPage, chi
           Dashboard
         </button>
         <button
+          onClick={() => setCurrentPage(PAGE_ROUTES.REGISTRO)}
+          className={`${styles.navLink} ${currentPage === PAGE_ROUTES.REGISTRO ? styles.active : ''}`}
+        >
+          Registro
+        </button>
+        <button
           onClick={() => setCurrentPage(PAGE_ROUTES.PLANNING)}
           className={`${styles.navLink} ${currentPage === PAGE_ROUTES.PLANNING ? styles.active : ''}`}
         >

@@ -6,6 +6,7 @@ import { Layout, type Page } from './components/Layout/Layout';
 import { DashboardPage } from './pages/DashboardPage';
 import { ManageCategoriesPage } from './pages/ManageCategoriesPage';
 import { PlanningPage } from './pages/PlanningPage';
+import { RegistroPage } from './pages/RegistroPage'; 
 import './index.css';
 import { PAGE_ROUTES } from './constants'; // 1. Importamos las constantes
 
@@ -49,6 +50,7 @@ export default function App() {
         // 3. Usamos las constantes en el switch
         switch (currentPage) {
             case PAGE_ROUTES.DASHBOARD: return <DashboardPage userId={userId} />;
+            case PAGE_ROUTES.REGISTRO: return <RegistroPage userId={userId} />;
             case PAGE_ROUTES.PLANNING: return <PlanningPage userId={userId} />;
             case PAGE_ROUTES.ANALYSIS: return <ManageCategoriesPage userId={userId} />;
             default: return <DashboardPage userId={userId} />;

@@ -27,8 +27,9 @@ describe('Componente EditExpenseModal', () => {
         expense={mockExpenseToEdit}
         categories={mockCategories}
         onClose={vi.fn()}
-        onSave={vi.fn()}
-      />
+        onSave={vi.fn()} onAddSubCategory={function (categoryId: string, subCategoryName: string): Promise<void> {
+          throw new Error('Function not implemented.');
+        } }      />
     );
 
     // Verificamos que los campos están poblados con los datos del mock
@@ -44,8 +45,9 @@ describe('Componente EditExpenseModal', () => {
         expense={mockExpenseToEdit}
         categories={mockCategories}
         onClose={handleClose}
-        onSave={vi.fn()}
-      />
+        onSave={vi.fn()} onAddSubCategory={function (categoryId: string, subCategoryName: string): Promise<void> {
+          throw new Error('Function not implemented.');
+        } }      />
     );
 
     fireEvent.click(screen.getByRole('button', { name: /cancelar/i }));
@@ -59,8 +61,9 @@ describe('Componente EditExpenseModal', () => {
         expense={mockExpenseToEdit}
         categories={mockCategories}
         onClose={vi.fn()}
-        onSave={handleSave}
-      />
+        onSave={handleSave} onAddSubCategory={function (categoryId: string, subCategoryName: string): Promise<void> {
+          throw new Error('Function not implemented.');
+        } }      />
     );
 
     const descriptionInput = screen.getByLabelText(/descripción/i);
@@ -82,8 +85,9 @@ describe('Componente EditExpenseModal', () => {
         expense={mockExpenseToEdit}
         categories={mockCategories}
         onClose={vi.fn()}
-        onSave={vi.fn()}
-      />
+        onSave={vi.fn()} onAddSubCategory={function (categoryId: string, subCategoryName: string): Promise<void> {
+          throw new Error('Function not implemented.');
+        } }      />
     );
 
     // Cambiamos la descripción a un valor inválido ("ab" tiene 2 caracteres)

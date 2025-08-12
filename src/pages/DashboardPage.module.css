@@ -1,0 +1,80 @@
+.dashboardGrid {
+    display: grid;
+    /* Por defecto es una columna en pantallas pequeñas */
+    grid-template-columns: 1fr; 
+    gap: 2rem; /* Espacio entre los elementos */
+    margin-top: 2rem;
+}
+
+/* En pantallas más grandes (laptops, etc.), cambiamos a dos columnas */
+@media (min-width: 1024px) {
+    .dashboardGrid {
+        /* La columna principal ocupa el doble que la lateral */
+        grid-template-columns: 2fr 1fr; 
+        align-items: start;
+    }
+}
+
+.mainContent {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.chartsGrid {
+    display: grid;
+    grid-template-columns: 1fr; /* Por defecto, una columna en pantallas pequeñas */
+    gap: 2rem;
+}
+
+/* Solo en pantallas más anchas, ponemos los gráficos en 2 columnas */
+@media (min-width: 1280px) {
+    .chartsGrid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+.topContainer {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+@media (min-width: 1024px) {
+    .topContainer {
+        grid-template-columns: 5fr 4fr;
+        align-items: start;
+    }
+}
+
+/* Contenedor para los gráficos de abajo */
+.bottomContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.rightColumn {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem; /* Espacio entre el Resumen y las Metas */
+}
+
+.mainColumn {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.sidebarColumn {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}

@@ -45,13 +45,14 @@
 
 @media (min-width: 768px) {
   .form {
-    grid-template-columns: repeat(6, 1fr); /* 6 columnas para más flexibilidad */
+    grid-template-columns: repeat(2, 1fr); 
   }
-  .formGroupDescription { grid-column: span 3; }
+
+  .formGroupDescription { grid-column: span 1; }
   .formGroupAmount { grid-column: span 1; }
-  .formGroupCategory { grid-column: span 2; }
-  .formGroupCustom { grid-column: span 6; } /* Ocupa todo el ancho si aparece */
-  .fullWidth { grid-column: span 6; }
-  .formGroupSubCategory { grid-column: span 2; } /* Ajusta el grid */
-  .formGroupNewSubCategory { grid-column: span 6; } /* Ocupa todo el ancho */
+  .formGroupCategory { grid-column: span 1; }
+  .formGroupSubCategory { grid-column: span 1; }
+
+  .formGroupNewSubCategory { grid-column: span 2; }
+  .fullWidth { grid-column: span 2; }
 }

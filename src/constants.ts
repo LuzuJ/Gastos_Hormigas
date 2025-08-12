@@ -4,6 +4,7 @@
  */
 export const PAGE_ROUTES = {
   DASHBOARD: 'dashboard',
+  REGISTRO: 'registro',
   PLANNING: 'planning',
   ANALYSIS: 'analysis',
 } as const; // 'as const' hace los valores de solo lectura para mayor seguridad
@@ -20,5 +21,6 @@ export const FIRESTORE_PATHS = {
   EXPENSES: 'expenses',
   FINANCIALS: 'financials',
   FIXED_EXPENSES: 'fixedExpenses',
-  FINANCIALS_SUMMARY_DOC: 'summary'
+  FINANCIALS_SUMMARY_DOC: 'summary',
+  SAVINGS_GOALS: 'savingsGoals'
 } as const;
