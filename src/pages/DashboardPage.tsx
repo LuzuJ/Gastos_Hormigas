@@ -2,9 +2,7 @@ import React from 'react';
 import { ExpenseForm } from '../components/ExpenseForm/ExpenseForm';
 import { Summary } from '../components/Summary/Summary';
 import { useExpensesController } from '../hooks/useExpensesController';
-import { ExpenseChart } from '../components/ExpenseChart/ExpenseChart';
 import { SavingsGoalSummary } from '../components/SavingsGoals/SavingsGoalSummary';
-import { MonthlyTrendChart } from '../components/MonthlyTrendChart/MonthlyTrendChart';
 import styles from './DashboardPage.module.css';
 
 interface DashboardPageProps {
@@ -22,8 +20,6 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ userId }) => {
         financials, 
         totalExpensesMonth, 
         totalFixedExpenses,
-        monthlyExpensesTrend,
-        monthlyExpensesByCategory
     } = useExpensesController(userId);
 
     return (
@@ -32,14 +28,18 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ userId }) => {
             {/* --- COLUMNA IZQUIERDA (PRINCIPAL) --- */}
             <main className={styles.mainColumn}>
                 <ExpenseForm 
-                    onAdd={addExpense} 
+                    onAdd={async (data) => {
+                        const expenseWithDate = {
+                            ...data,
+                            createdAt: new Date() as any 
+                        };
+                        return addExpense(expenseWithDate);
+                    }} 
                     onAddSubCategory={addSubCategory}
                     categories={categories}
                     isSubmitting={false}
                     expenses={expenses}
                 />
-                <ExpenseChart data={monthlyExpensesByCategory} />
-                <MonthlyTrendChart data={monthlyExpensesTrend} />
             </main>
 
             {/* --- COLUMNA DERECHA (LATERAL) --- */}

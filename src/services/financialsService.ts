@@ -8,7 +8,7 @@ type FinancialsCallback = (data: Financials | null, error?: Error) => void;
 
 // 2. Usamos las constantes para la ruta del documento
 const getFinancialsDocRef = (userId: string) => {
-    return doc(db, FIRESTORE_PATHS.ARTIFACTS, appId, FIRESTORE_PATHS.USERS, userId, FIRESTORE_PATHS.FINANCIALS, FIRESTORE_PATHS.FINANCIALS_SUMMARY_DOC);
+    return doc(db, FIRESTORE_PATHS.USERS, userId, FIRESTORE_PATHS.FINANCIALS, FIRESTORE_PATHS.FINANCIALS_SUMMARY_DOC);
 };
 
 export const financialsService = {

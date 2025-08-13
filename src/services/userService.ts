@@ -7,7 +7,7 @@ import type { User } from 'firebase/auth';
 const appId = import.meta.env.VITE_FIREBASE_PROJECT_ID || 'default-app';
 
 const getUserDocRef = (userId: string) => {
-    return doc(db, FIRESTORE_PATHS.ARTIFACTS, appId, FIRESTORE_PATHS.USERS, userId);
+    return doc(db, FIRESTORE_PATHS.USERS, userId);
 };
 
 export const userService = {

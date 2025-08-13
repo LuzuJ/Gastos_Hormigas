@@ -56,7 +56,6 @@ export interface SavingsGoal {
   name: string;
   targetAmount: number;
   currentAmount: number;
-  createdAt: Timestamp;
 }
 
 export type SavingsGoalFormData = Omit<SavingsGoal, 'id' | 'createdAt' | 'currentAmount'>;

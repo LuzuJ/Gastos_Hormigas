@@ -47,6 +47,12 @@ export const Layout: React.FC<LayoutProps> = ({ currentPage, setCurrentPage, chi
           Análisis por Categoría
         </button>
         <button
+        onClick={() => setCurrentPage(PAGE_ROUTES.REPORTS)} 
+        className={`${styles.navLink} ${currentPage === PAGE_ROUTES.REPORTS ? styles.active : ''}`}
+        >
+          Reportes 
+        </button>
+        <button
           onClick={() => setCurrentPage(PAGE_ROUTES.PROFILE)}
           className={`${styles.navLink} ${currentPage === PAGE_ROUTES.PROFILE ? styles.active : ''}`}
         >

@@ -10,7 +10,7 @@ const appId = import.meta.env.VITE_FIREBASE_PROJECT_ID || 'default-app';
 type SavingsGoalsCallback = (data: SavingsGoal[], error?: Error) => void;
 
 const getSavingsGoalsCollectionRef = (userId: string) => {
-    return collection(db, FIRESTORE_PATHS.ARTIFACTS, appId, FIRESTORE_PATHS.USERS, userId, FIRESTORE_PATHS.SAVINGS_GOALS);
+    return collection(db, FIRESTORE_PATHS.USERS, userId, FIRESTORE_PATHS.SAVINGS_GOALS);
 };
 
 export const savingsGoalService = {
@@ -34,7 +34,7 @@ export const savingsGoalService = {
     },
 
     deleteSavingsGoal: (userId: string, goalId: string) => {
-        const goalDocRef = doc(db, FIRESTORE_PATHS.ARTIFACTS, appId, FIRESTORE_PATHS.USERS, userId, FIRESTORE_PATHS.SAVINGS_GOALS, goalId);
+        const goalDocRef = doc(db, FIRESTORE_PATHS.USERS, userId, FIRESTORE_PATHS.SAVINGS_GOALS, goalId);
         return deleteDoc(goalDocRef);
     },
 };

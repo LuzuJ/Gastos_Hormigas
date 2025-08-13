@@ -13,23 +13,25 @@ interface FixedExpensesProps {
 export const FixedExpenses: React.FC<FixedExpensesProps> = ({ categories, fixedExpenses, onAdd, onDelete }) => {
   const [description, setDescription] = useState('');
   const [amount, setAmount] = useState('');
-  const [category, setCategory] = useState(categories[0]?.name || '');
+  const [categoryId, setCategoryId] = useState(categories[0]?.id || '');
   const [dayOfMonth, setDayOfMonth] = useState(1);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const parsedAmount = parseFloat(amount);
-    if (description.trim() && !isNaN(parsedAmount) && parsedAmount > 0) {
+    if (description.trim() && !isNaN(parsedAmount) && parsedAmount > 0 && categoryId) {
       onAdd({
         description,
         amount: parsedAmount,
-        category: category, 
+        category: categoryId, // Guardamos el ID
         dayOfMonth,
       });
       setDescription('');
       setAmount('');
     }
   };
+
+  const days = Array.from({ length: 31 }, (_, i) => i + 1);
 
   return (
     <div className={styles.card}>
@@ -40,10 +42,16 @@ export const FixedExpenses: React.FC<FixedExpensesProps> = ({ categories, fixedE
       <form onSubmit={handleSubmit} className={styles.form}>
         <input type="text" value={description} onChange={e => setDescription(e.target.value)} placeholder="Descripción (ej. Renta)" className={styles.input}/>
         <input type="number" value={amount} onChange={e => setAmount(e.target.value)} placeholder="Monto" className={styles.input}/>
-        <select value={category} onChange={e => setCategory(e.target.value)} className={styles.select}>
-          {categories.map(cat => <option key={cat.id} value={cat.name}>{cat.name}</option>)}
+        {/* El select ahora usa el categoryId */}
+        <select value={categoryId} onChange={e => setCategoryId(e.target.value)} className={styles.select}>
+          {categories.map(cat => <option key={cat.id} value={cat.id}>{cat.name}</option>)}
         </select>
-        <input type="number" value={dayOfMonth} onChange={e => setDayOfMonth(parseInt(e.target.value, 10))} placeholder="Día de pago" min="1" max="31" className={styles.input}/>
+        
+        {/* 3. Reemplazamos el input de día por un select más intuitivo */}
+        <select value={dayOfMonth} onChange={e => setDayOfMonth(Number(e.target.value))} className={styles.select}>
+          {days.map(day => <option key={day} value={day}>Día {day}</option>)}
+        </select>
+        
         <button type="submit" className={styles.button}>Añadir</button>
       </form>
 

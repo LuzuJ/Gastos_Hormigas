@@ -4,12 +4,13 @@ import { auth } from './config/firebase';
 import { categoryService } from './services/categoryService';
 import { Layout, type Page } from './components/Layout/Layout';
 import { DashboardPage } from './pages/DashboardPage';
-import { ManageCategoriesPage } from './pages/ManageCategoriesPage';
+import { ReportsPage } from './pages/ReportsPage';
 import { PlanningPage } from './pages/PlanningPage';
 import { RegistroPage } from './pages/RegistroPage';
 import { automationService } from './services/automationService';
 import { LoginPage } from './pages/LoginPage';
 import { ProfilePage } from './pages/ProfilePage';
+import { ManageCategoriesPage } from './pages/ManageCategoriesPage';
 import './index.css';
 import { PAGE_ROUTES } from './constants';
 
@@ -47,9 +48,9 @@ export default function App() {
                 // Pasamos el userId a todas las páginas
                 case PAGE_ROUTES.DASHBOARD: return <DashboardPage userId={user.uid} />;
                 case PAGE_ROUTES.REGISTRO: return <RegistroPage userId={user.uid} />;
-                // Pasamos isGuest a las páginas con funcionalidades restringidas
                 case PAGE_ROUTES.PLANNING: return <PlanningPage userId={user.uid} isGuest={isGuest} />;
-                case PAGE_ROUTES.ANALYSIS: return <ManageCategoriesPage userId={user.uid} isGuest={isGuest} />;
+                case PAGE_ROUTES.REPORTS: return <ReportsPage userId={user.uid} isGuest={isGuest} />; // <-- Ruta para reportes
+                case PAGE_ROUTES.ANALYSIS: return <ManageCategoriesPage userId={user.uid} isGuest={isGuest} />; // <-- Ruta para gestionar categorías
                 case PAGE_ROUTES.PROFILE: return <ProfilePage userId={user.uid} />;
                 default: return <DashboardPage userId={user.uid} />;
             }

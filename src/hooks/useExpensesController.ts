@@ -102,6 +102,39 @@ export const useExpensesController = (userId: string | null) => {
         }));
     }, [expenses]);
 
+    const comparativeExpenses = useMemo(() => {
+        const now = new Date();
+        const currentMonth = now.getMonth();
+        const currentYear = now.getFullYear();
+        const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1).getMonth();
+        const lastMonthYear = new Date(now.getFullYear(), now.getMonth() - 1, 1).getFullYear();
+
+        const dataMap = new Map<string, { name: string; actual: number; anterior: number }>();
+
+        // Pre-poblamos el mapa con todas las categorías para asegurar que aparezcan
+        categories.forEach(cat => {
+            dataMap.set(cat.id, { name: cat.name, actual: 0, anterior: 0 });
+        });
+
+        expenses.forEach(expense => {
+            const expenseDate = expense.createdAt.toDate();
+            const expenseMonth = expenseDate.getMonth();
+            const expenseYear = expenseDate.getFullYear();
+            const categoryData = dataMap.get(expense.categoryId);
+
+            if (categoryData) {
+                if (expenseMonth === currentMonth && expenseYear === currentYear) {
+                    categoryData.actual += expense.amount;
+                } else if (expenseMonth === lastMonth && expenseYear === lastMonthYear) {
+                    categoryData.anterior += expense.amount;
+                }
+            }
+        });
+        
+        return Array.from(dataMap.values()).filter(d => d.actual > 0 || d.anterior > 0);
+    }, [expenses, categories]);
+
+
 
 
     // 4. Devolvemos una interfaz idéntica a la anterior
@@ -117,6 +150,7 @@ export const useExpensesController = (userId: string | null) => {
         totalFixedExpenses,
         monthlyExpensesTrend,
         totalExpensesMonth,
+        comparativeExpenses,
         monthlyExpensesByCategory,
         ...expenseActions,
         ...categoryActions,

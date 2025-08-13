@@ -1,6 +1,5 @@
 import {
   auth,
-  db // Asumimos que db se exporta desde firebase.ts
 } from '../config/firebase';
 import {
   GoogleAuthProvider,
@@ -13,38 +12,42 @@ import {
   EmailAuthProvider,
   type User
 } from 'firebase/auth';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
-import { FIRESTORE_PATHS } from '../constants';
+import { userService } from './userService';
 import { categoryService } from './categoryService';
 
 const googleProvider = new GoogleAuthProvider();
 
+/**
+ * Función centralizada para crear el perfil de un usuario y sus datos iniciales.
+ * Se asegura de que no se dupliquen datos si el usuario ya existe.
+ */
+const checkAndCreateNewUserDocument = async (user: User) => {
+  // Llama a la función en userService para crear el perfil si es la primera vez.
+  // Esta función ya comprueba si el usuario existe antes de escribir.
+  await userService.createUserProfile(user);
+  
+  // Inicializa las categorías por defecto solo para usuarios nuevos.
+  await categoryService.initializeDefaultCategories(user.uid);
+};
+
 export const authService = {
-    // Iniciar sesión como invitado (anónimo)
-  signInAsGuest: async () => {
-    try {
-      const result = await signInAnonymously(auth);
-      // Creamos el documento de usuario para el anónimo si no existe
-      await checkAndCreateNewUserDocument(result.user);
-      return { success: true, user: result.user };
-    } catch (error) {
-      console.error("Error al iniciar como invitado:", error);
-      return { success: false, error };
-    }
-  },
-  // Iniciar sesión con Google
+  /**
+   * Inicia sesión con Google. Si el usuario era anónimo, enlaza la cuenta
+   * para conservar sus datos. Si es un usuario completamente nuevo, crea su perfil.
+   */
   signInWithGoogle: async (anonymousUser: User | null) => {
     try {
       const result = await signInWithPopup(auth, googleProvider);
       
-      // Si había un usuario anónimo, transferimos sus datos.
       if (anonymousUser) {
         const credential = GoogleAuthProvider.credentialFromResult(result);
         if (credential) {
+          // Fusiona el usuario anónimo con la cuenta de Google.
+          // Los datos del anónimo se conservan.
           await linkWithCredential(anonymousUser, credential);
-          // Opcional: fusionar datos si es necesario
         }
       } else {
+        // Es un inicio de sesión nuevo, crea su documento de perfil y categorías.
         await checkAndCreateNewUserDocument(result.user);
       }
       return { success: true, user: result.user };
@@ -53,26 +56,46 @@ export const authService = {
       return { success: false, error };
     }
   },
+
+  /**
+   * Inicia sesión como un usuario invitado (anónimo).
+   * Crea un perfil temporal y categorías para que pueda usar la app.
+   */
+  signInAsGuest: async () => {
+    try {
+      const result = await signInAnonymously(auth);
+      await checkAndCreateNewUserDocument(result.user);
+      return { success: true, user: result.user };
+    } catch (error) {
+      console.error("Error al iniciar como invitado:", error);
+      return { success: false, error };
+    }
+  },
+
+  /**
+   * Registra un nuevo usuario con correo y contraseña.
+   * Si el usuario era anónimo, convierte la cuenta en permanente.
+   */
   signUpWithEmail: async (email: string, password: string, anonymousUser: User | null) => {
     try {
-      // Si hay un usuario anónimo, creamos la credencial para enlazarla
       if (anonymousUser) {
         const credential = EmailAuthProvider.credential(email, password);
         await linkWithCredential(anonymousUser, credential);
-        // La sesión se actualiza al nuevo usuario permanente
         return { success: true, user: anonymousUser };
       }
       
-      // Si no hay usuario anónimo, creamos una cuenta desde cero
       const result = await createUserWithEmailAndPassword(auth, email, password);
       await checkAndCreateNewUserDocument(result.user);
       return { success: true, user: result.user };
-
     } catch (error) {
       console.error("Error al registrar con email:", error);
       return { success: false, error };
     }
   },
+
+  /**
+   * Inicia sesión con una cuenta de correo existente.
+   */
   signInWithEmail: async (email: string, password: string) => {
     try {
       const result = await signInWithEmailAndPassword(auth, email, password);
@@ -83,21 +106,10 @@ export const authService = {
     }
   },
 
-  // Cerrar sesión
+  /**
+   * Cierra la sesión del usuario actual.
+   */
   signOut: () => {
     return signOut(auth);
   },
-};
-
-// Función auxiliar para crear el documento de usuario y categorías por defecto
-const checkAndCreateNewUserDocument = async (user: User) => {
-  const appId = import.meta.env.VITE_FIREBASE_PROJECT_ID || 'default-app';
-  const userDocRef = doc(db, FIRESTORE_PATHS.ARTIFACTS, appId, FIRESTORE_PATHS.USERS, user.uid);
-  const userDoc = await getDoc(userDocRef);
-
-  if (!userDoc.exists()) {
-    // El documento del usuario no existe, es un primer inicio de sesión real
-    await setDoc(userDocRef, { email: user.email, createdAt: new Date() });
-    await categoryService.initializeDefaultCategories(user.uid);
-  }
 };

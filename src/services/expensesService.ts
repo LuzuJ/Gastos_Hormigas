@@ -12,7 +12,7 @@ type ExpensesCallback = (data: Expense[], error?: Error) => void;
 
 // 2. Usamos las constantes para construir la ruta
 const getExpensesCollectionRef = (userId: string) => {
-    return collection(db, FIRESTORE_PATHS.ARTIFACTS, appId, FIRESTORE_PATHS.USERS, userId, FIRESTORE_PATHS.EXPENSES);
+    return collection(db, FIRESTORE_PATHS.USERS, userId, FIRESTORE_PATHS.EXPENSES);
 };
 
 export const expensesService = {
@@ -28,17 +28,18 @@ export const expensesService = {
         });
     },
     addExpense: (userId: string, expenseData: ExpenseFormData, expenseDate?: Timestamp) => {
-        return addDoc(getExpensesCollectionRef(userId), 
-        { ...expenseData, 
-            createdAt: expenseDate || serverTimestamp() });
+        return addDoc(getExpensesCollectionRef(userId), { 
+            ...expenseData, 
+            createdAt: expenseDate || serverTimestamp() 
+        });
     },
     updateExpense: (userId: string, expenseId: string, expenseData: Partial<ExpenseFormData>) => {
         // 3. También las usamos para obtener la referencia a un documento específico
-        const expenseDocRef = doc(db, FIRESTORE_PATHS.ARTIFACTS, appId, FIRESTORE_PATHS.USERS, userId, FIRESTORE_PATHS.EXPENSES, expenseId);
+        const expenseDocRef = doc(db, FIRESTORE_PATHS.USERS, userId, FIRESTORE_PATHS.EXPENSES, expenseId);
         return updateDoc(expenseDocRef, expenseData);
     },
     deleteExpense: (userId: string, expenseId: string) => {
-        const expenseDocRef = doc(db, FIRESTORE_PATHS.ARTIFACTS, appId, FIRESTORE_PATHS.USERS, userId, FIRESTORE_PATHS.EXPENSES, expenseId);
+        const expenseDocRef = doc(db, FIRESTORE_PATHS.USERS, userId, FIRESTORE_PATHS.EXPENSES, expenseId);
         return deleteDoc(expenseDocRef);
     }
 };

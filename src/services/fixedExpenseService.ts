@@ -12,7 +12,7 @@ type FixedExpensesCallback = (data: FixedExpense[], error?: Error) => void;
 
 // 2. Usamos las constantes para construir la ruta
 const getFixedExpensesCollectionRef = (userId: string) => {
-    return collection(db, FIRESTORE_PATHS.ARTIFACTS, appId, FIRESTORE_PATHS.USERS, userId, FIRESTORE_PATHS.FIXED_EXPENSES);
+    return collection(db, FIRESTORE_PATHS.USERS, userId, FIRESTORE_PATHS.FIXED_EXPENSES);
 };
 
 export const fixedExpenseService = {
@@ -33,7 +33,7 @@ export const fixedExpenseService = {
 
     deleteFixedExpense: (userId: string, fixedExpenseId: string) => {
         // 3. Y finalmente aquí también
-        const fixedExpenseDocRef = doc(db, FIRESTORE_PATHS.ARTIFACTS, appId, FIRESTORE_PATHS.USERS, userId, FIRESTORE_PATHS.FIXED_EXPENSES, fixedExpenseId);
+        const fixedExpenseDocRef = doc(db, FIRESTORE_PATHS.USERS, userId, FIRESTORE_PATHS.FIXED_EXPENSES, fixedExpenseId);
         return deleteDoc(fixedExpenseDocRef);
     },
     getFixedExpensesOnce: async (userId: string) => {
@@ -43,7 +43,7 @@ export const fixedExpenseService = {
 
     // Actualiza un gasto fijo específico (para marcarlo como registrado)
     updateFixedExpense: (userId: string, goalId: string, data: Partial<FixedExpense>) => {
-        const fixedExpenseDocRef = doc(db, FIRESTORE_PATHS.ARTIFACTS, appId, FIRESTORE_PATHS.USERS, userId, FIRESTORE_PATHS.FIXED_EXPENSES, goalId);
+        const fixedExpenseDocRef = doc(db, FIRESTORE_PATHS.USERS, userId, FIRESTORE_PATHS.FIXED_EXPENSES, goalId);
         return updateDoc(fixedExpenseDocRef, data);
     }
 };
