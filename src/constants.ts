@@ -7,6 +7,7 @@ export const PAGE_ROUTES = {
   REGISTRO: 'registro',
   PLANNING: 'planning',
   ANALYSIS: 'analysis',
+  PROFILE: 'profile',
 } as const; // 'as const' hace los valores de solo lectura para mayor seguridad
 
 /**

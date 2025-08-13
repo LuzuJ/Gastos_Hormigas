@@ -65,18 +65,3 @@
   border-bottom-color: #4f46e5; /* Línea indicadora para la pestaña activa */
 }
 
-.logoutButton {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  background-color: #f3f4f6;
-  color: #4b5563;
-  border: 1px solid #e5e7eb;
-  padding: 0.5rem 1rem;
-  border-radius: 0.5rem;
-  cursor: pointer;
-  font-weight: 500;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}

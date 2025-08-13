@@ -23,10 +23,9 @@ export const FixedExpenses: React.FC<FixedExpensesProps> = ({ categories, fixedE
       onAdd({
         description,
         amount: parsedAmount,
-        category,
+        category: category, 
         dayOfMonth,
       });
-      // Limpiar formulario
       setDescription('');
       setAmount('');
     }

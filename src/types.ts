@@ -60,3 +60,9 @@ export interface SavingsGoal {
 }
 
 export type SavingsGoalFormData = Omit<SavingsGoal, 'id' | 'createdAt' | 'currentAmount'>;
+
+export interface UserProfile {
+  displayName: string;
+  email: string;
+  currency: 'USD' | 'EUR' ; // Puedes añadir más monedas en el futuro
+}

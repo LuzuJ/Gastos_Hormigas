@@ -9,6 +9,7 @@ import { PlanningPage } from './pages/PlanningPage';
 import { RegistroPage } from './pages/RegistroPage';
 import { automationService } from './services/automationService';
 import { LoginPage } from './pages/LoginPage';
+import { ProfilePage } from './pages/ProfilePage';
 import './index.css';
 import { PAGE_ROUTES } from './constants';
 
@@ -49,6 +50,7 @@ export default function App() {
                 // Pasamos isGuest a las páginas con funcionalidades restringidas
                 case PAGE_ROUTES.PLANNING: return <PlanningPage userId={user.uid} isGuest={isGuest} />;
                 case PAGE_ROUTES.ANALYSIS: return <ManageCategoriesPage userId={user.uid} isGuest={isGuest} />;
+                case PAGE_ROUTES.PROFILE: return <ProfilePage userId={user.uid} />;
                 default: return <DashboardPage userId={user.uid} />;
             }
         };
