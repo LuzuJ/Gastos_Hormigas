@@ -60,6 +60,9 @@ export const RegistroPage: React.FC<RegistroPageProps> = ({ userId }) => {
 
   const filteredExpenses = useMemo(() => {
     return expenses.filter(expense => {
+      if (!expense.createdAt) {
+        return false;
+      }
       const expenseDate = expense.createdAt.toDate();
       const searchMatch = searchTerm === '' || expense.description.toLowerCase().includes(searchTerm.toLowerCase());
       const startDate = dateRange.startDate ? new Date(dateRange.startDate) : null;
@@ -81,7 +84,7 @@ export const RegistroPage: React.FC<RegistroPageProps> = ({ userId }) => {
     const csvRows = [headers.join(',')];
 
     filteredExpenses.forEach(expense => {
-      const date = expense.createdAt.toDate().toLocaleDateString('es-EC');
+      const date = expense.createdAt!.toDate().toLocaleDateString('es-EC');
       const categoryName = categories.find(c => c.id === expense.categoryId)?.name || 'N/A';
       const description = `"${expense.description.replace(/"/g, '""')}"`;
       
