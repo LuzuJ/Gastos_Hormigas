@@ -24,5 +24,7 @@ export const FIRESTORE_PATHS = {
   FINANCIALS: 'financials',
   FIXED_EXPENSES: 'fixedExpenses',
   FINANCIALS_SUMMARY_DOC: 'summary',
-  SAVINGS_GOALS: 'savingsGoals'
+  SAVINGS_GOALS: 'savingsGoals',
+  ASSETS: 'assets',
+  LIABILITIES: 'liabilities',
 } as const;

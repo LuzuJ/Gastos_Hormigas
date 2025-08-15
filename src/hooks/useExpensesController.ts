@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useExpenses } from './useExpenses';
+import { useNetWorth } from './useNetWorth';
 import { useCategories } from './useCategories';
 import { useFinancials } from './useFinancials';
 import { useUserProfile } from './useUserProfile';
@@ -13,6 +14,7 @@ export const useExpensesController = (userId: string | null) => {
     const { financials, fixedExpenses, totalFixedExpenses, ...financialsActions } = useFinancials(userId);
     const { savingsGoals, ...savingsGoalActions } = useSavingsGoals(userId);
     const { profile, ...profileActions } = useUserProfile(userId);
+    const { assets, liabilities, netWorth, totalAssets, totalLiabilities, ...netWorthActions } = useNetWorth(userId); 
     const { notifications, addNotification, removeNotification } = useNotifications();
 
     // 2. El estado de carga y error se puede manejar aquí o en cada hook individual
@@ -177,10 +179,13 @@ export const useExpensesController = (userId: string | null) => {
         totalExpensesMonth,
         comparativeExpenses,
         monthlyExpensesByCategory,
+        assets, liabilities, netWorth, 
+        totalAssets, totalLiabilities,
         ...expenseActions,
         ...categoryActions,
         ...profileActions,
         ...financialsActions,
         ...savingsGoalActions,
+        ...netWorthActions,
     };
 };

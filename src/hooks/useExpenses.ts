@@ -17,6 +17,7 @@ export const useExpenses = (userId: string | null) => {
 
     const addExpense = useCallback(async (data: ExpenseFormData) => {
         if (!userId) return { success: false, error: 'Usuario no autenticado.' };
+        
         try {
             await expensesService.addExpense(userId, data);
             return { success: true };

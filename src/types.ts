@@ -40,7 +40,7 @@ export interface FixedExpense {
   amount: number;
   category: string;
   dayOfMonth: number; 
-  lastPostedMonth?: string; // Formato "YYYY-MM", ej: "2025-07"
+  lastPostedMonth?: string; 
 }
 
 export type ExpenseFormData = {
@@ -65,3 +65,19 @@ export interface UserProfile {
   email: string;
   currency: 'USD' | 'EUR' ; // Puedes añadir más monedas en el futuro
 }
+
+export interface Asset {
+  id: string;
+  name: string;
+  value: number;
+  type: 'cash' | 'investment' | 'property'; // Tipos de ejemplo
+}
+export type AssetFormData = Omit<Asset, 'id'>;
+
+export interface Liability {
+  id: string;
+  name: string;
+  amount: number;
+  type: 'credit_card' | 'loan'; // Tipos de ejemplo
+}
+export type LiabilityFormData = Omit<Liability, 'id'>;

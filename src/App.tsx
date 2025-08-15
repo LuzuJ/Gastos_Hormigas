@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Toaster } from 'react-hot-toast';
 import { onAuthStateChanged, type User } from 'firebase/auth';
 import { auth } from './config/firebase';
 import { categoryService } from './services/categoryService';
@@ -57,10 +58,12 @@ export default function App() {
         };
 
         return (
-            // Pasamos isGuest al Layout para mostrar botones diferentes
-            <Layout currentPage={currentPage} setCurrentPage={setCurrentPage} isGuest={isGuest}>
-                {renderPage()}
-            </Layout>
+            <> {/* <-- 2. Envuelve todo en un fragmento */}
+                <Toaster position="bottom-center" /> 
+                <Layout currentPage={currentPage} setCurrentPage={setCurrentPage} isGuest={isGuest}>
+                    {renderPage()}
+                </Layout>
+            </>
         );
     }
 

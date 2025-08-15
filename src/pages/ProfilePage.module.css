@@ -33,3 +33,15 @@
 .actions { display: flex; align-items: center; gap: 1rem; }
 .button { background-color: #4f46e5; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 0.5rem; font-weight: 600; cursor: pointer; }
 .savedMessage { color: #16a34a; font-weight: 500; }
+
+.planningGrid { display: grid;
+grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
+gap: 1.5rem;
+}
+
+/* Para pantallas más pequeñas */
+@media (max-width: 767px) {
+.planningGrid {
+grid-template-columns: 1fr; /* Una sola columna en pantallas pequeñas */
+}
+}
