@@ -25,9 +25,11 @@ export const useExpensesController = (userId: string | null) => {
         const currentMonth = new Date().getMonth();
         const currentYear = new Date().getFullYear();
 
+        // 2. FILTRO DE SEGURIDAD
         const expensesThisMonth = expenses.filter(e => {
-            const expenseDate = e.createdAt?.toDate();
-            return expenseDate && expenseDate.getMonth() === currentMonth && expenseDate.getFullYear() === currentYear;
+            if (!e.createdAt) return false; // Ignora gastos sin fecha
+            const expenseDate = e.createdAt.toDate();
+            return expenseDate.getMonth() === currentMonth && expenseDate.getFullYear() === currentYear;
         });
 
         const grouped = expensesThisMonth.reduce((acc, expense) => {
@@ -39,10 +41,7 @@ export const useExpensesController = (userId: string | null) => {
             return acc;
         }, {} as { [key: string]: number });
 
-        return Object.entries(grouped).map(([name, value]) => ({
-            name,
-            value,
-        }));
+        return Object.entries(grouped).map(([name, value]) => ({ name, value }));
     }, [expenses, categories]);
 
     useEffect(() => {
@@ -80,10 +79,12 @@ export const useExpensesController = (userId: string | null) => {
         const currentMonth = new Date().getMonth();
         const currentYear = new Date().getFullYear();
 
-        const variableExpensesMonth = expenses
+        const validExpenses = expenses.filter(e => e.createdAt);
+
+        const variableExpensesMonth = validExpenses
             .filter(e => {
-                const expenseDate = e.createdAt?.toDate();
-                return expenseDate && expenseDate.getMonth() === currentMonth && expenseDate.getFullYear() === currentYear;
+                const expenseDate = e.createdAt!.toDate(); // Usamos '!' porque ya filtramos los nulos
+                return expenseDate.getMonth() === currentMonth && expenseDate.getFullYear() === currentYear;
             })
             .reduce((sum, e) => sum + e.amount, 0);
 
@@ -95,34 +96,31 @@ export const useExpensesController = (userId: string | null) => {
         const today = new Date();
         const monthNames = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
 
-        // Filtramos gastos de los últimos 6 meses
         for (let i = 5; i >= 0; i--) {
             const date = new Date(today.getFullYear(), today.getMonth() - i, 1);
             const monthName = monthNames[date.getMonth()];
             const year = date.getFullYear().toString().slice(-2);
             const key = `${monthName} '${year}`;
-            trendData[key] = 0; // Inicializamos el mes
+            trendData[key] = 0;
         }
+        
+        // 3. FILTRO DE SEGURIDAD
+        const validExpenses = expenses.filter(e => e.createdAt);
 
-        expenses.forEach(expense => {
-            const expenseDate = expense.createdAt?.toDate();
-            if (expenseDate) {
-                const sixMonthsAgo = new Date(today.getFullYear(), today.getMonth() - 5, 1);
-                if (expenseDate >= sixMonthsAgo) {
-                    const monthName = monthNames[expenseDate.getMonth()];
-                    const year = expenseDate.getFullYear().toString().slice(-2);
-                    const key = `${monthName} '${year}`;
-                    if (trendData[key] !== undefined) {
-                        trendData[key] += expense.amount;
-                    }
+        validExpenses.forEach(expense => {
+            const expenseDate = expense.createdAt!.toDate();
+            const sixMonthsAgo = new Date(today.getFullYear(), today.getMonth() - 5, 1);
+            if (expenseDate >= sixMonthsAgo) {
+                const monthName = monthNames[expenseDate.getMonth()];
+                const year = expenseDate.getFullYear().toString().slice(-2);
+                const key = `${monthName} '${year}`;
+                if (trendData[key] !== undefined) {
+                    trendData[key] += expense.amount;
                 }
             }
         });
 
-        return Object.entries(trendData).map(([name, total]) => ({
-            name,
-            total,
-        }));
+        return Object.entries(trendData).map(([name, total]) => ({ name, total }));
     }, [expenses]);
 
     const comparativeExpenses = useMemo(() => {
@@ -140,7 +138,8 @@ export const useExpensesController = (userId: string | null) => {
         });
 
         expenses.forEach(expense => {
-            const expenseDate = expense.createdAt.toDate();
+            const expenseDate = expense.createdAt?.toDate();
+            if (!expenseDate) return;
             const expenseMonth = expenseDate.getMonth();
             const expenseYear = expenseDate.getFullYear();
             const categoryData = dataMap.get(expense.categoryId);

@@ -1,28 +1,38 @@
-import js from '@eslint/js'
-import globals from 'globals'
-import reactHooks from 'eslint-plugin-react-hooks'
-import reactRefresh from 'eslint-plugin-react-refresh'
-import tseslint from 'typescript-eslint'
+// eslint.config.js (en la raíz del proyecto)
 
-export default tseslint.config(
-  { ignores: ['dist'] },
+import globals from "globals";
+import tseslint from "typescript-eslint";
+import pluginReactConfig from "eslint-plugin-react/configs/recommended.js";
+import reactHooks from "eslint-plugin-react-hooks";
+
+export default [
   {
-    extends: [js.configs.recommended, ...tseslint.configs.recommended],
-    files: ['**/*.{ts,tsx}'],
+    // Ignora la carpeta de build
+    ignores: ["dist"],
+  },
+  // Configuración base para todo el proyecto
+  ...tseslint.configs.recommended,
+  {
     languageOptions: {
-      ecmaVersion: 2020,
-      globals: globals.browser,
+      globals: globals.browser, // El entorno por defecto es de navegador
     },
+  },
+  // Configuración específica para tu código de React en la carpeta 'src'
+  {
+    files: ["src/**/*.{js,jsx,ts,tsx}"],
+    ...pluginReactConfig,
     plugins: {
-      'react-hooks': reactHooks,
-      'react-refresh': reactRefresh,
+      "react-hooks": reactHooks,
     },
     rules: {
       ...reactHooks.configs.recommended.rules,
-      'react-refresh/only-export-components': [
-        'warn',
-        { allowConstantExport: true },
-      ],
+      "react/react-in-jsx-scope": "off", // No es necesario con Vite/React 17+
+      "react/prop-types": "off", // Ya usamos TypeScript para esto
+    },
+    settings: {
+      react: {
+        version: "detect", // Detecta la versión de React automáticamente
+      },
     },
   },
-)
+];
