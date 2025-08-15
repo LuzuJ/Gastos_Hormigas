@@ -46,21 +46,17 @@ export const useSavingsGoals = (userId: string | null) => {
     const addToSavingsGoal = useCallback(async (goalId: string, amount: number) => {
         if (!userId || amount <= 0) return { success: false, error: 'Monto inválido o usuario no autenticado.' };
         
-        const goalDocRef = doc(db, FIRESTORE_PATHS.ARTIFACTS, appId, FIRESTORE_PATHS.USERS, userId, FIRESTORE_PATHS.SAVINGS_GOALS, goalId);
+        const goalDocRef = doc(db, FIRESTORE_PATHS.USERS, userId, FIRESTORE_PATHS.SAVINGS_GOALS, goalId);
 
         try {
-            // Usamos una transacción para asegurar que la actualización sea atómica
+            // Firestore maneja la lectura y escritura de forma segura dentro de la transacción
             await runTransaction(db, async (transaction) => {
                 const goalDoc = await transaction.get(goalDocRef);
                 if (!goalDoc.exists()) {
                     throw new Error("¡La meta ya no existe!");
                 }
                 
-                const newAmount = goalDoc.data().currentAmount + amount;
-                if (newAmount > goalDoc.data().targetAmount) {
-                   // Opcional: podrías decidir si permitir exceder la meta o no
-                }
-
+                // Usamos la función 'increment' de Firestore para una actualización atómica y segura.
                 transaction.update(goalDocRef, { currentAmount: increment(amount) });
             });
             return { success: true };

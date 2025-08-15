@@ -65,3 +65,11 @@
   border-bottom-color: #4f46e5; /* Línea indicadora para la pestaña activa */
 }
 
+.headerActions {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}

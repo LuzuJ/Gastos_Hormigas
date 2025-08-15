@@ -4,6 +4,7 @@ import { useCategories } from './useCategories';
 import { useFinancials } from './useFinancials';
 import { useUserProfile } from './useUserProfile';
 import { useSavingsGoals } from './useSavingsGoals';
+import { useNotifications } from './useNotifications'; 
 
 export const useExpensesController = (userId: string | null) => {
     // 1. Usamos nuestros nuevos hooks especializados
@@ -12,13 +13,40 @@ export const useExpensesController = (userId: string | null) => {
     const { financials, fixedExpenses, totalFixedExpenses, ...financialsActions } = useFinancials(userId);
     const { savingsGoals, ...savingsGoalActions } = useSavingsGoals(userId);
     const { profile, ...profileActions } = useUserProfile(userId);
+    const { notifications, addNotification, removeNotification } = useNotifications();
 
     // 2. El estado de carga y error se puede manejar aquí o en cada hook individual
     // Por simplicidad, lo manejamos aquí por ahora, asumiendo que todos cargan juntos.
     const [loading, setLoading] = useState(true);
     const [error] = useState(''); // Puedes conectar esto a los hooks si devuelven errores
 
+    // 3. Los cálculos que dependen de múltiples hooks se quedan aquí
+    const monthlyExpensesByCategory = useMemo(() => {
+        const currentMonth = new Date().getMonth();
+        const currentYear = new Date().getFullYear();
+
+        const expensesThisMonth = expenses.filter(e => {
+            const expenseDate = e.createdAt?.toDate();
+            return expenseDate && expenseDate.getMonth() === currentMonth && expenseDate.getFullYear() === currentYear;
+        });
+
+        const grouped = expensesThisMonth.reduce((acc, expense) => {
+            const categoryName = categories.find(c => c.id === expense.categoryId)?.name || 'Desconocida';
+            if (!acc[categoryName]) {
+                acc[categoryName] = 0;
+            }
+            acc[categoryName] += expense.amount;
+            return acc;
+        }, {} as { [key: string]: number });
+
+        return Object.entries(grouped).map(([name, value]) => ({
+            name,
+            value,
+        }));
+    }, [expenses, categories]);
+
     useEffect(() => {
+        const notified = new Set<string>();
         // Un simple efecto para simular el fin de la carga inicial
         if (userId) {
             // Una mejor implementación podría esperar a que todos los datos lleguen por primera vez
@@ -26,9 +54,28 @@ export const useExpensesController = (userId: string | null) => {
         } else {
             setLoading(false);
         }
-    }, [userId]);
+        categories.forEach(category => {
+            if (category.budget && category.budget > 0) {
+                const spent = monthlyExpensesByCategory.find(e => e.name === category.name)?.value || 0;
+                const percentage = (spent / category.budget) * 100;
 
-    // 3. Los cálculos que dependen de múltiples hooks se quedan aquí
+                if (percentage >= 100) {
+                    const message = `Has superado tu presupuesto de ${category.name}.`;
+                    if (!notified.has(message)) {
+                        addNotification({ message, type: 'danger' });
+                        notified.add(message);
+                    }
+                } else if (percentage >= 80) {
+                    const message = `Estás cerca del 80% de tu presupuesto de ${category.name}.`;
+                    if (!notified.has(message)) {
+                        addNotification({ message, type: 'warning' });
+                        notified.add(message);
+                    }
+                }
+            }
+        });
+    }, [userId, monthlyExpensesByCategory, categories, addNotification]);
+
     const totalExpensesMonth = useMemo(() => {
         const currentMonth = new Date().getMonth();
         const currentYear = new Date().getFullYear();
@@ -42,30 +89,6 @@ export const useExpensesController = (userId: string | null) => {
 
         return variableExpensesMonth + totalFixedExpenses;
     }, [expenses, totalFixedExpenses]);
-
-    const monthlyExpensesByCategory = useMemo(() => {
-    const currentMonth = new Date().getMonth();
-    const currentYear = new Date().getFullYear();
-
-    const expensesThisMonth = expenses.filter(e => {
-        const expenseDate = e.createdAt?.toDate();
-        return expenseDate && expenseDate.getMonth() === currentMonth && expenseDate.getFullYear() === currentYear;
-    });
-
-    const grouped = expensesThisMonth.reduce((acc, expense) => {
-        const categoryName = categories.find(c => c.id === expense.categoryId)?.name || 'Desconocida';
-        if (!acc[categoryName]) {
-            acc[categoryName] = 0;
-        }
-        acc[categoryName] += expense.amount;
-        return acc;
-    }, {} as { [key: string]: number });
-
-    return Object.entries(grouped).map(([name, value]) => ({
-        name,
-        value,
-    }));
-    }, [expenses, categories]);
 
     const monthlyExpensesTrend = useMemo(() => {
         const trendData: { [key: string]: number } = {};
@@ -141,6 +164,9 @@ export const useExpensesController = (userId: string | null) => {
     return {
         expenses,
         profile,
+        notifications,
+        addNotification,
+        removeNotification,
         categories,
         financials,
         fixedExpenses,

@@ -21,7 +21,7 @@ export interface Expense {
   amount: number;
   categoryId: string;
   subCategory: string;
-  createdAt: Timestamp;
+  createdAt: Timestamp | null;
 }
 
 export interface Financials {

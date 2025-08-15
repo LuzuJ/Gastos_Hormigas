@@ -1,6 +1,9 @@
 import React, { type ReactNode } from 'react';
 import styles from './Layout.module.css';
-import { PAGE_ROUTES } from '../../constants'; 
+import { PAGE_ROUTES } from '../../constants';
+import { Notifications } from '../Notifications/Notifications';
+import { useExpensesController } from '../../hooks/useExpensesController';
+import { auth } from '../../config/firebase'; 
 
 // 2. Derivamos el tipo Page directamente de las constantes para que siempre estén sincronizados
 export type Page = typeof PAGE_ROUTES[keyof typeof PAGE_ROUTES];
@@ -12,12 +15,16 @@ interface LayoutProps {
   isGuest?: boolean; 
 }
 
-export const Layout: React.FC<LayoutProps> = ({ currentPage, setCurrentPage, children }) => {
+export const Layout: React.FC<LayoutProps> = ({ currentPage, setCurrentPage, children, isGuest}) => {
+  const { notifications, removeNotification } = useExpensesController(auth.currentUser?.uid || null);
   return (
     <div className={styles.container}>
       <header className={styles.header}>
         <h1>Panel de Gastos</h1>
         <p>Tu centro de control para entender y mejorar tus finanzas.</p>
+        <div className={styles.headerActions}>
+          <Notifications notifications={notifications} onRemove={removeNotification} />
+        </div>
       </header>
 
       {/* 3. Usamos las constantes en los botones de navegación */}
