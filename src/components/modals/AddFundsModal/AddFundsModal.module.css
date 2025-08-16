@@ -5,13 +5,13 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: rgba(0, 0, 0, 0.6);
+  background-color: var(--overlay-background);
   backdrop-filter: blur(4px);
   animation: fadeIn 0.2s ease-out;
 }
 
 .modal {
-  background-color: white;
+  background-color: var(--background-card);
   padding: 2rem;
   border-radius: 1rem;
   width: 100%;
@@ -34,10 +34,11 @@
   margin-top: 0;
   font-size: 1.5rem;
   font-weight: 600;
+  color: var(--text-headings);
 }
 
 .modal p {
-  color: #6b7280;
+  color: var(--text-secondary);
   margin-top: 0.5rem;
 }
 
@@ -49,18 +50,21 @@
   display: block;
   margin-bottom: 0.5rem;
   font-weight: 500;
+  color: var(--text-primary);
 }
 
 .input {
   width: 100%;
   padding: 0.65rem 1rem;
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--border-color);
+  background-color: var(--background-primary);
+  color: var(--text-primary);
   border-radius: 0.5rem;
   font-size: 1.25rem;
 }
 
 .error {
-  color: #ef4444;
+  color: var(--danger-color);
   font-size: 0.875rem;
   margin-top: 0.5rem;
 }
@@ -71,7 +75,7 @@
   gap: 1rem;
   margin-top: 2rem;
   padding-top: 1.5rem;
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid var(--border-color);
 }
 
 .button {
@@ -83,11 +87,11 @@
 }
 
 .cancelButton {
-  background-color: #e5e7eb;
-  color: #4b5563;
+  background-color: var(--background-secondary);
+  color: var(--text-secondary);
 }
 
 .saveButton {
-  background-color: #3b82f6;
+  background-color: var(--info-color);
   color: white;
 }

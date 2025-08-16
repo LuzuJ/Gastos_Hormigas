@@ -1,5 +1,5 @@
 .card {
-  background-color: white;
+  background-color: var(--background-card);
   padding: 1.5rem;
   border-radius: 1rem;
   box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
@@ -12,7 +12,7 @@
 }
 
 .icon {
-  color: #ef4444; /* red-500 */
+  color: var(--danger-color); /* red-500 */
   margin-right: 0.75rem;
 }
 
@@ -20,7 +20,7 @@
   margin: 0;
   font-size: 1.25rem;
   font-weight: 600;
-  color: #1f2937;
+  color: var(--text-headings);
 }
 
 .form {
@@ -30,19 +30,21 @@
   align-items: flex-end;
   margin-bottom: 1.5rem;
   padding-bottom: 1.5rem;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid var(--border-color);
 }
 
 .input, .select {
   width: 100%;
   padding: 0.65rem 1rem;
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--border-color);
+  background-color: var(--background-primary);
+  color: var(--text-primary);
   border-radius: 0.5rem;
   font-size: 1rem;
 }
 
 .button {
-  background-color: #4f46e5;
+  background-color: var(--primary-accent);
   color: white;
   padding: 0.65rem 1rem;
   border-radius: 0.5rem;
@@ -65,14 +67,14 @@
   justify-content: space-between;
   align-items: center;
   padding: 0.75rem 1rem;
-  background-color: #f9fafb;
+  background-color: var(--background-hover);
   border-radius: 0.5rem;
 }
 
 .deleteButton {
   background: none;
   border: none;
-  color: #9ca3af;
+  color: var(--text-secondary);
   cursor: pointer;
   padding: 0.25rem;
   border-radius: 99px;
@@ -82,6 +84,6 @@
 }
 
 .deleteButton:hover {
-    color: #ef4444;
-    background-color: #fee2e2;
+    color: var(--danger-color);
+    background-color: var(--danger-color-light);
 }

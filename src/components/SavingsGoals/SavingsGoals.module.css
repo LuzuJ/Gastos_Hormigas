@@ -1,5 +1,5 @@
 .card {
-  background-color: white;
+  background-color: var(--background-card);
   padding: 1.5rem;
   border-radius: 1rem;
   box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
@@ -13,7 +13,7 @@
 }
 
 .icon {
-  color: #3b82f6; /* blue-500 */
+  color: var(--info-color); /* blue-500 */
   margin-right: 0.75rem;
 }
 
@@ -21,7 +21,7 @@
   margin: 0;
   font-size: 1.25rem;
   font-weight: 600;
-  color: #1f2937;
+  color: var(--text-headings);
 }
 
 .form {
@@ -31,19 +31,21 @@
   align-items: flex-end;
   margin-bottom: 1.5rem;
   padding-bottom: 1.5rem;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid var(--border-color);
 }
 
 .input {
   width: 100%;
   padding: 0.65rem 1rem;
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--border-color);
+  background-color: var(--background-primary);
+  color: var(--text-primary);
   border-radius: 0.5rem;
   font-size: 1rem;
 }
 
 .button {
-  background-color: #3b82f6;
+  background-color: var(--info-color);
   color: white;
   padding: 0.65rem 1rem;
   border-radius: 0.5rem;
@@ -53,7 +55,7 @@
 }
 
 .formError {
-  color: #ef4444;
+  color: var(--danger-color);
   font-size: 0.875rem;
   margin-bottom: 1rem;
   text-align: center;
@@ -70,7 +72,7 @@
 
 .emptyMessage {
   text-align: center;
-  color: #6b7280;
+  color: var(--text-secondary);
   padding: 1rem 0;
 }
 
@@ -79,7 +81,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 1rem;
-  background-color: #f9fafb;
+  background-color: var(--background-hover);
   border-radius: 0.5rem;
 }
 
@@ -89,13 +91,13 @@
 
 .goalName {
   font-weight: 600;
-  color: #111827;
+  color: var(--text-headings);
 }
 
 .progressBar {
   width: 100%;
   height: 8px;
-  background-color: #e5e7eb;
+  background-color: var(--border-color);
   border-radius: 99px;
   overflow: hidden;
   margin-top: 0.5rem;
@@ -103,14 +105,14 @@
 
 .progressFill {
   height: 100%;
-  background-color: #3b82f6;
+  background-color: var(--info-color);
   border-radius: 99px;
   transition: width 0.3s ease-in-out;
 }
 
 .goalAmount {
   font-size: 0.875rem;
-  color: #6b7280;
+  color: var(--text-secondary);
   margin-top: 0.25rem;
   display: block;
 }
@@ -125,8 +127,8 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  background-color: #e5e7eb;
-  color: #4b5563;
+  background-color: var(--background-secondary);
+  color: var(--text-secondary);
   padding: 0.5rem 1rem;
   border-radius: 0.5rem;
   border: none;
@@ -136,17 +138,17 @@
 }
 
 .actionButton:hover {
-  background-color: #d1d5db;
+  background-color: var(--background-secondary-hover);
 }
 
 .deleteButton {
   background-color: transparent;
-  color: #9ca3af;
+  color: var(--text-secondary);
 }
 
 .deleteButton:hover {
-  background-color: #fee2e2;
-  color: #ef4444;
+  background-color: var(--danger-color-light);
+  color: var(--danger-color);
 }
 
 .guestOverlay {
@@ -155,15 +157,15 @@
   align-items: center;
   gap: 0.75rem;
   padding: 1.5rem;
-  border: 2px dashed #e5e7eb;
+  border: 2px dashed var(--border-color);
   border-radius: 0.5rem;
-  color: #6b7280;
+  color: var(--text-secondary);
   text-align: center;
   margin-bottom: 1.5rem;
 }
 
 .actionButton:disabled {
-  background-color: #f3f4f6;
-  color: #d1d5db;
+  background-color: var(--background-secondary);
+  color: var(--text-disabled);
   cursor: not-allowed;
 }

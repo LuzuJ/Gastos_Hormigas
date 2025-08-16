@@ -14,12 +14,14 @@
   gap: 0.5rem;
 }
 .addCategoryForm input {
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--border-color);
+  background-color: var(--background-card);
+  color: var(--text-primary);
   padding: 0.5rem 0.75rem;
   border-radius: 0.375rem;
 }
 .addCategoryForm button {
-  background-color: #4f46e5;
+  background-color: var(--primary-accent);
   color: white;
   border: none;
   padding: 0.5rem 1rem;

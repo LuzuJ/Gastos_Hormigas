@@ -1,6 +1,7 @@
 import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 import styles from './MonthlyTrendChart.module.css';
+import { useTheme } from '../../hooks/useTheme';
 
 interface ChartData {
   name: string;
@@ -13,6 +14,9 @@ interface MonthlyTrendChartProps {
 
 export const MonthlyTrendChart: React.FC<MonthlyTrendChartProps> = ({ data }) => {
   const hasData = data.some(item => item.total > 0);
+  const { isDark } = useTheme();
+
+  const tooltipCursorColor = isDark ? '#374151' : '#f3f4f6';
 
   return (
     <div className={styles.chartContainer}>
@@ -24,7 +28,7 @@ export const MonthlyTrendChart: React.FC<MonthlyTrendChartProps> = ({ data }) =>
             <XAxis dataKey="name" stroke="#6b7280" fontSize={12} />
             <YAxis stroke="#6b7280" fontSize={12} tickFormatter={(value: number) => `$${value}`} />
             <Tooltip
-              cursor={{ fill: '#f3f4f6' }}
+              cursor={{ fill: tooltipCursorColor }} 
               formatter={(value: number) => [`$${value.toFixed(2)}`, 'Total Gastado']}
               labelFormatter={(label) => `Mes: ${label}`}
             />

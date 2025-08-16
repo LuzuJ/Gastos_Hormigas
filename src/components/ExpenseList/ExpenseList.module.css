@@ -10,73 +10,73 @@
   display: flex; 
   align-items: center; 
   justify-content: space-between;
-  background-color: white; 
+  background-color: var(--background-card); 
   padding: 1rem; 
   border-radius: 0.5rem;
   box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); 
   transition: box-shadow 0.2s;
-  list-style-type: none; /* Asegura que no haya viñetas */
+  list-style-type: none;
 }
 .item:hover { 
   box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1); 
 }
 
 .details { flex: 1; margin-right: 1rem; }
-.description { font-weight: 500; text-transform: capitalize; color: #1f2937; }
-.meta { display: flex; align-items: center; margin-top: 0.25rem; font-size: 0.75rem; color: #6b7280; }
+.description { font-weight: 500; text-transform: capitalize; color: var(--text-primary); }
+.meta { display: flex; align-items: center; margin-top: 0.25rem; font-size: 0.75rem; color: var(--text-secondary); }
 .date { margin-left: 0.75rem; }
-.actions { display: flex; align-items: center; gap: 0.5rem; /* Añade espacio entre botones */ }
-.amount { font-size: 1rem; font-weight: 600; color: #111827; margin-right: 1rem; }
+.actions { display: flex; align-items: center; gap: 0.5rem; }
+.amount { font-size: 1rem; font-weight: 600; color: var(--text-headings); margin-right: 1rem; }
 
 .actionButton {
-  color: #9ca3af; 
+  color: var(--text-secondary); 
   padding: 0.5rem; 
   border-radius: 9999px;
   background: none; 
   border: none; 
   cursor: pointer; 
   transition: all 0.2s;
-  display: flex; /* Para centrar el ícono */
+  display: flex;
   align-items: center;
   justify-content: center;
 }
 .actionButton:hover { 
-  color: #4f46e5; 
-  background-color: #eef2ff; 
+  color: var(--primary-accent); 
+  background-color: var(--primary-accent-light); 
 }
 .deleteButton:hover { 
-  color: #ef4444; 
-  background-color: #fee2e2; 
+  color: var(--danger-color); 
+  background-color: var(--danger-color-light); 
 }
 
 .tag {
   display: inline-flex; align-items: center; padding: 2px 10px;
   border-radius: 9999px; font-size: 0.75rem; font-weight: 500;
 }
-.tagAlimento { background-color: #dbeafe; color: #1e40af; }
-.tagTransporte { background-color: #d1fae5; color: #065f46; }
-.tagEntretenimiento { background-color: #fef3c7; color: #92400e; }
-.tagHogar { background-color: #ffedd5; color: #9a3412; }
-.tagSalud { background-color: #fee2e2; color: #991b1b; }
-.tagOtro { background-color: #e5e7eb; color: #374151; }
+/* Ahora las etiquetas usan las variables que creamos */
+.tagAlimento { background-color: var(--tag-alimento-bg); color: var(--tag-alimento-text); }
+.tagTransporte { background-color: var(--tag-transporte-bg); color: var(--tag-transporte-text); }
+.tagEntretenimiento { background-color: var(--tag-entretenimiento-bg); color: var(--tag-entretenimiento-text); }
+.tagHogar { background-color: var(--tag-hogar-bg); color: var(--tag-hogar-text); }
+.tagSalud { background-color: var(--tag-salud-bg); color: var(--tag-salud-text); }
+.tagOtro { background-color: var(--tag-otro-bg); color: var(--tag-otro-text); }
 
 .stateContainer {
   display: flex; flex-direction: column; justify-content: center;
   align-items: center; padding: 3rem 0; text-align: center;
-  background-color: #f9fafb; border-radius: 0.5rem;
+  background-color: var(--background-hover); border-radius: 0.5rem;
 }
-.stateContainer h3 { font-size: 1.125rem; font-weight: 600; color: #374151; }
-.stateContainer p { color: #6b7280; }
-.spinner { animation: spin 1s linear infinite; color: #4f46e5; }
+.stateContainer h3 { font-size: 1.125rem; font-weight: 600; color: var(--text-headings); }
+.stateContainer p { color: var(--text-secondary); }
+.spinner { animation: spin 1s linear infinite; color: var(--primary-accent); }
 @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
 .subCategoryTag {
-  background-color: #f3f4f6; /* gray-100 */
-  color: #4b5563; /* gray-600 */
+  background-color: var(--background-secondary);
+  color: var(--text-secondary);
   padding: 2px 8px;
   border-radius: 9999px;
   font-size: 0.75rem;
   font-weight: 500;
   margin-left: 0.5rem;
 }
-

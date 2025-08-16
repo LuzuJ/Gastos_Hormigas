@@ -1,5 +1,5 @@
 .card {
-  background-color: white;
+  background-color: var(--background-card);
   padding: 1.5rem;
   border-radius: 1rem;
   box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05);
@@ -10,14 +10,14 @@
   margin-bottom: 1rem;
 }
 .icon {
-  color: #16a34a; /* green-600 */
+  color: var(--success-color-strong); /* green-600 */
   margin-right: 0.75rem;
 }
 .header h3 {
   margin: 0;
   font-size: 1.25rem;
   font-weight: 600;
-  color: #1f2937;
+  color: var(--text-headings);
 }
 .display, .form {
   display: flex;
@@ -28,27 +28,29 @@
 .incomeValue {
   font-size: 2.25rem;
   font-weight: 700;
-  color: #16a34a;
+  color: var(--success-color-strong);
   margin: 0;
 }
 .editButton {
-  background-color: #f3f4f6;
-  color: #4b5563;
+  background-color: var(--background-secondary);
+  color: var(--text-secondary);
   padding: 0.5rem 1rem;
   border-radius: 0.5rem;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--border-color);
   cursor: pointer;
   font-weight: 600;
 }
 .input {
   flex-grow: 1;
   padding: 0.65rem 1rem;
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--border-color);
+  background-color: var(--background-primary);
+  color: var(--text-primary);
   border-radius: 0.5rem;
   font-size: 1.25rem;
 }
 .button {
-  background-color: #4f46e5;
+  background-color: var(--primary-accent);
   color: white;
   padding: 0.65rem 1rem;
   border-radius: 0.5rem;
@@ -56,6 +58,6 @@
   cursor: pointer;
 }
 .cancelButton {
-  background-color: #e5e7eb;
-  color: #4b5563;
+  background-color: var(--background-secondary);
+  color: var(--text-secondary);
 }

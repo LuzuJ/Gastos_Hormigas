@@ -4,6 +4,7 @@ import { PAGE_ROUTES } from '../../constants';
 import { Notifications } from '../Notifications/Notifications';
 import { useExpensesController } from '../../hooks/useExpensesController';
 import { auth } from '../../config/firebase'; 
+import { ThemeToggler } from '../ThemeToggler/ThemeToggler'; 
 
 // 2. Derivamos el tipo Page directamente de las constantes para que siempre estén sincronizados
 export type Page = typeof PAGE_ROUTES[keyof typeof PAGE_ROUTES];
@@ -24,6 +25,7 @@ export const Layout: React.FC<LayoutProps> = ({ currentPage, setCurrentPage, chi
         <p>Tu centro de control para entender y mejorar tus finanzas.</p>
         <div className={styles.headerActions}>
           <Notifications notifications={notifications} onRemove={removeNotification} />
+          <ThemeToggler /> 
         </div>
       </header>
 

@@ -1,6 +1,7 @@
 import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, CartesianGrid } from 'recharts';
 import styles from './ComparativeChart.module.css';
+import { useTheme } from '../../hooks/useTheme';
 
 interface ChartData {
   name: string;
@@ -13,6 +14,9 @@ interface ComparativeChartProps {
 }
 
 export const ComparativeChart: React.FC<ComparativeChartProps> = ({ data }) => {
+  const { isDark } = useTheme();
+  const tooltipCursorColor = isDark ? '#374151' : '#f3f4f6';
+
   return (
     <div className={styles.container}>
       <h3 className={styles.title}>Comparativa Mes Actual vs. Mes Anterior</h3>
@@ -22,7 +26,7 @@ export const ComparativeChart: React.FC<ComparativeChartProps> = ({ data }) => {
           <XAxis type="number" stroke="#6b7280" fontSize={12} tickFormatter={(value) => `$${value}`} />
           <YAxis type="category" dataKey="name" stroke="#6b7280" fontSize={12} width={100} />
           <Tooltip
-            cursor={{ fill: '#f3f4f6' }}
+            cursor={{ fill: tooltipCursorColor }}
             formatter={(value: number) => `$${value.toFixed(2)}`}
           />
           <Legend />

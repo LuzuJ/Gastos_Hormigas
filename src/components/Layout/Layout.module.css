@@ -13,12 +13,12 @@
 .header h1 {
   font-size: 2.75rem;
   font-weight: 700;
-  color: #1f2937;
+  color: var(--text-headings);
   margin: 0;
 }
 
 .header p {
-  color: #6b7280;
+  color: var(--text-secondary);
   margin-top: 0.5rem;
   font-size: 1.125rem;
 }
@@ -31,8 +31,8 @@
   text-align: center;
   margin-top: 4rem;
   padding-top: 2rem;
-  border-top: 1px solid #e5e7eb;
-  color: #9ca3af;
+  border-top: 1px solid var(--border-color);
+  color: var(--text-secondary);
   font-size: 0.875rem;
 }
 
@@ -40,29 +40,29 @@
   display: flex;
   justify-content: center;
   margin-bottom: 2rem;
-  border-bottom: 1px solid #e5e7eb; /* Borde inferior para separar */
+  border-bottom: 1px solid var(--border-color);
 }
 
 .navLink {
-  padding: 0.75rem 1.5rem; /* Más espaciado vertical y horizontal */
-  font-size: 1rem; /* Un poco más grande */
-  font-weight: 600; /* Más grueso */
-  color: #6b7280; /* Un gris más suave para los inactivos */
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-secondary);
   border: none;
   background: none;
   cursor: pointer;
   transition: all 0.2s ease-in-out;
-  border-bottom: 3px solid transparent; /* Borde inferior transparente por defecto */
-  transform: translateY(1px); /* Pequeño truco para alinear con el borde */
+  border-bottom: 3px solid transparent;
+  transform: translateY(1px);
 }
 
 .navLink:hover {
-  color: #4f46e5; /* Color de acento al pasar el cursor */
+  color: var(--primary-accent);
 }
 
 .navLink.active {
-  color: #4f46e5; /* Color de acento para la pestaña activa */
-  border-bottom-color: #4f46e5; /* Línea indicadora para la pestaña activa */
+  color: var(--primary-accent);
+  border-bottom-color: var(--primary-accent);
 }
 
 .headerActions {

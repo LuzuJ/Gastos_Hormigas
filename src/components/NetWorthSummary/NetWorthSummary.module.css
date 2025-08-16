@@ -5,7 +5,7 @@
     margin-top: 2rem;
 }
 .card {
-    background-color: white;
+    background-color: var(--background-card);
     padding: 1.5rem;
     border-radius: 16px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.05);
@@ -16,11 +16,26 @@
 .icon {
     padding: 0.75rem;
     border-radius: 50%;
-    color: white;
+    color: white; /* El ícono siempre será blanco */
 }
-.assetsIcon { background-color: #16a34a; }
-.liabilitiesIcon { background-color: #dc2626; }
-.netWorthCard { background-color: #4f46e5; color: white; }
-.netWorthCard .label { color: #e0e7ff; }
-.label { display: block; font-size: 0.875rem; color: #6b7280; margin-bottom: 0.25rem; }
-.value { font-size: 1.5rem; font-weight: 700; }
+.assetsIcon { background-color: var(--success-color-strong); }
+.liabilitiesIcon { background-color: var(--danger-color); }
+
+.netWorthCard { 
+    background-color: var(--primary-accent); 
+    color: white; /* Texto principal siempre blanco para contraste */
+}
+.netWorthCard .label { 
+    color: var(--primary-accent-text); /* Variable especial para el texto secundario */
+}
+.label { 
+    display: block; 
+    font-size: 0.875rem; 
+    color: var(--text-secondary); 
+    margin-bottom: 0.25rem; 
+}
+.value { 
+    font-size: 1.5rem; 
+    font-weight: 700; 
+    /* El color se hereda: var(--text-headings) en tarjetas normales, y 'white' en .netWorthCard */
+}

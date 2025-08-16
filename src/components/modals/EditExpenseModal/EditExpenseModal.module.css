@@ -6,14 +6,14 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: rgba(0, 0, 0, 0.6);
+  background-color: var(--overlay-background);
   backdrop-filter: blur(4px);
   animation: fadeIn 0.2s ease-out;
 }
 
 /* Estilos para la ventana del modal */
 .modal {
-  background-color: white;
+  background-color: var(--background-card);
   padding: 2rem;
   border-radius: 1rem;
   width: 100%;
@@ -36,7 +36,7 @@
   margin-top: 0;
   font-size: 1.5rem;
   font-weight: 600;
-  color: #1f2937;
+  color: var(--text-headings);
 }
 
 /* Estilos para el formulario dentro del modal */
@@ -51,7 +51,7 @@
   display: block;
   margin-bottom: 0.5rem;
   font-weight: 500;
-  color: #4b5563;
+  color: var(--text-secondary);
   font-size: 0.875rem;
 }
 
@@ -59,7 +59,9 @@
 .formGroup select {
   width: 100%;
   padding: 0.65rem 1rem;
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--border-color);
+  background-color: var(--background-primary);
+  color: var(--text-primary);
   border-radius: 0.5rem;
   font-size: 1rem;
   transition: all 0.2s;
@@ -68,13 +70,13 @@
 .formGroup input:focus,
 .formGroup select:focus {
   outline: none;
-  border-color: #4f46e5;
-  box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.3);
+  border-color: var(--primary-accent);
+  box-shadow: 0 0 0 2px var(--primary-accent-focus-ring);
 }
 
 .error {
-    color: #ef4444;
-    background-color: #fee2e2;
+    color: var(--danger-color);
+    background-color: var(--danger-color-light);
     padding: 0.75rem;
     border-radius: 0.5rem;
     font-size: 0.875rem;
@@ -88,7 +90,7 @@
   gap: 1rem;
   margin-top: 1.5rem;
   padding-top: 1.5rem;
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid var(--border-color);
 }
 
 .button {
@@ -101,19 +103,19 @@
 }
 
 .cancelButton {
-  background-color: #e5e7eb;
-  color: #4b5563;
+  background-color: var(--background-secondary);
+  color: var(--text-secondary);
 }
 
 .cancelButton:hover {
-  background-color: #d1d5db;
+  background-color: var(--background-hover);
 }
 
 .saveButton {
-  background-color: #4f46e5;
+  background-color: var(--primary-accent);
   color: white;
 }
 
 .saveButton:hover {
-  background-color: #4338ca;
+  background-color: var(--primary-accent-hover);
 }

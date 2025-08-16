@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { auth } from '../config/firebase';
 import { authService } from '../services/authService';
+import { ThemeToggler } from '../components/ThemeToggler/ThemeToggler';
 import styles from './LoginPage.module.css'; // Crearemos este archivo a continuación
 
 export const LoginPage: React.FC = () => {
@@ -66,6 +67,9 @@ export const LoginPage: React.FC = () => {
   return (
     <div className={styles.container}>
       <div className={styles.card}>
+        <div className={styles.togglerContainer}> {/* <-- 2. Añade este div contenedor */}
+          <ThemeToggler />
+        </div>
         <h1>{isSigningUp ? 'Crear Cuenta' : 'Iniciar Sesión'}</h1>
         <p>Tu asistente para controlar tus finanzas personales.</p>
 

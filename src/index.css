@@ -1,16 +1,119 @@
+/* src/index.css */
 :root {
+  /* === Paleta de Colores - Modo Claro (Default) === */
+  --background-primary: #f8f9fa;
+  --background-card: #ffffff;
+  --text-primary: #1f2937;
+  --text-secondary: #6b7280;
+  --text-headings: #111827;
+  --border-color: #e5e7eb;
+  --primary-accent: #4f46e5;
+  --primary-accent-hover: #4338ca;
+
+  /* === Paleta de Colores Semánticos (No cambian con el tema) === */
+  --success-color: #22c55e; /* Verde para éxito, barras de progreso */
+  --success-color-strong: #16a34a; /* Verde más oscuro para botones */
+  --warning-color: #f59e0b;  /* Amarillo para advertencias */
+  --danger-color: #ef4444;   /* Rojo para peligro, errores, eliminar */
+  --info-color: #3b82f6;     /* Azul para información, metas de ahorro */
+
+  --background-hover: #f9fafb; /* Color para hover en elementos de lista */
+  --primary-accent-light: #eef2ff; /* Fondo para etiquetas y badges */
+  --danger-color-light: #fee2e2;  /* Fondo para hover en botones de eliminar */
+  --background-secondary: #f3f4f6; /* Para botones inactivos, etc. */
+
+  --primary-accent-disabled: #a5b4fc; /* Color para botones primarios deshabilitados */
+  --primary-accent-focus-ring: rgba(79, 70, 229, 0.3); /* Sombra de focus */
+
+  /* === Colores para Etiquetas de Categoría === */
+  --tag-alimento-bg: #dbeafe;
+  --tag-alimento-text: #1e40af;
+  --tag-transporte-bg: #d1fae5;
+  --tag-transporte-text: #065f46;
+  --tag-entretenimiento-bg: #fef3c7;
+  --tag-entretenimiento-text: #92400e;
+  --tag-hogar-bg: #ffedd5;
+  --tag-hogar-text: #9a3412;
+  --tag-salud-bg: #fee2e2;
+  --tag-salud-text: #991b1b;
+  --tag-otro-bg: #e5e7eb;
+  --tag-otro-text: #374151;
+  --overlay-background: rgba(0, 0, 0, 0.6);
+
+  --primary-accent-text: #e0e7ff; /* Texto claro para usar sobre fondos de acento */
+
+  /* En la sección de Paleta de Colores Semánticos */
+  --warning-color-strong: #d97706; /* Naranja/amarillo para texto de advertencia */
+  --danger-color-strong: #dc2626;  /* Rojo para texto de peligro */
+
+  --background-secondary-hover: #d1d5db; /* Hover para botones secundarios */
+  --text-disabled: #d1d5db;            /* Texto para elementos deshabilitados */
+
+  /* En la sección de Paleta de Colores Semánticos */
+  --success-color-medium: #059669; /* Verde intermedio para texto de balance positivo */
+  --secondary-accent: #6366f1;     /* Morado/Índigo para la tarjeta "Gastado Hoy" */
+
+  /* En la sección de Paleta de Colores Semánticos */
+  --danger-text: #b91c1c;
+  --danger-border-color: #fecaca;
+
+  --background-hover: #f3f4f6; /* Color para hover en elementos de lista y gráficos */
+
+  /* Configuración base de la fuente... (sin cambios) */
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
-
   color-scheme: light;
-  color: #213547;
-  background-color: #f8f9fa;
-
+  color: var(--text-primary);
+  background-color: var(--background-primary);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* === Paleta de Colores - Modo Oscuro === */
+html[data-theme='dark'] {
+  --background-primary: #111827;
+  --background-card: #1f2937;
+  --text-primary: #f3f4f6;
+  --text-secondary: #9ca3af;
+  --text-headings: #ffffff;
+  --border-color: #374151;
+  --primary-accent: #818cf8;
+  --primary-accent-hover: #6366f1;
+  --background-secondary: #374151;
+  --background-hover: #374151;
+  --primary-accent-light: #4338ca;
+  --danger-color-light: #5f2120;
+  --primary-accent-disabled: #4338ca;
+  --primary-accent-focus-ring: rgba(129, 140, 248, 0.4);
+
+  --tag-alimento-bg: #1e40af;
+  --tag-alimento-text: #dbeafe;
+  --tag-transporte-bg: #065f46;
+  --tag-transporte-text: #d1fae5;
+  --tag-entretenimiento-bg: #92400e;
+  --tag-entretenimiento-text: #fef3c7;
+  --tag-hogar-bg: #9a3412;
+  --tag-hogar-text: #ffedd5;
+  --tag-salud-bg: #991b1b;
+  --tag-salud-text: #fee2e2;
+  --tag-otro-bg: #4b5563;
+  --tag-otro-text: #e5e7eb;
+  --overlay-background: rgba(10, 10, 10, 0.7);
+
+  --primary-accent-text: #1e1b4b; /* Texto oscuro para usar sobre fondos de acento claros */
+  
+  --background-secondary-hover: #4b5563;
+  --text-disabled: #4b5563;
+
+  --danger-text: #fca5a5;
+  --danger-border-color: #450a0a;
+
+  --background-hover: #374151; /* Un gris oscuro para el hover en modo oscuro */
+  
+  color-scheme: dark;
 }
 
 body {
@@ -23,7 +126,8 @@ body {
 }
 
 .export-button {
-  background-color: #16a34a; /* verde */
+  /* Ahora usamos la variable semántica */
+  background-color: var(--success-color-strong);
   color: white;
   border: none;
   padding: 0.65rem 1.25rem;
