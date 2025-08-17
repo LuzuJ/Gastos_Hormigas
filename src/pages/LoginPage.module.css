@@ -120,3 +120,33 @@
   top: 1rem;
   right: 1rem;
 }
+
+.passwordWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+/* Hacemos que el input dentro del wrapper ocupe todo el espacio */
+.passwordWrapper .input {
+  width: 100%;
+}
+
+.passwordToggle {
+  position: absolute;
+  right: 0.75rem; /* Espaciado desde la derecha */
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-secondary);
+  padding: 0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.passwordToggle:hover {
+  color: var(--text-primary);
+}

@@ -2,12 +2,14 @@ import React, { useState } from 'react';
 import { auth } from '../config/firebase';
 import { authService } from '../services/authService';
 import { ThemeToggler } from '../components/ThemeToggler/ThemeToggler';
+import { Eye, EyeOff } from 'lucide-react';
 import styles from './LoginPage.module.css'; // Crearemos este archivo a continuación
 
 export const LoginPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [isSigningUp, setIsSigningUp] = useState(false); // Para cambiar entre login y registro
+  const [isSigningUp, setIsSigningUp] = useState(false); 
+  const [showPassword, setShowPassword] = useState(false); 
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -83,15 +85,25 @@ export const LoginPage: React.FC = () => {
             required
             className={styles.input}
           />
-          <input
-            type="password"
-            placeholder="Contraseña"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            minLength={6}
-            className={styles.input}
-          />
+          <div className={styles.passwordWrapper}>
+            <input
+              type={showPassword ? 'text' : 'password'} // <-- Cambia el tipo dinámicamente
+              placeholder="Contraseña"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              minLength={6}
+              className={styles.input}
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className={styles.passwordToggle}
+              aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+            >
+              {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+            </button>
+          </div>
           {error && <p className={styles.error}>{error}</p>}
           <button type="submit" className={styles.primaryButton} disabled={loading}>
             {buttonText}
