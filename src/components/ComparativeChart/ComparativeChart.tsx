@@ -16,6 +16,7 @@ interface ComparativeChartProps {
 export const ComparativeChart: React.FC<ComparativeChartProps> = ({ data }) => {
   const { isDark } = useTheme();
   const tooltipCursorColor = isDark ? '#374151' : '#f3f4f6';
+  const barBackgroundColor = isDark ? '#374151' : '#e5e7eb'
 
   return (
     <div className={styles.container}>
@@ -30,8 +31,8 @@ export const ComparativeChart: React.FC<ComparativeChartProps> = ({ data }) => {
             formatter={(value: number) => `$${value.toFixed(2)}`}
           />
           <Legend />
-          <Bar dataKey="anterior" name="Mes Anterior" fill="#a5b4fc" />
-          <Bar dataKey="actual" name="Mes Actual" fill="#4f46e5" />
+          <Bar dataKey="anterior" name="Mes Anterior" fill="#a5b4fc" background={{ fill: barBackgroundColor }} />
+          <Bar dataKey="actual" name="Mes Actual" fill="#4f46e5" background={{ fill: barBackgroundColor }} />
         </BarChart>
       </ResponsiveContainer>
     </div>

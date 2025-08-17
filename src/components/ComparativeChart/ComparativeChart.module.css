@@ -11,3 +11,9 @@
   font-weight: 600;
   color: var(--text-headings); /* Ajustado para el tema */
 }
+
+.chartWrapper {
+  background-color: var(--border-color);
+  padding: 1.5rem 0.5rem 0.5rem 0;
+  border-radius: 0.75rem;
+}

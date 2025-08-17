@@ -1,21 +1,24 @@
 import React, { useState } from 'react';
 import styles from './SavingsGoals.module.css';
-import { Target, Trash2, Plus, Lock } from 'lucide-react';
+import { Target, Trash2, Plus, Minus, Lock } from 'lucide-react';
 import type { SavingsGoal, SavingsGoalFormData } from '../../types';
 import { AddFundsModal } from '../modals/AddFundsModal/AddFundsModal';
+import { RemoveFundsModal } from '../modals/RemoveFundsModal/RemoveFundsModal';
 
 interface SavingsGoalsProps {
   savingsGoals: SavingsGoal[];
   onAdd: (data: SavingsGoalFormData) => Promise<{ success: boolean; error?: string; }>;
   onDelete: (id: string) => Promise<void>;
   onAddFunds: (id: string, amount: number) => Promise<{ success: boolean; error?: string; }>;
+  onRemoveFunds: (id: string, amount: number) => Promise<{ success: boolean; error?: string; }>;
   isGuest?: boolean; 
 }
 
-export const SavingsGoals: React.FC<SavingsGoalsProps> = ({ savingsGoals, onAdd, onDelete, onAddFunds, isGuest }) => {
+export const SavingsGoals: React.FC<SavingsGoalsProps> = ({ savingsGoals, onAdd, onDelete, onAddFunds, onRemoveFunds, isGuest }) => {
   const [name, setName] = useState('');
   const [targetAmount, setTargetAmount] = useState('');
   const [error, setError] = useState('');
+  const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedGoal, setSelectedGoal] = useState<SavingsGoal | null>(null);
 
@@ -50,10 +53,23 @@ export const SavingsGoals: React.FC<SavingsGoalsProps> = ({ savingsGoals, onAdd,
     onDelete(goalId);
   }
 
+  const handleOpenRemoveModal = (goal: SavingsGoal) => { 
+    if (isGuest) return;
+    setSelectedGoal(goal);
+    setIsRemoveModalOpen(true);
+  };
+
   const handleSaveFunds = (amount: number) => {
+    if (selectedGoal) onAddFunds(selectedGoal.id, amount);
+  };
+
+  const handleRemoveFunds = async (amount: number) => { // <-- Nueva función para guardar
     if (selectedGoal) {
-      onAddFunds(selectedGoal.id, amount);
-    } 
+      const result = await onRemoveFunds(selectedGoal.id, amount);
+      if (result && !result.success) {
+        alert(result.error); // O mostrar un toast
+      }
+    }
   };
 
   return (
@@ -66,6 +82,16 @@ export const SavingsGoals: React.FC<SavingsGoalsProps> = ({ savingsGoals, onAdd,
         />
       )}
     
+    {/* ↓ Renderiza el nuevo modal ↓ */}
+      {isRemoveModalOpen && selectedGoal && (
+        <RemoveFundsModal
+          goalName={selectedGoal.name}
+          maxAmount={selectedGoal.currentAmount}
+          onClose={() => setIsRemoveModalOpen(false)}
+          onSave={handleRemoveFunds}
+        />
+      )}
+
     <div className={styles.card}>
       <div className={styles.header}>
         <Target className={styles.icon} />
@@ -106,6 +132,9 @@ export const SavingsGoals: React.FC<SavingsGoalsProps> = ({ savingsGoals, onAdd,
                   <button onClick={() => handleOpenModal(goal)} className={styles.actionButton} disabled={isGuest}>
                     <Plus size={16} /> Añadir
                   </button>
+                  <button onClick={() => handleOpenRemoveModal(goal)} className={styles.actionButton} disabled={isGuest || goal.currentAmount === 0}>
+                      <Minus size={16} /> Quitar
+                    </button>
                   <button onClick={() => handleDelete(goal.id)} className={`${styles.actionButton} ${styles.deleteButton}`} disabled={isGuest}>
                     <Trash2 size={16} />
                   </button>
@@ -118,3 +147,7 @@ export const SavingsGoals: React.FC<SavingsGoalsProps> = ({ savingsGoals, onAdd,
     </>
   );
 };
+
+function onRemoveFunds(id: string, amount: number) {
+  throw new Error('Function not implemented.');
+}

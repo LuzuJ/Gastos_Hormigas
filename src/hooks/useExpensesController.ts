@@ -16,6 +16,7 @@ export const useExpensesController = (userId: string | null) => {
     const { profile, ...profileActions } = useUserProfile(userId);
     const { assets, liabilities, netWorth, totalAssets, totalLiabilities, ...netWorthActions } = useNetWorth(userId); 
     const { notifications, addNotification, removeNotification } = useNotifications();
+    
 
     // 2. El estado de carga y error se puede manejar aquí o en cada hook individual
     // Por simplicidad, lo manejamos aquí por ahora, asumiendo que todos cargan juntos.

@@ -66,11 +66,39 @@ export const useSavingsGoals = (userId: string | null) => {
         }
     }, [userId]);
 
+    const removeFromSavingsGoal = useCallback(async (goalId: string, amount: number) => {
+        if (!userId || amount <= 0) return { success: false, error: 'Monto inválido o usuario no autenticado.' };
+        
+        const goalDocRef = doc(db, FIRESTORE_PATHS.USERS, userId, FIRESTORE_PATHS.SAVINGS_GOALS, goalId);
+
+        try {
+            await runTransaction(db, async (transaction) => {
+                const goalDoc = await transaction.get(goalDocRef);
+                if (!goalDoc.exists()) {
+                    throw new Error("¡La meta ya no existe!");
+                }
+
+                const currentAmount = goalDoc.data().currentAmount;
+                if (currentAmount < amount) {
+                    throw new Error("No puedes quitar más dinero del que has ahorrado.");
+                }
+                
+                // Usamos increment con un número negativo para restar
+                transaction.update(goalDocRef, { currentAmount: increment(-amount) });
+            });
+            return { success: true };
+        } catch (err: any) {
+            console.error("Error al quitar fondos:", err);
+            return { success: false, error: err.message || 'No se pudo actualizar la meta.' };
+        }
+    }, [userId]);
+
     return {
         savingsGoals,
         loadingSavingsGoals: loading,
         addSavingsGoal,
         deleteSavingsGoal,
         addToSavingsGoal,
+        removeFromSavingsGoal,
     };
 };

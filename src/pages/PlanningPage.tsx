@@ -17,7 +17,7 @@ export const PlanningPage: React.FC<PlanningPageProps> = ({ userId, isGuest }) =
       categories, fixedExpenses, addFixedExpense, deleteFixedExpense, 
       savingsGoals, addSavingsGoal, deleteSavingsGoal, addToSavingsGoal,
       assets, liabilities, netWorth, totalAssets, totalLiabilities,
-      addAsset, deleteAsset, addLiability, deleteLiability
+      addAsset, deleteAsset, addLiability, deleteLiability, removeFromSavingsGoal
     } = useExpensesController(userId);
 
     return (
@@ -68,6 +68,7 @@ export const PlanningPage: React.FC<PlanningPageProps> = ({ userId, isGuest }) =
               onAdd={addSavingsGoal}
               onDelete={deleteSavingsGoal}
               onAddFunds={addToSavingsGoal}
+              onRemoveFunds={removeFromSavingsGoal}
             />
             
         </div>
