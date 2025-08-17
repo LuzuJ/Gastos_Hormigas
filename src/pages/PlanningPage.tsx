@@ -5,8 +5,8 @@ import { SavingsGoals } from '../components/SavingsGoals/SavingsGoals';
 import { useExpensesController } from '../hooks/useExpensesController';
 import { NetWorthSummary } from '../components/NetWorthSummary/NetWorthSummary';
 import { NetWorthManager } from '../components/NetWorthManager/NetWorthManager';
+import { GuestBlockedFeature } from '../components/GuestBlockedFeature/GuestBlockedFeature'; // 1. Importar
 import styles from './PlanningPage.module.css';
-
 
 export interface PlanningPageProps {
     userId: string | null;
@@ -32,47 +32,42 @@ export const PlanningPage: React.FC<PlanningPageProps> = ({ userId, isGuest }) =
             />
 
             {error && <p className="error-message">{error}</p>}
-            {isGuest && (
-              <div className="guest-warning">
-                <p>Estás en modo invitado. Para guardar tus metas y gastos fijos de forma permanente, por favor, crea una cuenta.</p>
-              </div>
-            )}
+            
             {isGuest ? (
-                <p>Crea una cuenta para gestionar tus activos y pasivos.</p>
+                <GuestBlockedFeature message="Gestiona tus activos, pasivos, gastos fijos y metas de ahorro creando una cuenta." />
             ) : (
-                <NetWorthManager
-                    assets={assets}
-                    liabilities={liabilities}
-                    onAddAsset={addAsset}
-                    onDeleteAsset={deleteAsset}
-                    onAddLiability={addLiability}
-                    onDeleteLiability={deleteLiability}
-                />
+                <>
+                    <NetWorthManager
+                        assets={assets}
+                        liabilities={liabilities}
+                        onAddAsset={addAsset}
+                        onDeleteAsset={deleteAsset}
+                        onAddLiability={addLiability}
+                        onDeleteLiability={deleteLiability}
+                    />
+                    
+                    <IncomeForm
+                        currentIncome={financials?.monthlyIncome || 0}
+                        onSetIncome={setMonthlyIncome}
+                    />
+
+                    <div style={{ marginTop: '2rem' }}>
+                      <FixedExpenses 
+                        categories={categories} 
+                        fixedExpenses={fixedExpenses}
+                        onAdd={addFixedExpense}
+                        onDelete={deleteFixedExpense}
+                      />
+                    </div>
+                    <SavingsGoals 
+                      savingsGoals={savingsGoals}
+                      onAdd={addSavingsGoal}
+                      onDelete={deleteSavingsGoal}
+                      onAddFunds={addToSavingsGoal}
+                      onRemoveFunds={removeFromSavingsGoal}
+                    />
+                </>
             )}
-            
-            <IncomeForm
-                currentIncome={financials?.monthlyIncome || 0}
-                onSetIncome={setMonthlyIncome}
-            />
-
-            <div style={{ marginTop: '2rem' }}>
-              <FixedExpenses 
-                categories={categories} 
-                fixedExpenses={fixedExpenses}
-                onAdd={addFixedExpense}
-                onDelete={deleteFixedExpense}
-              />
-            </div>
-            <SavingsGoals 
-            isGuest={isGuest}
-              savingsGoals={savingsGoals}
-              onAdd={addSavingsGoal}
-              onDelete={deleteSavingsGoal}
-              onAddFunds={addToSavingsGoal}
-              onRemoveFunds={removeFromSavingsGoal}
-            />
-            
         </div>
-
     );
 };

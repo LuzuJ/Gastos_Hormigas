@@ -45,8 +45,8 @@ export const CategoryStyleModal: React.FC<CategoryStyleModalProps> = ({ category
         <h3>Personalizar "{category.name}"</h3>
 
         <div className={styles.section}>
-          <label>Color</label>
-          <div className={styles.grid}>
+          <label htmlFor="color-palette">Color</label>
+          <div id="color-palette" className={styles.grid}>
             {COLOR_PALETTE.map(color => (
               <button
                 key={color}
@@ -60,8 +60,8 @@ export const CategoryStyleModal: React.FC<CategoryStyleModalProps> = ({ category
         </div>
 
         <div className={styles.section}>
-          <label>Icono</label>
-          <div className={styles.grid}>
+          <label htmlFor="icon-grid">Icono</label>
+          <div id="icon-grid" className={styles.grid}>
             {AVAILABLE_ICONS.map(iconName => (
               <button
                 key={iconName}

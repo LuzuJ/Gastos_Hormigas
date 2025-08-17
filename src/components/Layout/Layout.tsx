@@ -5,8 +5,8 @@ import { Notifications } from '../Notifications/Notifications';
 import { useExpensesController } from '../../hooks/useExpensesController';
 import { auth } from '../../config/firebase'; 
 import { ThemeToggler } from '../ThemeToggler/ThemeToggler'; 
+import { UserPlus } from 'lucide-react';
 
-// 2. Derivamos el tipo Page directamente de las constantes para que siempre estén sincronizados
 export type Page = typeof PAGE_ROUTES[keyof typeof PAGE_ROUTES];
 
 interface LayoutProps {
@@ -18,8 +18,21 @@ interface LayoutProps {
 
 export const Layout: React.FC<LayoutProps> = ({ currentPage, setCurrentPage, children, isGuest}) => {
   const { notifications, removeNotification } = useExpensesController(auth.currentUser?.uid || null);
+  const handleGoToProfile = () => {
+    setCurrentPage(PAGE_ROUTES.PROFILE);
+  };
+
   return (
     <div className={styles.container}>
+      {isGuest && (
+        <div className={styles.guestBanner}>
+          <p>Estás en **modo invitado**. Tus datos se perderán al salir.</p>
+          <button onClick={handleGoToProfile}>
+            <UserPlus size={16} />
+            Crear cuenta gratis
+          </button>
+        </div>
+      )}
       <header className={styles.header}>
         <h1>Panel de Gastos</h1>
         <p>Tu centro de control para entender y mejorar tus finanzas.</p>

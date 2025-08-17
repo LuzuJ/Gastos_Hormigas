@@ -43,9 +43,6 @@ export const ExpenseList: React.FC<ExpenseListProps> = ({ expenses, categories, 
                             <DynamicIcon name={category?.icon || 'Tag'} size={24} color="white" />
                         </div>
                         {/* --- COLUMNA IZQUIERDA --- */}
-                        <div className={styles.iconContainer} style={{ backgroundColor: category?.color || '#8d99ae' }}>
-                            <DynamicIcon name={category?.icon || 'Tag'} size={24} color="white" />
-                        </div>
 
                         <div className={styles.mainInfo}>
                             <div className={styles.topRow}>

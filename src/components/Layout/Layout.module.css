@@ -107,3 +107,42 @@
   font-size: 0.875rem;
 }
 
+.guestBanner {
+  background-color: var(--warning-color);
+  color: var(--text-headings);
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.75rem;
+  margin-bottom: 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  text-align: center;
+}
+
+.guestBanner p {
+  margin: 0;
+  font-weight: 500;
+}
+
+.guestBanner button {
+  background-color: var(--background-card);
+  color: var(--warning-color-strong);
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+html[data-theme='dark'] .guestBanner {
+  background-color: var(--warning-color-strong);
+  color: var(--background-primary);
+}
+
+html[data-theme='dark'] .guestBanner button {
+  background-color: var(--background-primary);
+  color: var(--warning-color);
+}
