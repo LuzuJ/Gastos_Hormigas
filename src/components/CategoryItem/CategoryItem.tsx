@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { ChevronDown, ChevronRight, Edit, PiggyBank, Plus, Tag, Trash2 } from 'lucide-react';
 import styles from './CategoryItem.module.css';
 import type { Category, Expense } from '../../types';
@@ -8,7 +8,7 @@ interface CategoryItemProps {
   category: Category;
   expenses: Expense[];
   onAddSubCategory: (categoryId: string, name: string) => void;
-  onDeleteSubCategory: (categoryId: string, subCategoryId: string) => void;
+  onDeleteSubCategory: (categoryId: string, subCategoryId: string, subCategoryName: string) => void;
   onDeleteCategory: (categoryId: string) => void;
   onUpdateBudget: (categoryId: string, budget: number) => void;
 }
@@ -21,8 +21,41 @@ export const CategoryItem: React.FC<CategoryItemProps> = ({
   const [isEditingBudget, setIsEditingBudget] = useState(false);
   const [budgetInput, setBudgetInput] = useState(category.budget?.toString() || '');
 
-  const categoryExpenses = expenses.filter(e => e.categoryId === category.id);
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
+
+  const categoryExpenses = useMemo(() => 
+    expenses.filter(e => e.categoryId === category.id),
+    [expenses, category.id]
+  );
+
   const totalAmount = categoryExpenses.reduce((sum, e) => sum + e.amount, 0);
+
+  const { availableYears, availableMonths } = useMemo(() => {
+    const years = new Set<number>();
+    const months = new Set<number>();
+    categoryExpenses.forEach(exp => {
+      if (exp.createdAt) {
+        const date = exp.createdAt.toDate();
+        years.add(date.getFullYear());
+        if (date.getFullYear() === selectedYear) {
+          months.add(date.getMonth());
+        }
+      }
+    });
+    return { 
+      availableYears: Array.from(years).sort((a, b) => b - a),
+      availableMonths: Array.from(months).sort((a, b) => a - b)
+    };
+  }, [categoryExpenses, selectedYear]);
+
+  const filteredExpenses = useMemo(() => {
+    return categoryExpenses.filter(exp => {
+      if (!exp.createdAt) return false;
+      const date = exp.createdAt.toDate();
+      return date.getFullYear() === selectedYear && date.getMonth() === selectedMonth;
+    });
+  }, [categoryExpenses, selectedYear, selectedMonth]);
 
   const handleAddSubCategory = (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,6 +72,9 @@ export const CategoryItem: React.FC<CategoryItemProps> = ({
       setIsEditingBudget(false);
     }
   };
+  const monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+
+  
 return (
     <div className={styles.categoryCard}>
       <header className={styles.categoryHeader} onClick={() => setIsOpen(!isOpen)}>
@@ -60,7 +96,7 @@ return (
                 {category.subcategories.map(sub => (
                   <li key={sub.id}>
                     {sub.name}
-                    <button onClick={() => onDeleteSubCategory(category.id, sub.id)} className={styles.deleteSubButton}>
+                    <button onClick={() => onDeleteSubCategory(category.id, sub.id, sub.name)} className={styles.deleteSubButton}>
                       <Trash2 size={14} />
                     </button>
                   </li>
@@ -94,16 +130,28 @@ return (
           </div>
 
           <h4 className={`${styles.sectionTitle} ${styles.expensesTitle}`}>Gastos en esta Categoría</h4>
-          {categoryExpenses.length > 0 ? (
+          
+          {/* --- 5. NUEVOS SELECTORES DE FILTRO --- */}
+          <div className={styles.filtersContainer}>
+            <select className={styles.filterSelect} value={selectedYear} onChange={e => setSelectedYear(Number(e.target.value))}>
+              {availableYears.map(year => <option key={year} value={year}>{year}</option>)}
+            </select>
+            <select className={styles.filterSelect} value={selectedMonth} onChange={e => setSelectedMonth(Number(e.target.value))}>
+              {availableMonths.map(month => <option key={month} value={month}>{monthNames[month]}</option>)}
+            </select>
+          </div>
+
+          {/* --- 6. RENDERIZAMOS LA LISTA FILTRADA --- */}
+          {filteredExpenses.length > 0 ? (
             <ul className={styles.expenseList}>
-              {categoryExpenses.map(expense => (
+              {filteredExpenses.map(expense => (
                 <li key={expense.id}>
                   <span>{expense.description} ({expense.subCategory})</span>
                   <span>${expense.amount.toFixed(2)}</span>
                 </li>
               ))}
             </ul>
-          ) : <p className={styles.noExpenses}>No hay gastos registrados en esta categoría.</p>}
+          ) : <p className={styles.noExpenses}>No hay gastos registrados para este período.</p>}
 
           {!category.isDefault && (
              <div className={styles.deleteCategoryContainer}>

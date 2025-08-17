@@ -1,6 +1,7 @@
 import React from 'react';
 import styles from './ExpenseFilter.module.css';
 import { Search } from 'lucide-react';
+import type { Category } from '../../types';
 
 export type FilterPeriod = 'today' | 'all' | 'last7days' | 'thisMonth' | 'lastMonth' | 'custom';
 
@@ -16,6 +17,9 @@ interface ExpenseFilterProps {
   onFilterChange: (period: FilterPeriod) => void;
   dateRange: DateRange;
   onDateChange: (range: DateRange) => void;
+  categories: Category[];
+  selectedCategoryId: string;
+  onCategoryChange: (id: string) => void;
 }
 
 export const ExpenseFilter: React.FC<ExpenseFilterProps> = ({
@@ -25,6 +29,9 @@ export const ExpenseFilter: React.FC<ExpenseFilterProps> = ({
   onFilterChange,
   dateRange,
   onDateChange,
+  categories,
+  selectedCategoryId,
+  onCategoryChange,
 }) => {
 
   const handleDateInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -45,6 +52,21 @@ export const ExpenseFilter: React.FC<ExpenseFilterProps> = ({
           className={styles.input}
         />
         <Search className={styles.icon} size={20} />
+      </div>
+
+      <div className={styles.filterGroup}>
+        <label htmlFor="categoryFilter">Categoría</label>
+        <select 
+          id="categoryFilter"
+          className={styles.select}
+          value={selectedCategoryId}
+          onChange={(e) => onCategoryChange(e.target.value)}
+        >
+          <option value="all">Todas las categorías</option>
+          {categories.map(cat => (
+            <option key={cat.id} value={cat.id}>{cat.name}</option>
+          ))}
+        </select>
       </div>
       
       {/* --- Filtros Rápidos (ahora son botones) --- */}

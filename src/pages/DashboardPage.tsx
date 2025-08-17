@@ -3,6 +3,7 @@ import { ExpenseForm } from '../components/ExpenseForm/ExpenseForm';
 import { Summary } from '../components/Summary/Summary';
 import { useExpensesController } from '../hooks/useExpensesController';
 import { SavingsGoalSummary } from '../components/SavingsGoals/SavingsGoalSummary';
+import { BudgetSummary } from '../components/BudgetSummary/BudgetSummary';
 import styles from './DashboardPage.module.css';
 
 interface DashboardPageProps {
@@ -20,6 +21,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ userId }) => {
         financials, 
         totalExpensesMonth, 
         totalFixedExpenses,
+        monthlyExpensesByCategory,
     } = useExpensesController(userId);
 
     return (
@@ -49,6 +51,10 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ userId }) => {
                     totalMonth={totalExpensesMonth}
                     monthlyIncome={financials?.monthlyIncome || 0}
                     fixedExpensesTotal={totalFixedExpenses}
+                />
+                <BudgetSummary 
+                  categories={categories} 
+                  monthlyExpensesByCategory={monthlyExpensesByCategory} 
                 />
                 <SavingsGoalSummary savingsGoals={savingsGoals} />
             </aside>

@@ -27,6 +27,7 @@ export const RegistroPage: React.FC<RegistroPageProps> = ({ userId }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterPeriod, setFilterPeriod] = useState<FilterPeriod>('last7days');
   const [dateRange, setDateRange] = useState<DateRange>({ startDate: null, endDate: null });
+  const [selectedCategoryId, setSelectedCategoryId] = useState('all');
 
   useEffect(() => {
     const now = new Date();
@@ -75,9 +76,10 @@ export const RegistroPage: React.FC<RegistroPageProps> = ({ userId }) => {
       if (startDate) startDate.setUTCHours(0, 0, 0, 0);
       if (endDate) endDate.setUTCHours(23, 59, 59, 999);
       const dateMatch = (!startDate || expenseDate >= startDate) && (!endDate || expenseDate <= endDate);
-      return searchMatch && dateMatch;
+      const categoryMatch = selectedCategoryId === 'all' || expense.categoryId === selectedCategoryId;
+      return searchMatch && dateMatch && categoryMatch;
     });
-  }, [expenses, searchTerm, dateRange]);
+  }, [expenses, searchTerm, dateRange, selectedCategoryId]);
 
   const handleExportCSV = () => {
     if (filteredExpenses.length === 0) {
@@ -129,6 +131,9 @@ export const RegistroPage: React.FC<RegistroPageProps> = ({ userId }) => {
           onFilterChange={setFilterPeriod}
           dateRange={dateRange}
           onDateChange={setDateRange}
+          categories={categories}
+          selectedCategoryId={selectedCategoryId}
+          onCategoryChange={setSelectedCategoryId}
         />
       </div>
 

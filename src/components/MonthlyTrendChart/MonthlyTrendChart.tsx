@@ -17,7 +17,6 @@ export const MonthlyTrendChart: React.FC<MonthlyTrendChartProps> = ({ data }) =>
   const { isDark } = useTheme();
 
   const tooltipCursorColor = isDark ? '#374151' : '#f3f4f6';
-  const barBackgroundColor = isDark ? '#374151' : '#e5e7eb';
 
   return (
     <div className={styles.chartContainer}>
@@ -33,7 +32,7 @@ export const MonthlyTrendChart: React.FC<MonthlyTrendChartProps> = ({ data }) =>
               formatter={(value: number) => [`$${value.toFixed(2)}`, 'Total Gastado']}
               labelFormatter={(label) => `Mes: ${label}`}
             />
-            <Bar dataKey="total" fill="#4f46e5" name="Total Gastado" barSize={30} background={{ fill: barBackgroundColor }} />
+            <Bar dataKey="total" fill="#4f46e5" name="Total Gastado" barSize={30}  />
           </BarChart>
         </ResponsiveContainer>
       ) : (

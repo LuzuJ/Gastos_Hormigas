@@ -1,0 +1,75 @@
+.container {
+  background-color: var(--background-card);
+  padding: 1.5rem;
+  border-radius: 1rem;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05);
+  margin-top: 2rem;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.icon {
+  color: var(--primary-accent);
+  margin-right: 0.75rem;
+}
+
+.title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-headings);
+}
+
+.list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.budgetItem {
+  display: flex;
+  flex-direction: column;
+}
+
+.budgetInfo {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 0.25rem;
+}
+
+.budgetName {
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.budgetAmount {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.progressBar {
+  width: 100%;
+  height: 8px;
+  background-color: var(--border-color);
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  border-radius: 99px;
+  transition: width 0.3s ease-in-out;
+}
+
+.green { background-color: var(--success-color); }
+.yellow { background-color: var(--warning-color); }
+.red { background-color: var(--danger-color); }

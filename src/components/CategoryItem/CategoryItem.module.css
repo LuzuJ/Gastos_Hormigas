@@ -46,7 +46,6 @@
 .categoryContent {
   padding: 0 1.5rem 1.5rem 1.5rem;
   border-top: 1px solid var(--border-color);
-  background-color: var(--background-hover);
   animation: fadeIn 0.3s ease-in-out;
 }
 
@@ -98,7 +97,7 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    background-color: var(--primary-accent-light);
+    border: 1px solid var(--primary-accent-light);
     color: var(--primary-accent-hover);
     padding: 0.25rem 0.75rem;
     border-radius: 99px;
@@ -233,4 +232,20 @@
 .deleteCategoryButton:hover {
   background-color: var(--danger-color-light);
   color: var(--danger-color);
+}
+
+.filtersContainer {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.filterSelect {
+  flex: 1; /* Ocupan el mismo espacio */
+  padding: 0.5rem;
+  border: 1px solid var(--border-color);
+  background-color: var(--background-card);
+  color: var(--text-primary);
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
 }
