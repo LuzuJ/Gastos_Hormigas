@@ -5,6 +5,7 @@ import { SavingsGoals } from '../components/SavingsGoals/SavingsGoals';
 import { useExpensesController } from '../hooks/useExpensesController';
 import { NetWorthSummary } from '../components/NetWorthSummary/NetWorthSummary';
 import { NetWorthManager } from '../components/NetWorthManager/NetWorthManager';
+import styles from './PlanningPage.module.css';
 
 
 export interface PlanningPageProps {
@@ -21,8 +22,8 @@ export const PlanningPage: React.FC<PlanningPageProps> = ({ userId, isGuest }) =
     } = useExpensesController(userId);
 
     return (
-        <div>
-            <h2 className="section-title">Planificación Financiera</h2>
+        <div className={styles.container}>
+            <h2 className={`section-title ${styles.title}`}>Planificación Financiera</h2>
           
             <NetWorthSummary 
               totalAssets={totalAssets}

@@ -21,10 +21,28 @@ export const Summary: React.FC<SummaryProps> = ({ totalToday, totalMonth, monthl
 
     return (
         <div className={styles.container}>
+            
+            {/* Columna Izquierda */}
             <div className={styles.box}>
                 <span className={styles.label}>Ingreso Mensual</span>
                 <span className={`${styles.value} ${styles.income}`}>{formatCurrency(monthlyIncome)}</span>
             </div>
+            
+            {/* Columna Derecha */}
+            <div className={`${styles.box} ${styles.todayBox}`}>
+                <span className={styles.label}>Gastado Hoy</span>
+                <span className={`${styles.value} ${styles.expense}`}>{formatCurrency(totalToday)}</span>
+            </div>
+
+            {/* Columna Izquierda */}
+            <div className={styles.box}>
+                <span className={styles.label}>Saldo Restante</span>
+                <span className={`${styles.value} ${balance >= 0 ? styles.balancePositive : styles.balanceNegative}`}>
+                    {formatCurrency(balance)}
+                </span>
+            </div>
+            
+            {/* Columna Derecha */}
             <div className={`${styles.box} ${styles.expenseBox}`}>
                 <span className={styles.label}>Total Gastos del Mes</span>
                 <span className={`${styles.value} ${styles.expense}`}>{formatCurrency(totalMonth)}</span>
@@ -32,16 +50,6 @@ export const Summary: React.FC<SummaryProps> = ({ totalToday, totalMonth, monthl
                     <span>Fijos: {formatCurrency(fixedExpensesTotal)}</span>
                     <span>Variables: {formatCurrency(variableExpenses)}</span>
                 </div>
-            </div>
-            <div className={styles.box}>
-                <span className={styles.label}>Saldo Restante</span>
-                <span className={`${styles.value} ${balance >= 0 ? styles.balancePositive : styles.balanceNegative}`}>
-                    {formatCurrency(balance)}
-                </span>
-            </div>
-            <div className={`${styles.box} ${styles.todayBox}`}>
-                <span className={styles.label}>Gastado Hoy</span>
-                <span className={`${styles.value} ${styles.expense}`}>{formatCurrency(totalToday)}</span>
             </div>
         </div>
     );

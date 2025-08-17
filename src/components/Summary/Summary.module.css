@@ -1,8 +1,7 @@
 .container {
     display: grid;
     gap: 1rem;
-    margin-bottom: 2rem;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-template-columns: 1fr 1fr;
 }
 
 .box {
@@ -32,7 +31,9 @@
     border-top: 1px solid var(--border-color);
     padding-top: 0.5rem;
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
+    align-items: flex-start; 
+    gap: 0.25rem; 
 }
 
 .income { color: var(--success-color-strong); }

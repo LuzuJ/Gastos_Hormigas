@@ -24,10 +24,9 @@
 }
 
 .form {
-  display: grid;
+  display: flex;
+  flex-direction: column; /* Apilado en móvil */
   gap: 1rem;
-  grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
-  align-items: flex-end;
   margin-bottom: 1.5rem;
   padding-bottom: 1.5rem;
   border-bottom: 1px solid var(--border-color);
@@ -35,7 +34,7 @@
 
 .input, .select {
   width: 100%;
-  padding: 0.65rem 1rem;
+  padding: 0.75rem 1rem;
   border: 1px solid var(--border-color);
   background-color: var(--background-primary);
   color: var(--text-primary);
@@ -46,7 +45,7 @@
 .button {
   background-color: var(--primary-accent);
   color: white;
-  padding: 0.65rem 1rem;
+  padding: 0.75rem 1rem;
   border-radius: 0.5rem;
   border: none;
   cursor: pointer;
@@ -87,3 +86,12 @@
     color: var(--danger-color);
     background-color: var(--danger-color-light);
 }
+
+@media(min-width: 1024px) {
+  .form {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr auto;
+    align-items: flex-end;
+  }
+}
+

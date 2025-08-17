@@ -118,23 +118,28 @@ export const SavingsGoals: React.FC<SavingsGoalsProps> = ({ savingsGoals, onAdd,
             const progress = goal.targetAmount > 0 ? (goal.currentAmount / goal.targetAmount) * 100 : 0;
             return (
               <li key={goal.id} className={styles.listItem}>
+                
+                {/* Encabezado con nombre y montos */}
                 <div className={styles.goalInfo}>
                   <span className={styles.goalName}>{goal.name}</span>
-                  <div className={styles.progressBar}>
-                    <div className={styles.progressFill} style={{ width: `${progress}%` }} />
-                  </div>
                   <span className={styles.goalAmount}>
                     ${goal.currentAmount.toFixed(2)} / ${goal.targetAmount.toFixed(2)}
                   </span>
                 </div>
+
+                {/* Barra de progreso */}
+                <div className={styles.progressBar}>
+                  <div className={styles.progressFill} style={{ width: `${Math.min(progress, 100)}%` }} />
+                </div>
+
+                {/* Acciones */}
                 <div className={styles.actions}>
-                  {/* 4. Deshabilitamos los botones si es invitado */}
                   <button onClick={() => handleOpenModal(goal)} className={styles.actionButton} disabled={isGuest}>
                     <Plus size={16} /> Añadir
                   </button>
                   <button onClick={() => handleOpenRemoveModal(goal)} className={styles.actionButton} disabled={isGuest || goal.currentAmount === 0}>
-                      <Minus size={16} /> Quitar
-                    </button>
+                    <Minus size={16} /> Quitar
+                  </button>
                   <button onClick={() => handleDelete(goal.id)} className={`${styles.actionButton} ${styles.deleteButton}`} disabled={isGuest}>
                     <Trash2 size={16} />
                   </button>

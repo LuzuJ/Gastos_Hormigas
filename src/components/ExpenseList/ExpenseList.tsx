@@ -34,12 +34,16 @@ export const ExpenseList: React.FC<ExpenseListProps> = ({ expenses, categories, 
     return (
         <ul className={styles.list}>
             {expenses.map((expense) => {
-                const categoryName = getCategoryName(expense.categoryId); // Esta línea ahora es correcta
+                const categoryName = getCategoryName(expense.categoryId);
 
                 return (
                     <li key={expense.id} className={styles.item}>
-                        <div className={styles.details}>
-                            <p className={styles.description}>{expense.description}</p>
+                        {/* --- COLUMNA IZQUIERDA --- */}
+                        <div className={styles.mainInfo}>
+                            <div className={styles.topRow}>
+                                <p className={styles.description}>{expense.description}</p>
+                                <span className={styles.amount}>${expense.amount.toFixed(2)}</span>
+                            </div>
                             <div className={styles.meta}>
                                 <span className={`${styles.tag} ${styles['tag' + (categoryName.replace(/\s+/g, '') || 'Otro')]}`}>
                                     {categoryName}
@@ -47,15 +51,18 @@ export const ExpenseList: React.FC<ExpenseListProps> = ({ expenses, categories, 
                                 <span className={styles.subCategoryTag}>
                                     {expense.subCategory}
                                 </span>
-                                <span className={styles.date}>
-                                    {expense.createdAt ? new Date(expense.createdAt.seconds * 1000).toLocaleDateString() : 'Justo ahora'}
-                                </span>
                             </div>
                         </div>
-                        <div className={styles.actions}>
-                            <span className={styles.amount}>${expense.amount.toFixed(2)}</span>
-                            <button onClick={() => onEdit(expense)} className={styles.actionButton} aria-label="Editar gasto"><Edit size={18} /></button>
-                            <button onClick={() => onDelete(expense.id)} className={`${styles.actionButton} ${styles.deleteButton}`} aria-label="Eliminar gasto"><Trash2 size={18} /></button>
+
+                        {/* --- COLUMNA DERECHA --- */}
+                        <div className={styles.sideInfo}>
+                            <span className={styles.date}>
+                                {expense.createdAt ? new Date(expense.createdAt.seconds * 1000).toLocaleDateString() : ''}
+                            </span>
+                            <div className={styles.actions}>
+                                <button onClick={() => onEdit(expense)} className={styles.actionButton} aria-label="Editar gasto"><Edit size={18} /></button>
+                                <button onClick={() => onDelete(expense.id)} className={`${styles.actionButton} ${styles.deleteButton}`} aria-label="Eliminar gasto"><Trash2 size={18} /></button>
+                            </div>
                         </div>
                     </li>
                 );

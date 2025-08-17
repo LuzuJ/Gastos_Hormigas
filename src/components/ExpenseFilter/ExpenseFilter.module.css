@@ -67,11 +67,12 @@
 /* --- Rango de Fechas --- */
 .dateRange {
   display: flex;
-  gap: 1rem;
+  gap: 1rem; 
 }
 .dateInputGroup {
   display: flex;
   flex-direction: column;
+  flex: 1;
 }
 .dateInputGroup label {
   font-size: 0.75rem;
@@ -79,10 +80,11 @@
   margin-bottom: 0.25rem;
 }
 .dateInput {
-  padding: 0.5rem;
+  padding: 0.65rem;
   border: 1px solid var(--border-color);
   background-color: var(--background-secondary);
   color: var(--text-primary);
   border-radius: 0.5rem;
   font-size: 0.875rem;
+  width: 100%;
 }

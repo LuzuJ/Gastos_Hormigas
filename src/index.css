@@ -126,11 +126,10 @@ body {
 }
 
 .export-button {
-  /* Ahora usamos la variable semántica */
   background-color: var(--success-color-strong);
   color: white;
   border: none;
-  padding: 0.65rem 1.25rem;
+  padding: 0.5rem 1rem; 
   border-radius: 0.5rem;
   font-weight: 600;
   cursor: pointer;

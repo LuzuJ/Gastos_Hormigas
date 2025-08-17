@@ -74,7 +74,7 @@ export const Layout: React.FC<LayoutProps> = ({ currentPage, setCurrentPage, chi
       </main>
 
       <footer className={styles.footer}>
-        <p>Hecho con ❤️ para un gran proyecto de ingeniería.</p>
+        <p>No gastes más de lo que tienes ❤️.</p>
       </footer>
     </div>
   );

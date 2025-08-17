@@ -4,6 +4,7 @@ import { ExpenseList } from '../components/ExpenseList/ExpenseList';
 import { EditExpenseModal } from '../components/modals/EditExpenseModal/EditExpenseModal';
 import { ExpenseFilter, type DateRange, type FilterPeriod } from '../components/ExpenseFilter/ExpenseFilter';
 import { Download } from 'lucide-react'; 
+import styles from './RegistroPage.module.css';
 
 
 const formatDate = (date: Date) => date.toISOString().split('T')[0];
@@ -24,7 +25,7 @@ export const RegistroPage: React.FC<RegistroPageProps> = ({ userId }) => {
   } = useExpensesController(userId);
 
   const [searchTerm, setSearchTerm] = useState('');
-  const [filterPeriod, setFilterPeriod] = useState<FilterPeriod>('thisMonth');
+  const [filterPeriod, setFilterPeriod] = useState<FilterPeriod>('last7days');
   const [dateRange, setDateRange] = useState<DateRange>({ startDate: null, endDate: null });
 
   useEffect(() => {
@@ -33,6 +34,10 @@ export const RegistroPage: React.FC<RegistroPageProps> = ({ userId }) => {
     let endDate: Date | null = null;
 
     switch (filterPeriod) {
+      case 'today':
+        startDate = now;
+        endDate = now;
+        break;
       case 'thisMonth':
         startDate = new Date(now.getFullYear(), now.getMonth(), 1);
         endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0);
@@ -43,7 +48,7 @@ export const RegistroPage: React.FC<RegistroPageProps> = ({ userId }) => {
         break;
       case 'last7days':
         startDate = new Date();
-        startDate.setDate(now.getDate() - 6); // Incluye hoy
+        startDate.setDate(now.getDate() - 6);
         endDate = now;
         break;
       case 'all':
@@ -107,14 +112,13 @@ export const RegistroPage: React.FC<RegistroPageProps> = ({ userId }) => {
 
   return (
     <div>
-      <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-        <div>
-          <h2 className="section-title">Registro de Todos los Gastos</h2>
-        </div>
+      <div className={styles.pageHeader}>
+        <h2 className={`section-title ${styles.title}`}>Registro de Todos los Gastos</h2>
         <button onClick={handleExportCSV} className="export-button">
             <Download size={16}/> Exportar CSV
         </button>
       </div>
+      
       
       {/* 1. Mueve el ExpenseFilter aquí, arriba de la lista */}
       <div style={{ marginTop: '2rem' }}>

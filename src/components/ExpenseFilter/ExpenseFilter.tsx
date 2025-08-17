@@ -2,7 +2,7 @@ import React from 'react';
 import styles from './ExpenseFilter.module.css';
 import { Search } from 'lucide-react';
 
-export type FilterPeriod = 'all' | 'last7days' | 'thisMonth' | 'lastMonth' | 'custom';
+export type FilterPeriod = 'today' | 'all' | 'last7days' | 'thisMonth' | 'lastMonth' | 'custom';
 
 export interface DateRange {
   startDate: string | null;
@@ -49,9 +49,10 @@ export const ExpenseFilter: React.FC<ExpenseFilterProps> = ({
       
       {/* --- Filtros Rápidos (ahora son botones) --- */}
       <div className={styles.quickFilters}>
+        <button onClick={() => onFilterChange('last7days')} className={filterPeriod === 'last7days' ? styles.active : ''}>7 Días</button>
+        <button onClick={() => onFilterChange('today')} className={filterPeriod === 'today' ? styles.active : ''}>Hoy</button>
         <button onClick={() => onFilterChange('thisMonth')} className={filterPeriod === 'thisMonth' ? styles.active : ''}>Este Mes</button>
         <button onClick={() => onFilterChange('lastMonth')} className={filterPeriod === 'lastMonth' ? styles.active : ''}>Mes Anterior</button>
-        <button onClick={() => onFilterChange('last7days')} className={filterPeriod === 'last7days' ? styles.active : ''}>7 Días</button>
         <button onClick={() => onFilterChange('all')} className={filterPeriod === 'all' ? styles.active : ''}>Todo</button>
       </div>
 
