@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
-import { ChevronDown, ChevronRight, Edit, PiggyBank, Plus, Tag, Trash2 } from 'lucide-react';
+import { ChevronDown, ChevronRight, Edit, Palette, PiggyBank, Plus, Tag, Trash2 } from 'lucide-react';
 import styles from './CategoryItem.module.css';
+import { DynamicIcon } from '../DynamicIcon';
 import type { Category, Expense } from '../../types';
 import { BudgetProgressBar } from '../BudgetProgressBar/BudgetProgressBar';
 
@@ -11,16 +12,16 @@ interface CategoryItemProps {
   onDeleteSubCategory: (categoryId: string, subCategoryId: string, subCategoryName: string) => void;
   onDeleteCategory: (categoryId: string) => void;
   onUpdateBudget: (categoryId: string, budget: number) => void;
+  onEditStyle: () => void;
 }
 
 export const CategoryItem: React.FC<CategoryItemProps> = ({
-  category, expenses, onAddSubCategory, onDeleteSubCategory, onDeleteCategory, onUpdateBudget
+  category, expenses, onAddSubCategory, onDeleteSubCategory, onDeleteCategory, onUpdateBudget, onEditStyle
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [newSubCategory, setNewSubCategory] = useState('');
   const [isEditingBudget, setIsEditingBudget] = useState(false);
   const [budgetInput, setBudgetInput] = useState(category.budget?.toString() || '');
-
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
 
@@ -80,6 +81,9 @@ return (
       <header className={styles.categoryHeader} onClick={() => setIsOpen(!isOpen)}>
         <div className={styles.categoryInfo}>
           {isOpen ? <ChevronDown size={20} /> : <ChevronRight size={20} />}
+          <div className={styles.iconWrapper} style={{ backgroundColor: category.color || '#8d99ae' }}>
+             <DynamicIcon name={category.icon || 'Tag'} size={20} color="white" />
+          </div>
           <span className={styles.categoryName}>{category.name}</span>
         </div>
         <span className={styles.categoryTotal}>${totalAmount.toFixed(2)}</span>
@@ -87,7 +91,6 @@ return (
 
       {isOpen && (
         <div className={styles.categoryContent}>
-          
           <div className={styles.contentGrid}>
             {/* Columna Izquierda: Subcategorías */}
             <div>
@@ -128,7 +131,11 @@ return (
               )}
             </div>
           </div>
-
+          <div className={styles.actionsContainer}>
+            <button className={styles.editStyleButton} onClick={onEditStyle}>
+                  <Palette size={14} /> Editar Icono y Color
+              </button>
+          </div>
           <h4 className={`${styles.sectionTitle} ${styles.expensesTitle}`}>Gastos en esta Categoría</h4>
           
           {/* --- 5. NUEVOS SELECTORES DE FILTRO --- */}

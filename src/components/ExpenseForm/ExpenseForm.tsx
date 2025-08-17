@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { PlusCircle } from 'lucide-react';
 import styles from './ExpenseForm.module.css';
+import toast from 'react-hot-toast';
 import type { Category, Expense, ExpenseFormData, SubCategory } from '../../types';
 import { BudgetProgressBar } from '../BudgetProgressBar/BudgetProgressBar';
 import { expenseFormSchema } from '../../schemas';
@@ -45,7 +46,6 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({ onAdd, onAddSubCategor
         
         setSelectedSubCategory(subcategories[0]?.name || ADD_NEW_SUBCATEGORY_VALUE);
         setShowNewSubCategoryInput(subcategories.length === 0);
-
     };
 
     const handleSubCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -92,6 +92,7 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({ onAdd, onAddSubCategor
         const result = await onAdd(validationResult.data);
 
         if (result.success) {
+            toast.success('¡Gasto añadido con éxito!')
             setDescription('');
             setAmount('');
             setFormError('');
@@ -104,6 +105,7 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({ onAdd, onAddSubCategor
                 setSelectedSubCategory(firstCategory.subcategories[0]?.name || '');
             }
         } else { 
+            toast.error(result.error || 'Ocurrió un error inesperado.');
             setFormError(result.error || 'Ocurrió un error inesperado.'); 
         }
     };

@@ -20,13 +20,14 @@ const getSubCategoriesCollectionRef = (userId: string, categoryId: string) =>
 
 // Definimos las categorías y subcategorías que se crearán para nuevos usuarios
 const defaultCategoriesStructure = [
-    { name: 'Alimento', subcategories: ['Supermercado', 'Restaurante', 'Delivery'] },
-    { name: 'Transporte', subcategories: ['Gasolina', 'Transporte Público', 'Taxi/Uber'] },
-    { name: 'Hogar', subcategories: ['Servicios (Luz, Agua)', 'Decoración', 'Reparaciones'] },
-    { name: 'Entretenimiento', subcategories: ['Suscripciones', 'Cine', 'Salidas'] },
-    { name: 'Salud', subcategories: ['Farmacia', 'Consulta Médica'] },
-    { name: 'Otro', subcategories: ['General'] }
+    { name: 'Alimento', icon: 'Pizza', color: '#FFC300', subcategories: ['Supermercado', 'Restaurante', 'Delivery'] },
+    { name: 'Transporte', icon: 'Car', color: '#FF5733', subcategories: ['Gasolina', 'Transporte Público', 'Taxi/Uber'] },
+    { name: 'Hogar', icon: 'Home', color: '#C70039', subcategories: ['Servicios (Luz, Agua)', 'Decoración', 'Reparaciones'] },
+    { name: 'Entretenimiento', icon: 'Gamepad2', color: '#900C3F', subcategories: ['Suscripciones', 'Cine', 'Salidas'] },
+    { name: 'Salud', icon: 'HeartPulse', color: '#581845', subcategories: ['Farmacia', 'Consulta Médica'] },
+    { name: 'Otro', icon: 'ShoppingBag', color: '#2a9d8f', subcategories: ['General'] }
 ];
+
 
 export const categoryService = {
     initializeDefaultCategories: async (userId: string): Promise<boolean> => {
@@ -40,6 +41,8 @@ export const categoryService = {
                 const categoryDocRef = doc(categoriesRef);
                 batch.set(categoryDocRef, {
                     name: category.name,
+                    icon: category.icon, 
+                    color: category.color, 
                     isDefault: true,
                     subcategories: category.subcategories.map(subName => ({
                         id: nanoid(10), 
@@ -69,12 +72,20 @@ export const categoryService = {
         const categoryDocRef = doc(getCategoriesCollectionRef(userId), categoryId);
         return updateDoc(categoryDocRef, { budget });
     },
-
+    updateCategoryStyle: (userId: string, categoryId: string, style: { icon: string; color: string }) => {
+        const categoryDocRef = doc(getCategoriesCollectionRef(userId), categoryId);
+        return updateDoc(categoryDocRef, {
+            icon: style.icon,
+            color: style.color
+        });
+    },
     addCategory: (userId: string, categoryName: string) => {
         return addDoc(getCategoriesCollectionRef(userId), {
             name: categoryName,
             isDefault: false,
-            subcategories: [] 
+            subcategories: [],
+            icon: 'Tag', 
+            color: '#8d99ae'
         });
     },
     deleteCategory: (userId: string, categoryId: string) => {

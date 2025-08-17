@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { useExpensesController } from '../hooks/useExpensesController';
-import styles from './ManageCategoriesPage.module.css'; // Estilos simplificados para la página
-import { CategoryItem } from '../components/CategoryItem/CategoryItem'; // Importamos el nuevo componente
+import styles from './ManageCategoriesPage.module.css';
+import { CategoryItem } from '../components/CategoryItem/CategoryItem';
+import { CategoryStyleModal } from '../components/CategoryStyleModal/CategoryStyleModal';
+import type { Category } from '../types';
 
 interface ManageCategoriesPageProps {
     userId: string | null;
@@ -9,8 +11,14 @@ interface ManageCategoriesPageProps {
 }
 
 export const ManageCategoriesPage: React.FC<ManageCategoriesPageProps> = ({ userId, isGuest }) => {
-    const { categories, expenses, addSubCategory, deleteSubCategory, deleteCategory, addCategory, updateCategoryBudget } = useExpensesController(userId);
+    const { 
+      categories, expenses, addSubCategory, deleteSubCategory, 
+      deleteCategory, addCategory, updateCategoryBudget, updateCategoryStyle 
+    } = useExpensesController(userId);
+    
     const [newCategoryName, setNewCategoryName] = useState('');
+    const [isStyleModalOpen, setIsStyleModalOpen] = useState(false);
+    const [editingCategory, setEditingCategory] = useState<Category | null>(null);
 
     const handleAddCategory = (e: React.FormEvent) => {
       e.preventDefault();
@@ -18,6 +26,22 @@ export const ManageCategoriesPage: React.FC<ManageCategoriesPageProps> = ({ user
         addCategory(newCategoryName);
         setNewCategoryName('');
       }
+    };
+    
+    const handleOpenStyleModal = (category: Category) => {
+        setEditingCategory(category);
+        setIsStyleModalOpen(true);
+    };
+
+    const handleCloseStyleModal = () => {
+        setIsStyleModalOpen(false);
+        setEditingCategory(null);
+    };
+
+    const handleSaveStyle = (style: { icon: string, color: string }) => {
+        if (editingCategory) {
+            updateCategoryStyle(editingCategory.id, style);
+        }
     };
 
     return (
@@ -39,9 +63,18 @@ export const ManageCategoriesPage: React.FC<ManageCategoriesPageProps> = ({ user
                         onDeleteSubCategory={deleteSubCategory}
                         onDeleteCategory={deleteCategory}
                         onUpdateBudget={updateCategoryBudget}
+                        onEditStyle={() => handleOpenStyleModal(cat)}
                     />
                 ))}
             </div>
+
+            {isStyleModalOpen && editingCategory && (
+                <CategoryStyleModal
+                    category={editingCategory}
+                    onClose={handleCloseStyleModal}
+                    onSave={handleSaveStyle}
+                />
+            )}
         </div>
     );
 };

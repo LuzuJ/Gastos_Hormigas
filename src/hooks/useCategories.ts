@@ -39,27 +39,12 @@ export const useCategories = (userId: string | null) => {
         await categoryService.addSubCategory(userId, categoryId, subCategoryName.trim());
     }, [userId, categories]);
 
-    function removeSubCategoryFromList(currentCategories: Category[], categoryId: string, subCategoryId: string): Category[] {
-        return currentCategories.map(cat => {
-            if (cat.id === categoryId) {
-                return {
-                    ...cat,
-                    subcategories: cat.subcategories.filter(sub => sub.id !== subCategoryId)
-                };
-            }
-            return cat;
-        });
-    }
-
     const deleteSubCategory = useCallback(async (categoryId: string, subCategoryId: string, subCategoryName: string) => {
         if (!userId) return;
-        // La actualización ahora es atómica, por lo que no necesitamos actualizar el estado localmente.
-        // Firestore se encargará de notificar el cambio a través de onSnapshot.
         try {
             await categoryService.deleteSubCategory(userId, categoryId, subCategoryId, subCategoryName);
         } catch (error) {
             console.error("Error al borrar la subcategoría en la BD:", error);
-            // Opcional: podrías querer volver a poner el estado como estaba si la operación falla
         }
     }, [userId]);
 
@@ -68,6 +53,12 @@ export const useCategories = (userId: string | null) => {
         await categoryService.updateCategoryBudget(userId, categoryId, budget);
     }, [userId]);
 
+    const updateCategoryStyle = useCallback(async (categoryId: string, style: { icon: string; color: string }) => {
+        if (!userId) return;
+        await categoryService.updateCategoryStyle(userId, categoryId, style);
+    }, [userId]);
+
+
     return {
         categories,
         addCategory,
@@ -75,5 +66,6 @@ export const useCategories = (userId: string | null) => {
         addSubCategory,
         deleteSubCategory,
         updateCategoryBudget,
+        updateCategoryStyle,
     };
 };

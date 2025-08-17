@@ -2,6 +2,7 @@ import React from 'react';
 import { Trash2, Loader2, Edit } from 'lucide-react';
 import type { Expense, Category } from '../../types';
 import styles from './ExpenseList.module.css';
+import { DynamicIcon } from '../DynamicIcon';
 
 interface ExpenseListProps {
   expenses: Expense[];
@@ -26,31 +27,35 @@ export const ExpenseList: React.FC<ExpenseListProps> = ({ expenses, categories, 
     }
     
     // Esta función ahora recibirá una lista de categorías consistente
-    const getCategoryName = (categoryId: string): string => {
-        const category = categories.find(c => c.id === categoryId);
-        return category?.name || 'Desconocida'; 
+    const getCategory = (categoryId: string): Category | undefined => {
+        return categories.find(c => c.id === categoryId);
     };
 
     return (
         <ul className={styles.list}>
             {expenses.map((expense) => {
-                const categoryName = getCategoryName(expense.categoryId);
+                const category = getCategory(expense.categoryId);
+                const categoryName = category?.name || 'Desconocida';
 
                 return (
                     <li key={expense.id} className={styles.item}>
+                        <div className={styles.iconContainer} style={{ backgroundColor: category?.color || '#8d99ae' }}>
+                            <DynamicIcon name={category?.icon || 'Tag'} size={24} color="white" />
+                        </div>
                         {/* --- COLUMNA IZQUIERDA --- */}
+                        <div className={styles.iconContainer} style={{ backgroundColor: category?.color || '#8d99ae' }}>
+                            <DynamicIcon name={category?.icon || 'Tag'} size={24} color="white" />
+                        </div>
+
                         <div className={styles.mainInfo}>
                             <div className={styles.topRow}>
                                 <p className={styles.description}>{expense.description}</p>
                                 <span className={styles.amount}>${expense.amount.toFixed(2)}</span>
                             </div>
                             <div className={styles.meta}>
-                                <span className={`${styles.tag} ${styles['tag' + (categoryName.replace(/\s+/g, '') || 'Otro')]}`}>
-                                    {categoryName}
-                                </span>
-                                <span className={styles.subCategoryTag}>
-                                    {expense.subCategory}
-                                </span>
+                                {/* Ya no necesitamos el tag de color aquí, el icono lo reemplaza */}
+                                <span className={styles.categoryNameText}>{categoryName}</span>
+                                <span className={styles.subCategoryTag}>{expense.subCategory}</span>
                             </div>
                         </div>
 

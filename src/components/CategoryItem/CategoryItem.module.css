@@ -249,3 +249,42 @@
   border-radius: 0.5rem;
   font-size: 0.875rem;
 }
+
+
+.iconWrapper {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0; /* Evita que el círculo se encoja */
+}
+
+.actionsContainer {
+  display: flex;
+  justify-content: flex-start;
+  padding-bottom: 1.5rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.editStyleButton {
+  background-color: var(--background-secondary);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.2s;
+}
+
+.editStyleButton:hover {
+  background-color: var(--background-hover);
+  color: var(--primary-accent);
+  border-color: var(--primary-accent);
+}

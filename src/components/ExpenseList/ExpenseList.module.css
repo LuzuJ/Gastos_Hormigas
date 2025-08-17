@@ -9,6 +9,7 @@
 
 .item {
   display: flex;
+  align-items: center;
   justify-content: space-between;
   background-color: var(--background-card);
   padding: 1rem;
@@ -20,17 +21,32 @@
   box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
 }
 
+.iconContainer {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
 .mainInfo {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-  flex-grow: 1; /* Ocupa el espacio disponible */
+  gap: 0.25rem; /* Reducimos el gap aquí */
+  flex-grow: 1;
 }
 .topRow {
   display: flex;
   align-items: flex-start;
+  justify-content: space-between; /* Asegura que el monto se vaya a la derecha */
 }
-
+.categoryNameText {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
 .details { flex: 1; margin-right: 1rem; }
 .description {
   font-weight: 600;
@@ -72,10 +88,6 @@
   background-color: var(--danger-color-light); 
 }
 
-.tag {
-  display: inline-flex; align-items: center; padding: 2px 10px;
-  border-radius: 9999px; font-size: 0.75rem; font-weight: 500;
-}
 .sideInfo {
   display: flex;
   flex-direction: column;
@@ -85,13 +97,6 @@
   min-width: 80px; /* Ancho mínimo para que no se deforme */
   text-align: right;
 }
-
-.tagAlimento { background-color: var(--tag-alimento-bg); color: var(--tag-alimento-text); }
-.tagTransporte { background-color: var(--tag-transporte-bg); color: var(--tag-transporte-text); }
-.tagEntretenimiento { background-color: var(--tag-entretenimiento-bg); color: var(--tag-entretenimiento-text); }
-.tagHogar { background-color: var(--tag-hogar-bg); color: var(--tag-hogar-text); }
-.tagSalud { background-color: var(--tag-salud-bg); color: var(--tag-salud-text); }
-.tagOtro { background-color: var(--tag-otro-bg); color: var(--tag-otro-text); }
 
 .stateContainer {
   display: flex; flex-direction: column; justify-content: center;

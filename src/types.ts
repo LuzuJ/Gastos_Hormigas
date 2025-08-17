@@ -7,6 +7,8 @@ export interface Category {
   isDefault?: boolean; // Indica si es una categoría por defecto
   budget?: number;
   subcategories: SubCategory[];
+  icon?: string; 
+  color?: string; 
 }
 
 export interface SubCategory {
