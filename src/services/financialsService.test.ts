@@ -22,7 +22,6 @@ vi.mock('firebase/firestore', async (importOriginal) => {
 });
 
 describe('Servicio financialsService', () => {
-  const appId = import.meta.env.VITE_FIREBASE_PROJECT_ID || 'default-app';
   const userId = 'test-user-financials';
 
   beforeEach(() => {
@@ -36,7 +35,7 @@ describe('Servicio financialsService', () => {
     financialsService.onFinancialsUpdate(userId, vi.fn());
 
     // Verificamos que se construye la ruta al documento 'summary' correctamente
-    expect(doc).toHaveBeenCalledWith(undefined, 'artifacts', appId, 'users', userId, 'financials', 'summary');
+    expect(doc).toHaveBeenCalledWith(undefined, 'users', userId, 'financials', 'summary');
     expect(onSnapshot).toHaveBeenCalledWith(expect.anything(), expect.any(Function), expect.any(Function));
   });
 
@@ -46,7 +45,7 @@ describe('Servicio financialsService', () => {
     await financialsService.setMonthlyIncome(userId, newIncome);
 
     // Verificamos que se apunta al documento correcto
-    expect(doc).toHaveBeenCalledWith(undefined, 'artifacts', appId, 'users', userId, 'financials', 'summary');
+    expect(doc).toHaveBeenCalledWith(undefined, 'users', userId, 'financials', 'summary');
 
     // Verificamos que se llama a setDoc con el objeto correcto y la opción { merge: true }
     expect(setDoc).toHaveBeenCalledWith(

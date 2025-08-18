@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 
 export interface Notification {
   id: number;
@@ -8,14 +8,19 @@ export interface Notification {
 
 export const useNotifications = () => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
+  const idCounter = useRef(0);
 
   const addNotification = useCallback((notification: Omit<Notification, 'id'>) => {
-    // Evita añadir mensajes idénticos repetidamente
-    const exists = notifications.some(n => n.message === notification.message);
-    if (!exists) {
-      setNotifications(prev => [...prev, { ...notification, id: Date.now() }]);
-    }
-  }, [notifications]);
+    setNotifications(prev => {
+      // Evita añadir mensajes idénticos repetidamente
+      const exists = prev.some(n => n.message === notification.message);
+      if (!exists) {
+        idCounter.current += 1;
+        return [...prev, { ...notification, id: idCounter.current }];
+      }
+      return prev;
+    });
+  }, []);
 
   const removeNotification = useCallback((id: number) => {
     setNotifications(prev => prev.filter(n => n.id !== id));

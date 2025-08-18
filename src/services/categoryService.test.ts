@@ -31,9 +31,6 @@ vi.mock('firebase/firestore', () => {
 
 describe('Servicio categoryService', () => {
 
-  // Obtenemos el ID del proyecto real que usa Vite para no hardcodearlo
-  const appId = import.meta.env.VITE_FIREBASE_PROJECT_ID || 'default-app';
-
   beforeEach(() => {
     vi.resetAllMocks();
   });
@@ -44,13 +41,16 @@ describe('Servicio categoryService', () => {
 
     await categoryService.addCategory(userId, categoryName);
 
-    // 2. CORRECCIÓN: Verificamos la llamada a collection con el appId real
-    expect(collection).toHaveBeenCalledWith(undefined, 'artifacts', appId, 'users', userId, 'categories');
+    // 2. CORRECCIÓN: Verificamos la llamada a collection con la estructura real
+    expect(collection).toHaveBeenCalledWith(undefined, 'users', userId, 'categories');
 
     // La llamada a addDoc es más simple de verificar ahora
     expect(addDoc).toHaveBeenCalledWith(expect.anything(), { // el primer arg es la collectionRef mockeada
       name: categoryName,
-      isDefault: false
+      isDefault: false,
+      subcategories: [],
+      icon: 'Tag',
+      color: '#607D8B'
     });
   });
 
@@ -62,7 +62,7 @@ describe('Servicio categoryService', () => {
     await categoryService.deleteCategory(userId, categoryId);
 
     // 3. CORRECCIÓN: Verificamos las llamadas por separado, que es más robusto
-    expect(collection).toHaveBeenCalledWith(undefined, 'artifacts', appId, 'users', userId, 'categories');
+    expect(collection).toHaveBeenCalledWith(undefined, 'users', userId, 'categories');
     expect(mockedDoc).toHaveBeenCalledWith(expect.anything(), categoryId);
     expect(mockedDeleteDoc).toHaveBeenCalledWith(expect.anything());
   });
@@ -75,7 +75,7 @@ describe('Servicio categoryService', () => {
 
     await categoryService.updateCategoryBudget(userId, categoryId, budget);
 
-    expect(collection).toHaveBeenCalledWith(undefined, 'artifacts', appId, 'users', userId, 'categories');
+    expect(collection).toHaveBeenCalledWith(undefined, 'users', userId, 'categories');
     expect(mockedDoc).toHaveBeenCalledWith(expect.anything(), categoryId);
     expect(mockedUpdateDoc).toHaveBeenCalledWith(expect.anything(), { budget: 1000 });
   });

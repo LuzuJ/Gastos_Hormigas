@@ -26,7 +26,6 @@ vi.mock('firebase/firestore', async (importOriginal) => {
 });
 
 describe('Servicio fixedExpenseService', () => {
-  const appId = import.meta.env.VITE_FIREBASE_PROJECT_ID || 'default-app';
   const userId = 'test-user-fixed';
 
   beforeEach(() => {
@@ -44,7 +43,7 @@ describe('Servicio fixedExpenseService', () => {
     await fixedExpenseService.addFixedExpense(userId, newFixedExpenseData);
 
     // Verificamos que se apunta a la colección correcta
-    expect(collection).toHaveBeenCalledWith(undefined, 'artifacts', appId, 'users', userId, 'fixedExpenses');
+    expect(collection).toHaveBeenCalledWith(undefined, 'users', userId, 'fixedExpenses');
 
     // Verificamos que se llama a addDoc con los datos correctos
     expect(addDoc).toHaveBeenCalledWith(expect.anything(), newFixedExpenseData);
@@ -57,7 +56,7 @@ describe('Servicio fixedExpenseService', () => {
 
     // Verificamos que el servicio NO usa getFixedExpensesCollectionRef, sino que construye la ruta directamente
     expect(collection).not.toHaveBeenCalled();
-    expect(doc).toHaveBeenCalledWith(undefined, 'artifacts', appId, 'users', userId, 'fixedExpenses', fixedExpenseId);
+    expect(doc).toHaveBeenCalledWith(undefined, 'users', userId, 'fixedExpenses', fixedExpenseId);
     expect(deleteDoc).toHaveBeenCalledWith(expect.anything());
   });
 });

@@ -29,7 +29,6 @@ vi.mock('firebase/firestore', async (importOriginal) => {
 });
 
 describe('Servicio expensesService', () => {
-  const appId = import.meta.env.VITE_FIREBASE_PROJECT_ID || 'default-app';
   const userId = 'test-user-expenses';
 
   beforeEach(() => {
@@ -47,7 +46,7 @@ describe('Servicio expensesService', () => {
 
     await expensesService.addExpense(userId, expenseData);
 
-    expect(collection).toHaveBeenCalledWith(undefined, 'artifacts', appId, 'users', userId, 'expenses');
+    expect(collection).toHaveBeenCalledWith(undefined, 'users', userId, 'expenses');
     expect(addDoc).toHaveBeenCalledWith(expect.anything(), {
       ...expenseData,
       createdAt: 'MOCK_SERVER_TIMESTAMP'
@@ -63,7 +62,7 @@ describe('Servicio expensesService', () => {
     // CORRECCIÓN: Verificamos que `doc` es llamado con la ruta completa como strings,
     // y que `collection` NO es llamado.
     expect(collection).not.toHaveBeenCalled();
-    expect(doc).toHaveBeenCalledWith(undefined, 'artifacts', appId, 'users', userId, 'expenses', expenseId);
+    expect(doc).toHaveBeenCalledWith(undefined, 'users', userId, 'expenses', expenseId);
 
     // Verificamos que se actualiza con los datos parciales
     expect(updateDoc).toHaveBeenCalledWith(expect.anything(), partialData);
@@ -76,7 +75,7 @@ describe('Servicio expensesService', () => {
 
     // CORRECCIÓN: Misma lógica que en la prueba anterior.
     expect(collection).not.toHaveBeenCalled();
-    expect(doc).toHaveBeenCalledWith(undefined, 'artifacts', appId, 'users', userId, 'expenses', expenseId);
+    expect(doc).toHaveBeenCalledWith(undefined, 'users', userId, 'expenses', expenseId);
     expect(deleteDoc).toHaveBeenCalledWith(expect.anything());
   });
 });
