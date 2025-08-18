@@ -1,20 +1,20 @@
 import React, { useState } from 'react';
-import { useExpensesController } from '../hooks/useExpensesController';
+import { useCategoriesContext, useExpensesContext } from '../contexts/AppContext';
 import styles from './ManageCategoriesPage.module.css';
 import { CategoryItem } from '../components/CategoryItem/CategoryItem';
 import { CategoryStyleModal } from '../components/CategoryStyleModal/CategoryStyleModal';
 import type { Category } from '../types';
 
 interface ManageCategoriesPageProps {
-    userId: string | null;
     isGuest: boolean;
 }
 
-export const ManageCategoriesPage: React.FC<ManageCategoriesPageProps> = ({ userId, isGuest }) => {
+export const ManageCategoriesPage: React.FC<ManageCategoriesPageProps> = ({ isGuest }) => {
     const { 
-      categories, expenses, addSubCategory, deleteSubCategory, 
+      categories, addSubCategory, deleteSubCategory, 
       deleteCategory, addCategory, updateCategoryBudget, updateCategoryStyle 
-    } = useExpensesController(userId);
+    } = useCategoriesContext();
+    const { expenses } = useExpensesContext();
     
     const [newCategoryName, setNewCategoryName] = useState('');
     const [isStyleModalOpen, setIsStyleModalOpen] = useState(false);
@@ -60,7 +60,9 @@ export const ManageCategoriesPage: React.FC<ManageCategoriesPageProps> = ({ user
                         category={cat}
                         expenses={expenses}
                         onAddSubCategory={addSubCategory}
-                        onDeleteSubCategory={deleteSubCategory}
+                        onDeleteSubCategory={(categoryId, subCategory) =>
+                            deleteSubCategory(categoryId, subCategory.id, subCategory.name)
+                        }
                         onDeleteCategory={deleteCategory}
                         onUpdateBudget={updateCategoryBudget}
                         onEditStyle={() => handleOpenStyleModal(cat)}

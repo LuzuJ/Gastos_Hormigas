@@ -14,7 +14,9 @@ const mockExpenses: Expense[] = [];
 
 describe('Componente CategoryItem', () => {
   it('debería estar cerrado por defecto y mostrar solo el encabezado', () => {
-    render(<CategoryItem category={mockCategory} expenses={mockExpenses} onAddSubCategory={vi.fn()} onDeleteSubCategory={vi.fn()} onDeleteCategory={vi.fn()} onUpdateBudget={vi.fn()} />);
+    render(<CategoryItem category={mockCategory} expenses={mockExpenses} onAddSubCategory={vi.fn()} onDeleteSubCategory={vi.fn()} onDeleteCategory={vi.fn()} onUpdateBudget={vi.fn()} onEditStyle={function (): void {
+      throw new Error('Function not implemented.');
+    } } />);
 
     expect(screen.getByText('Hogar')).toBeInTheDocument();
     // `queryByText` devuelve null si no encuentra el elemento, perfecto para verificar que algo NO está visible.
@@ -22,7 +24,9 @@ describe('Componente CategoryItem', () => {
   });
 
   it('debería expandirse y mostrar el contenido al hacer clic', () => {
-    render(<CategoryItem category={mockCategory} expenses={mockExpenses} onAddSubCategory={vi.fn()} onDeleteSubCategory={vi.fn()} onDeleteCategory={vi.fn()} onUpdateBudget={vi.fn()} />);
+    render(<CategoryItem category={mockCategory} expenses={mockExpenses} onAddSubCategory={vi.fn()} onDeleteSubCategory={vi.fn()} onDeleteCategory={vi.fn()} onUpdateBudget={vi.fn()} onEditStyle={function (): void {
+      throw new Error('Function not implemented.');
+    } } />);
 
     // Hacemos clic en el encabezado
     fireEvent.click(screen.getByText('Hogar'));
@@ -35,7 +39,9 @@ describe('Componente CategoryItem', () => {
   // ESTA PRUEBA VA A FALLAR
   it('debería llamar a onUpdateBudget al editar y guardar el presupuesto', () => {
     const handleUpdateBudget = vi.fn();
-    render(<CategoryItem category={mockCategory} expenses={mockExpenses} onAddSubCategory={vi.fn()} onDeleteSubCategory={vi.fn()} onDeleteCategory={vi.fn()} onUpdateBudget={handleUpdateBudget} />);
+    render(<CategoryItem category={mockCategory} expenses={mockExpenses} onAddSubCategory={vi.fn()} onDeleteSubCategory={vi.fn()} onDeleteCategory={vi.fn()} onUpdateBudget={handleUpdateBudget} onEditStyle={function (): void {
+      throw new Error('Function not implemented.');
+    } } />);
 
     // Expandimos el panel
     fireEvent.click(screen.getByText('Hogar'));

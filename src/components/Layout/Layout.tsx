@@ -2,11 +2,12 @@ import React, { type ReactNode } from 'react';
 import styles from './Layout.module.css';
 import { PAGE_ROUTES } from '../../constants';
 import { Notifications } from '../Notifications/Notifications';
-import { useExpensesController } from '../../hooks/useExpensesController';
-import { auth } from '../../config/firebase'; 
+// 1. Importamos el hook de contexto para las notificaciones.
+import { useNotificationsContext } from '../../contexts/AppContext';
 import { ThemeToggler } from '../ThemeToggler/ThemeToggler'; 
 import { UserPlus } from 'lucide-react';
 
+// El tipo 'Page' se mantiene igual.
 export type Page = typeof PAGE_ROUTES[keyof typeof PAGE_ROUTES];
 
 interface LayoutProps {
@@ -17,7 +18,9 @@ interface LayoutProps {
 }
 
 export const Layout: React.FC<LayoutProps> = ({ currentPage, setCurrentPage, children, isGuest}) => {
-  const { notifications, removeNotification } = useExpensesController(auth.currentUser?.uid || null);
+  // 2. Consumimos las notificaciones y la función para eliminarlas desde su propio contexto.
+  const { notifications, removeNotification } = useNotificationsContext();
+  
   const handleGoToProfile = () => {
     setCurrentPage(PAGE_ROUTES.PROFILE);
   };
@@ -37,12 +40,12 @@ export const Layout: React.FC<LayoutProps> = ({ currentPage, setCurrentPage, chi
         <h1>Panel de Gastos</h1>
         <p>Tu centro de control para entender y mejorar tus finanzas.</p>
         <div className={styles.headerActions}>
+          {/* El componente de notificaciones ahora recibe los datos del contexto. */}
           <Notifications notifications={notifications} onRemove={removeNotification} />
           <ThemeToggler /> 
         </div>
       </header>
 
-      {/* 3. Usamos las constantes en los botones de navegación */}
       <nav className={styles.mainNav}>
         <button
           onClick={() => setCurrentPage(PAGE_ROUTES.DASHBOARD)}

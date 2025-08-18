@@ -27,12 +27,20 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({ onAdd, onAddSubCategor
     const [newSubCategoryName, setNewSubCategoryName] = useState('');
     const [isOpen, setIsOpen] = useState(true); // Para el formulario plegable
 
-    useEffect(() => {
+     useEffect(() => {
         if (categories.length > 0 && !selectedCategoryId) {
             const firstCategory = categories[0];
             setSelectedCategoryId(firstCategory.id);
-            setAvailableSubCategories(firstCategory.subcategories);
-            setSelectedSubCategory(firstCategory.subcategories[0]?.name || '');
+            const subcategories = firstCategory.subcategories || [];
+            setAvailableSubCategories(subcategories);
+            
+            if (subcategories.length > 0) {
+                setSelectedSubCategory(subcategories[0].name);
+                setShowNewSubCategoryInput(false);
+            } else {
+                setSelectedSubCategory(ADD_NEW_SUBCATEGORY_VALUE);
+                setShowNewSubCategoryInput(true);
+            }
         }
     }, [categories, selectedCategoryId]);
 
@@ -44,8 +52,13 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({ onAdd, onAddSubCategor
         
         setAvailableSubCategories(subcategories);
         
-        setSelectedSubCategory(subcategories[0]?.name || ADD_NEW_SUBCATEGORY_VALUE);
-        setShowNewSubCategoryInput(subcategories.length === 0);
+        if (subcategories.length > 0) {
+            setSelectedSubCategory(subcategories[0].name);
+            setShowNewSubCategoryInput(false);
+        } else {
+            setSelectedSubCategory(ADD_NEW_SUBCATEGORY_VALUE);
+            setShowNewSubCategoryInput(true);
+        }
     };
 
     const handleSubCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {

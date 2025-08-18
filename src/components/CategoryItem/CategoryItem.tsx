@@ -2,14 +2,15 @@ import React, { useState, useMemo } from 'react';
 import { ChevronDown, ChevronRight, Edit, Palette, PiggyBank, Plus, Tag, Trash2 } from 'lucide-react';
 import styles from './CategoryItem.module.css';
 import { DynamicIcon } from '../DynamicIcon';
-import type { Category, Expense } from '../../types';
+import type { Category, Expense, SubCategory } from '../../types'; // <-- Asegúrate de importar SubCategory
 import { BudgetProgressBar } from '../BudgetProgressBar/BudgetProgressBar';
 
 interface CategoryItemProps {
   category: Category;
   expenses: Expense[];
   onAddSubCategory: (categoryId: string, name: string) => void;
-  onDeleteSubCategory: (categoryId: string, subCategoryId: string, subCategoryName: string) => void;
+  // ↓ CORRECCIÓN 1: La firma de la prop ahora espera el objeto SubCategory completo
+  onDeleteSubCategory: (categoryId: string, subCategory: SubCategory) => void; 
   onDeleteCategory: (categoryId: string) => void;
   onUpdateBudget: (categoryId: string, budget: number) => void;
   onEditStyle: () => void;
@@ -30,7 +31,17 @@ export const CategoryItem: React.FC<CategoryItemProps> = ({
     [expenses, category.id]
   );
 
-  const totalAmount = categoryExpenses.reduce((sum, e) => sum + e.amount, 0);
+  // El cálculo del total debe hacerse sobre los gastos filtrados por mes/año
+  const filteredExpenses = useMemo(() => {
+    return categoryExpenses.filter(exp => {
+      if (!exp.createdAt) return false;
+      const date = exp.createdAt.toDate();
+      return date.getFullYear() === selectedYear && date.getMonth() === selectedMonth;
+    });
+  }, [categoryExpenses, selectedYear, selectedMonth]);
+  
+  // CORRECCIÓN 3: El total ahora se basa en los gastos filtrados
+  const totalAmount = filteredExpenses.reduce((sum, e) => sum + e.amount, 0);
 
   const { availableYears, availableMonths } = useMemo(() => {
     const years = new Set<number>();
@@ -50,13 +61,6 @@ export const CategoryItem: React.FC<CategoryItemProps> = ({
     };
   }, [categoryExpenses, selectedYear]);
 
-  const filteredExpenses = useMemo(() => {
-    return categoryExpenses.filter(exp => {
-      if (!exp.createdAt) return false;
-      const date = exp.createdAt.toDate();
-      return date.getFullYear() === selectedYear && date.getMonth() === selectedMonth;
-    });
-  }, [categoryExpenses, selectedYear, selectedMonth]);
 
   const handleAddSubCategory = (e: React.FormEvent) => {
     e.preventDefault();
@@ -99,7 +103,8 @@ return (
                 {category.subcategories.map(sub => (
                   <li key={sub.id}>
                     {sub.name}
-                    <button onClick={() => onDeleteSubCategory(category.id, sub.id, sub.name)} className={styles.deleteSubButton}>
+                    {/* ↓ CORRECCIÓN 2: Pasa el objeto 'sub' completo a la función */}
+                    <button onClick={() => onDeleteSubCategory(category.id, sub)} className={styles.deleteSubButton}>
                       <Trash2 size={14} />
                     </button>
                   </li>
@@ -134,11 +139,10 @@ return (
           <div className={styles.actionsContainer}>
             <button className={styles.editStyleButton} onClick={onEditStyle}>
                   <Palette size={14} /> Editar Icono y Color
-              </button>
+                </button>
           </div>
           <h4 className={`${styles.sectionTitle} ${styles.expensesTitle}`}>Gastos en esta Categoría</h4>
           
-          {/* --- 5. NUEVOS SELECTORES DE FILTRO --- */}
           <div className={styles.filtersContainer}>
             <select className={styles.filterSelect} value={selectedYear} onChange={e => setSelectedYear(Number(e.target.value))}>
               {availableYears.map(year => <option key={year} value={year}>{year}</option>)}
@@ -148,7 +152,6 @@ return (
             </select>
           </div>
 
-          {/* --- 6. RENDERIZAMOS LA LISTA FILTRADA --- */}
           {filteredExpenses.length > 0 ? (
             <ul className={styles.expenseList}>
               {filteredExpenses.map(expense => (

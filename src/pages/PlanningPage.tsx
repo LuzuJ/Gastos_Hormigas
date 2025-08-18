@@ -2,70 +2,106 @@ import React from 'react';
 import { IncomeForm } from '../components/IncomeForm/IncomeForm';
 import { FixedExpenses } from '../components/FixedExpenses/FixedExpenses';
 import { SavingsGoals } from '../components/SavingsGoals/SavingsGoals';
-import { useExpensesController } from '../hooks/useExpensesController';
 import { NetWorthSummary } from '../components/NetWorthSummary/NetWorthSummary';
 import { NetWorthManager } from '../components/NetWorthManager/NetWorthManager';
-import { GuestBlockedFeature } from '../components/GuestBlockedFeature/GuestBlockedFeature'; // 1. Importar
+import { GuestBlockedFeature } from '../components/GuestBlockedFeature/GuestBlockedFeature';
+import {
+    useCategoriesContext,
+    useFinancialsContext,
+    useSavingsGoalsContext,
+    useNetWorthContext
+} from '../contexts/AppContext';
 import styles from './PlanningPage.module.css';
 
 export interface PlanningPageProps {
-    userId: string | null;
     isGuest: boolean;
 }
-export const PlanningPage: React.FC<PlanningPageProps> = ({ userId, isGuest }) => {
+
+export const PlanningPage: React.FC<PlanningPageProps> = ({ isGuest }) => {
+    const { categories } = useCategoriesContext();
     const { 
-      financials, setMonthlyIncome, error,
-      categories, fixedExpenses, addFixedExpense, deleteFixedExpense, 
-      savingsGoals, addSavingsGoal, deleteSavingsGoal, addToSavingsGoal,
-      assets, liabilities, netWorth, totalAssets, totalLiabilities,
-      addAsset, deleteAsset, addLiability, deleteLiability, removeFromSavingsGoal
-    } = useExpensesController(userId);
+        financials, 
+        setMonthlyIncome, 
+        fixedExpenses, 
+        addFixedExpense, 
+        deleteFixedExpense 
+    } = useFinancialsContext();
+    const { 
+        savingsGoals, 
+        addSavingsGoal, 
+        deleteSavingsGoal, 
+        addToSavingsGoal,
+        removeFromSavingsGoal 
+    } = useSavingsGoalsContext();
+    const { 
+        assets, 
+        liabilities, 
+        netWorth, 
+        totalAssets, 
+        totalLiabilities,
+        addAsset, 
+        deleteAsset, 
+        addLiability, 
+        deleteLiability 
+    } = useNetWorthContext();
 
     return (
         <div className={styles.container}>
-            <h2 className={`section-title ${styles.title}`}>Planificación Financiera</h2>
-          
-            <NetWorthSummary 
-              totalAssets={totalAssets}
-              totalLiabilities={totalLiabilities}
-              netWorth={netWorth}
-            />
-
-            {error && <p className="error-message">{error}</p>}
+            <div className={styles.header}>
+                <h2 className={`section-title ${styles.title}`}>Planificación Financiera</h2>
+            </div>
+            
+            <div className={styles.section}>
+                <NetWorthSummary 
+                    totalAssets={totalAssets}
+                    totalLiabilities={totalLiabilities}
+                    netWorth={netWorth}
+                />
+            </div>
             
             {isGuest ? (
-                <GuestBlockedFeature message="Gestiona tus activos, pasivos, gastos fijos y metas de ahorro creando una cuenta." />
+                <div className={styles.section}>
+                    <GuestBlockedFeature message="Gestiona tus activos, pasivos, gastos fijos y metas de ahorro creando una cuenta." />
+                </div>
             ) : (
                 <>
-                    <NetWorthManager
-                        assets={assets}
-                        liabilities={liabilities}
-                        onAddAsset={addAsset}
-                        onDeleteAsset={deleteAsset}
-                        onAddLiability={addLiability}
-                        onDeleteLiability={deleteLiability}
-                    />
-                    
-                    <IncomeForm
-                        currentIncome={financials?.monthlyIncome || 0}
-                        onSetIncome={setMonthlyIncome}
-                    />
-
-                    <div style={{ marginTop: '2rem' }}>
-                      <FixedExpenses 
-                        categories={categories} 
-                        fixedExpenses={fixedExpenses}
-                        onAdd={addFixedExpense}
-                        onDelete={deleteFixedExpense}
-                      />
+                    <div className={styles.section}>
+                        <NetWorthManager
+                            assets={assets}
+                            liabilities={liabilities}
+                            onAddAsset={addAsset}
+                            onDeleteAsset={deleteAsset}
+                            onAddLiability={addLiability}
+                            onDeleteLiability={deleteLiability}
+                        />
                     </div>
-                    <SavingsGoals 
-                      savingsGoals={savingsGoals}
-                      onAdd={addSavingsGoal}
-                      onDelete={deleteSavingsGoal}
-                      onAddFunds={addToSavingsGoal}
-                      onRemoveFunds={removeFromSavingsGoal}
-                    />
+
+                    <div className={styles.section}>
+                        <IncomeForm
+                            currentIncome={financials?.monthlyIncome || 0}
+                            onSetIncome={setMonthlyIncome}
+                        />
+                    </div>
+
+                    <div className={styles.section}>
+                        <FixedExpenses 
+                            categories={categories} 
+                            fixedExpenses={fixedExpenses}
+                            onAdd={addFixedExpense}
+                            onDelete={deleteFixedExpense}
+                        />
+                    </div>
+                    
+                    <div className={styles.section}>
+                        <SavingsGoals 
+                            savingsGoals={savingsGoals}
+                            onAdd={addSavingsGoal}
+                            onDelete={deleteSavingsGoal}
+                            onAddFunds={addToSavingsGoal}
+                            onRemoveFunds={removeFromSavingsGoal}
+                            isGuest={isGuest}
+                        />
+                    </div>
                 </>
             )}
         </div>

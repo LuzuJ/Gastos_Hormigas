@@ -10,31 +10,25 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   EmailAuthProvider,
-  type User
+  type User,
+  type AuthError
 } from 'firebase/auth';
 import { userService } from './userService';
 import { categoryService } from './categoryService';
 
 const googleProvider = new GoogleAuthProvider();
 
-/**
- * Función centralizada para crear el perfil de un usuario y sus datos iniciales.
- * Se asegura de que no se dupliquen datos si el usuario ya existe.
- */
 const checkAndCreateNewUserDocument = async (user: User) => {
-  // Llama a la función en userService para crear el perfil si es la primera vez.
-  // Esta función ya comprueba si el usuario existe antes de escribir.
-  await userService.createUserProfile(user);
-  
-  // Inicializa las categorías por defecto solo para usuarios nuevos.
-  await categoryService.initializeDefaultCategories(user.uid);
+  try {
+    await userService.createUserProfile(user);
+    await categoryService.initializeDefaultCategories(user.uid);
+    console.log('Documento de usuario y categorías inicializados correctamente');
+  } catch (error) {
+    console.error('Error al inicializar datos de usuario:', error);
+  }
 };
 
 export const authService = {
-  /**
-   * Inicia sesión con Google. Si el usuario era anónimo, enlaza la cuenta
-   * para conservar sus datos. Si es un usuario completamente nuevo, crea su perfil.
-   */
   signInWithGoogle: async (anonymousUser: User | null) => {
     try {
       const result = await signInWithPopup(auth, googleProvider);
@@ -42,45 +36,39 @@ export const authService = {
       if (anonymousUser) {
         const credential = GoogleAuthProvider.credentialFromResult(result);
         if (credential) {
-          // Fusiona el usuario anónimo con la cuenta de Google.
-          // Los datos del anónimo se conservan.
           await linkWithCredential(anonymousUser, credential);
+          // CORRECCIÓN: Forzamos un reload para que la app reconozca al usuario como registrado.
+          window.location.reload();
+          return { success: true, user: result.user };
         }
-      } else {
-        // Es un inicio de sesión nuevo, crea su documento de perfil y categorías.
-        await checkAndCreateNewUserDocument(result.user);
       }
+      await checkAndCreateNewUserDocument(result.user);
       return { success: true, user: result.user };
     } catch (error) {
-      console.error("Error al iniciar sesión con Google:", error);
-      return { success: false, error };
+      const authError = error as AuthError;
+      return { success: false, error: authError.code };
     }
   },
 
-  /**
-   * Inicia sesión como un usuario invitado (anónimo).
-   * Crea un perfil temporal y categorías para que pueda usar la app.
-   */
   signInAsGuest: async () => {
     try {
       const result = await signInAnonymously(auth);
       await checkAndCreateNewUserDocument(result.user);
       return { success: true, user: result.user };
     } catch (error) {
-      console.error("Error al iniciar como invitado:", error);
-      return { success: false, error };
+      const authError = error as AuthError;
+      return { success: false, error: authError.code };
     }
   },
 
-  /**
-   * Registra un nuevo usuario con correo y contraseña.
-   * Si el usuario era anónimo, convierte la cuenta en permanente.
-   */
   signUpWithEmail: async (email: string, password: string, anonymousUser: User | null) => {
     try {
       if (anonymousUser) {
         const credential = EmailAuthProvider.credential(email, password);
         await linkWithCredential(anonymousUser, credential);
+        await checkAndCreateNewUserDocument(anonymousUser);
+        // CORRECCIÓN: Forzamos un reload aquí también.
+        window.location.reload();
         return { success: true, user: anonymousUser };
       }
       
@@ -88,27 +76,50 @@ export const authService = {
       await checkAndCreateNewUserDocument(result.user);
       return { success: true, user: result.user };
     } catch (error) {
-      console.error("Error al registrar con email:", error);
-      return { success: false, error };
+      const authError = error as AuthError;
+      return { success: false, error: authError.code };
     }
   },
 
-  /**
-   * Inicia sesión con una cuenta de correo existente.
-   */
   signInWithEmail: async (email: string, password: string) => {
     try {
+      console.log('🔐 Intentando autenticar:', email);
       const result = await signInWithEmailAndPassword(auth, email, password);
+      console.log('✅ Firebase Auth exitoso:', result.user.uid);
+      
+      // Verificar que el usuario tenga un perfil creado en nuestra base de datos
+      const userProfile = await userService.getUserProfile(result.user.uid);
+      console.log('📋 Perfil encontrado:', userProfile ? 'SÍ' : 'NO');
+      
+      if (!userProfile) {
+        // Si el usuario fue autenticado por Firebase pero no tiene perfil en nuestra DB,
+        // esto indica que es un usuario que no se registró correctamente
+        console.log('❌ Usuario sin perfil, cerrando sesión');
+        await signOut(auth);
+        return { 
+          success: false, 
+          error: 'auth/user-not-registered' // Error específico para usuarios no registrados
+        };
+      }
+      
+      console.log('🎉 Inicio de sesión exitoso');
       return { success: true, user: result.user };
     } catch (error) {
-      console.error("Error al iniciar sesión con email:", error);
-      return { success: false, error };
+      const authError = error as AuthError;
+      console.log('🚫 Error de autenticación:', authError.code);
+      
+      // Manejar específicamente los errores de credenciales incorrectas
+      if (authError.code === 'auth/user-not-found' || 
+          authError.code === 'auth/wrong-password' ||
+          authError.code === 'auth/invalid-credential' ||
+          authError.code === 'auth/invalid-email') {
+        return { success: false, error: 'auth/invalid-credential' };
+      }
+      
+      return { success: false, error: authError.code };
     }
   },
 
-  /**
-   * Cierra la sesión del usuario actual.
-   */
   signOut: () => {
     return signOut(auth);
   },

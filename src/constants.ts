@@ -28,3 +28,12 @@ export const FIRESTORE_PATHS = {
   ASSETS: 'assets',
   LIABILITIES: 'liabilities',
 } as const;
+
+export const defaultCategoriesStructure = [
+    { name: 'Alimento', icon: 'Pizza', color: '#FFC300', subcategories: ['Supermercado', 'Restaurante', 'Delivery'] },
+    { name: 'Transporte', icon: 'Car', color: '#FF5733', subcategories: ['Gasolina', 'Transporte Público', 'Taxi/Uber'] },
+    { name: 'Hogar', icon: 'Home', color: '#C70039', subcategories: ['Servicios (Luz, Agua)', 'Decoración', 'Reparaciones'] },
+    { name: 'Entretenimiento', icon: 'Gamepad2', color: '#900C3F', subcategories: ['Suscripciones', 'Cine', 'Salidas'] },
+    { name: 'Salud', icon: 'HeartPulse', color: '#581845', subcategories: ['Farmacia', 'Consulta Médica'] },
+    { name: 'Otro', icon: 'ShoppingBag', color: '#2a9d8f', subcategories: ['General'] }
+];

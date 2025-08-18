@@ -16,7 +16,6 @@ import {
 } from '../contexts/AppContext';
 
 interface DashboardPageProps {
-  userId: string | null;
   isGuest: boolean;
 }
 

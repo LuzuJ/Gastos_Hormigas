@@ -1,11 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { useExpensesController } from '../hooks/useExpensesController';
-import { authService } from '../services/authService'; // Importa el servicio de auth
+import { auth } from '../config/firebase';
+import { authService } from '../services/authService';
 import styles from './ProfilePage.module.css';
-import { LogOut } from 'lucide-react'; // Importa el ícono
+import { LogOut, UserPlus, Eye, EyeOff } from 'lucide-react';
+import { useProfileContext } from '../contexts/AppContext';
+import type { Page } from '../components/Layout/Layout';
+import { PAGE_ROUTES } from '../constants';
 
-export const ProfilePage: React.FC<{ userId: string | null }> = ({ userId }) => {
-    const { profile, updateUserProfile } = useExpensesController(userId);
+interface ProfilePageProps {
+  userId: string | null;
+  isGuest: boolean;
+  setCurrentPage: (page: Page) => void;
+}
+
+// Componente para el perfil de un usuario REGISTRADO
+const RegisteredUserProfile: React.FC = () => {
+    const { profile, updateUserProfile, loadingProfile } = useProfileContext();
     const [displayName, setDisplayName] = useState('');
     const [currency, setCurrency] = useState<'USD' | 'EUR'>('USD');
     const [message, setMessage] = useState('');
@@ -26,16 +36,27 @@ export const ProfilePage: React.FC<{ userId: string | null }> = ({ userId }) => 
             setTimeout(() => setMessage(''), 3000);
         } catch (error) {
             console.error("Error al guardar el perfil:", error);
-            setMessage('Error al guardar. Verifica los permisos en Firebase.');
+            setMessage('Error al guardar. Inténtalo de nuevo.');
         }
     };
 
-    if (!profile) {
+    if (loadingProfile) {
         return <div className="loading-screen">Cargando perfil...</div>;
     }
 
+    if (!profile) {
+        return (
+            <div className={styles.errorContainer}>
+                <p>Error al cargar el perfil. Intenta cerrar sesión y volver a iniciar.</p>
+                <button onClick={() => authService.signOut()} className={styles.logoutButton}>
+                    <LogOut size={16} /> Cerrar Sesión
+                </button>
+            </div>
+        );
+    }
+
     return (
-        <div className={styles.container}>
+        <>
             <div className={styles.header}>
                 <h2 className="section-title">Mi Perfil</h2>
                 <button onClick={() => authService.signOut()} className={styles.logoutButton}>
@@ -49,22 +70,11 @@ export const ProfilePage: React.FC<{ userId: string | null }> = ({ userId }) => 
                 </div>
                 <div className={styles.formGroup}>
                     <label htmlFor="displayName">Nombre a Mostrar</label>
-                    <input
-                        id="displayName"
-                        type="text"
-                        value={displayName}
-                        onChange={(e) => setDisplayName(e.target.value)}
-                        className={styles.input}
-                    />
+                    <input id="displayName" type="text" value={displayName} onChange={(e) => setDisplayName(e.target.value)} className={styles.input}/>
                 </div>
                 <div className={styles.formGroup}>
                     <label htmlFor="currency">Moneda Principal</label>
-                    <select
-                        id="currency"
-                        value={currency}
-                        onChange={(e) => setCurrency(e.target.value as 'USD' | 'EUR')}
-                        className={styles.select}
-                    >
+                    <select id="currency" value={currency} onChange={(e) => setCurrency(e.target.value as 'USD' | 'EUR')} className={styles.select}>
                         <option value="USD">Dólar Estadounidense (USD)</option>
                         <option value="EUR">Euro (EUR)</option>
                     </select>
@@ -74,6 +84,90 @@ export const ProfilePage: React.FC<{ userId: string | null }> = ({ userId }) => 
                     {message && <span className={styles.savedMessage}>{message}</span>}
                 </div>
             </form>
+        </>
+    );
+};
+
+// Componente MEJORADO para el perfil de un usuario INVITADO
+const GuestProfile: React.FC<{ setCurrentPage: (page: Page) => void }> = ({ setCurrentPage }) => {
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
+
+    const getFriendlyErrorMessage = (errorCode: string): string => {
+        // ... (misma función de LoginPage)
+        return "Error";
+    };
+
+    const handleGoogleSignUp = async () => {
+        setLoading(true);
+        setError('');
+        const result = await authService.signInWithGoogle(auth.currentUser);
+        if (!result.success) {
+            setError(getFriendlyErrorMessage(result.error as string));
+            setLoading(false);
+        } else {
+            setCurrentPage(PAGE_ROUTES.DASHBOARD);
+        }
+    };
+
+    const handleEmailSignUp = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setLoading(true);
+        setError('');
+        const result = await authService.signUpWithEmail(email, password, auth.currentUser);
+        if (!result.success) {
+            setError(getFriendlyErrorMessage(result.error as string));
+            setLoading(false);
+        } else {
+            setCurrentPage(PAGE_ROUTES.DASHBOARD);
+        }
+    };
+
+    return (
+        <>
+            <div className={styles.header}>
+                <h2 className="section-title">Crear Cuenta</h2>
+                <button onClick={() => authService.signOut()} className={styles.logoutButton}>
+                    <LogOut size={16} /> Salir del modo invitado
+                </button>
+            </div>
+            <div className={`${styles.form} ${styles.guestForm}`}>
+                <UserPlus size={48} className={styles.guestIcon} />
+                <h3>Guarda tu Progreso</h3>
+                <p>Crea una cuenta gratuita para guardar todos tus gastos y planificación. ¡Tus datos actuales se conservarán!</p>
+                
+                <form onSubmit={handleEmailSignUp} className={styles.guestActions}>
+                    <input className={styles.input} type="email" placeholder="Correo electrónico" value={email} onChange={e => setEmail(e.target.value)} required />
+                    <div className={styles.passwordWrapper}>
+                        <input className={styles.input} type={showPassword ? 'text' : 'password'} placeholder="Crea una contraseña" value={password} onChange={e => setPassword(e.target.value)} required minLength={6} />
+                        <button type="button" onClick={() => setShowPassword(!showPassword)} className={styles.passwordToggleInForm}>
+                            {showPassword ? <EyeOff size={18}/> : <Eye size={18}/>}
+                        </button>
+                    </div>
+                    {error && <p className={styles.error}>{error}</p>}
+                    <button type="submit" className={styles.button} disabled={loading}>{loading ? 'Creando...' : 'Crear cuenta con correo'}</button>
+                </form>
+
+                <div className={styles.divider}>o</div>
+                <button onClick={handleGoogleSignUp} className={styles.googleButton} disabled={loading}>
+                    Continuar con Google
+                </button>
+            </div>
+        </>
+    );
+};
+
+// Componente principal que decide cuál de los dos anteriores renderizar
+export const ProfilePage: React.FC<ProfilePageProps> = ({ isGuest, setCurrentPage, userId }) => {
+    return (
+        <div className={styles.container}>
+            {isGuest 
+                ? <GuestProfile setCurrentPage={setCurrentPage} /> 
+                : <RegisteredUserProfile />
+            }
         </div>
     );
 };

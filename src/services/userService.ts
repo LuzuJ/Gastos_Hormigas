@@ -14,20 +14,41 @@ export const userService = {
     // Crea el perfil inicial de un usuario
     createUserProfile: async (user: User) => {
         const userDocRef = getUserDocRef(user.uid);
-        const userDoc = await getDoc(userDocRef);
-        if (!userDoc.exists()) {
-            await setDoc(userDocRef, {
-                displayName: user.displayName || user.email?.split('@')[0] || 'Usuario',
-                email: user.email,
-                currency: 'USD',
-            });
+        try {
+            const userDoc = await getDoc(userDocRef);
+            if (!userDoc.exists()) {
+                const profileData = {
+                    displayName: user.displayName || user.email?.split('@')[0] || 'Usuario',
+                    email: user.email || '',
+                    currency: 'USD' as const,
+                };
+                await setDoc(userDocRef, profileData);
+                console.log('Perfil de usuario creado exitosamente');
+            }
+        } catch (error) {
+            console.error('Error al crear el perfil de usuario:', error);
+            throw error;
         }
     },
 
     // Obtiene el perfil de un usuario
     getUserProfile: async (userId: string): Promise<UserProfile | null> => {
-        const userDoc = await getDoc(getUserDocRef(userId));
-        return userDoc.exists() ? userDoc.data() as UserProfile : null;
+        try {
+            const userDoc = await getDoc(getUserDocRef(userId));
+            if (userDoc.exists()) {
+                const data = userDoc.data();
+                // Asegurar que el perfil tenga todos los campos requeridos
+                return {
+                    displayName: data.displayName || 'Usuario',
+                    email: data.email || '',
+                    currency: data.currency || 'USD',
+                } as UserProfile;
+            }
+            return null;
+        } catch (error) {
+            console.error('Error al obtener el perfil de usuario:', error);
+            return null;
+        }
     },
 
     // Actualiza el perfil de un usuario

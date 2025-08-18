@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { userService } from '../services/userService';
+import { auth } from '../config/firebase';
 import type { UserProfile } from '../types';
 
 export const useUserProfile = (userId: string | null) => {
@@ -8,9 +9,22 @@ export const useUserProfile = (userId: string | null) => {
 
     const fetchProfile = useCallback(async (id: string) => {
         setLoading(true);
-        const userProfile = await userService.getUserProfile(id);
-        setProfile(userProfile);
-        setLoading(false);
+        try {
+            let userProfile = await userService.getUserProfile(id);
+            
+            // Si el perfil no existe, crearlo automáticamente
+            if (!userProfile && auth.currentUser) {
+                await userService.createUserProfile(auth.currentUser);
+                userProfile = await userService.getUserProfile(id);
+            }
+            
+            setProfile(userProfile);
+        } catch (error) {
+            console.error('Error al cargar el perfil:', error);
+            setProfile(null);
+        } finally {
+            setLoading(false);
+        }
     }, []);
 
     useEffect(() => {

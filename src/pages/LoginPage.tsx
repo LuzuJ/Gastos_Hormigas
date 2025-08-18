@@ -3,7 +3,7 @@ import { auth } from '../config/firebase';
 import { authService } from '../services/authService';
 import { ThemeToggler } from '../components/ThemeToggler/ThemeToggler';
 import { Eye, EyeOff } from 'lucide-react';
-import styles from './LoginPage.module.css'; // Crearemos este archivo a continuación
+import styles from './LoginPage.module.css';
 
 export const LoginPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
@@ -16,12 +16,40 @@ export const LoginPage: React.FC = () => {
 
   const handleGoogleSignIn = async () => {
     setLoading(true);
+    setError('');
     await authService.signInWithGoogle(auth.currentUser);
   };
 
   const handleGuestSignIn = async () => {
     setLoading(true);
+    setError('');
     await authService.signInAsGuest();
+  };
+
+  // Función para traducir códigos de error de Firebase a mensajes amigables
+  const getFriendlyErrorMessage = (errorCode: string): string => {
+    switch (errorCode) {
+      case 'auth/invalid-credential':
+      case 'auth/wrong-password':
+        return 'El correo electrónico o la contraseña son incorrectos.';
+      case 'auth/user-not-found':
+        return 'No se encontró ninguna cuenta con este correo electrónico.';
+      case 'auth/user-not-registered':
+        return 'Este usuario no está registrado en nuestro sistema. Por favor, regístrate primero.';
+      case 'auth/email-already-in-use':
+        return 'Este correo electrónico ya está registrado. Intenta iniciar sesión.';
+      case 'auth/weak-password':
+        return 'La contraseña es demasiado débil. Debe tener al menos 6 caracteres.';
+      case 'auth/invalid-email':
+        return 'El formato del correo electrónico no es válido.';
+      case 'auth/too-many-requests':
+        return 'Demasiados intentos fallidos. Intenta de nuevo más tarde.';
+      case 'auth/network-request-failed':
+        return 'Error de conexión. Verifica tu conexión a internet.';
+      default:
+        console.error("Firebase Auth Error Code:", errorCode);
+        return 'Ocurrió un error inesperado. Por favor, inténtalo de nuevo.';
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -35,24 +63,14 @@ export const LoginPage: React.FC = () => {
         : await authService.signInWithEmail(email, password);
       
       if (!result.success) {
-        // Traducimos el error de Firebase a un mensaje más amigable
-        const errorCode = (result.error as any)?.code || '';
-        if (errorCode === 'auth/invalid-credential') {
-          setError('El correo o la contraseña son incorrectos.');
-        } else if (errorCode === 'auth/email-already-in-use') {
-          setError('Este correo electrónico ya está registrado.');
-        } else {
-          setError('Ocurrió un error. Por favor, inténtalo de nuevo.');
-        }
+        setError(getFriendlyErrorMessage(result.error as string));
+        setLoading(false);
       }
-      // Si el login es exitoso, onAuthStateChanged en App.tsx se encarga del resto
-      
-    } catch (err) {
-      // Este bloque es un seguro por si algo inesperado ocurre
-      setError('Ocurrió un error inesperado.');
-      console.error("Error en el formulario de login:", err);
-    } finally {
-      // Este bloque se ejecuta SIEMPRE, ya sea que haya éxito o error
+      // Si el inicio de sesión es exitoso, onAuthStateChanged en App.tsx se encarga del resto.
+      // No cambiamos setLoading(false) aquí para que se mantenga el estado de carga hasta la redirección
+    } catch (error) {
+      console.error('Error inesperado en handleSubmit:', error);
+      setError('Ocurrió un error inesperado. Por favor, inténtalo de nuevo.');
       setLoading(false);
     }
   };
@@ -69,13 +87,12 @@ export const LoginPage: React.FC = () => {
   return (
     <div className={styles.container}>
       <div className={styles.card}>
-        <div className={styles.togglerContainer}> {/* <-- 2. Añade este div contenedor */}
+        <div className={styles.togglerContainer}>
           <ThemeToggler />
         </div>
         <h1>{isSigningUp ? 'Crear Cuenta' : 'Iniciar Sesión'}</h1>
         <p>Tu asistente para controlar tus finanzas personales.</p>
 
-        {/* Formulario de Email y Contraseña */}
         <form onSubmit={handleSubmit} className={styles.form}>
           <input
             type="email"
@@ -87,7 +104,7 @@ export const LoginPage: React.FC = () => {
           />
           <div className={styles.passwordWrapper}>
             <input
-              type={showPassword ? 'text' : 'password'} // <-- Cambia el tipo dinámicamente
+              type={showPassword ? 'text' : 'password'}
               placeholder="Contraseña"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -112,7 +129,6 @@ export const LoginPage: React.FC = () => {
 
         <div className={styles.divider}>o</div>
 
-        {/* Botones de Google e Invitado */}
         <div className={styles.actions}>
           <button onClick={handleGoogleSignIn} className={styles.googleButton} disabled={loading}>
             Continuar con Google
@@ -122,10 +138,9 @@ export const LoginPage: React.FC = () => {
           </button>
         </div>
 
-        {/* Enlace para cambiar entre Login y Registro */}
         <p className={styles.toggleText}>
           {isSigningUp ? '¿Ya tienes una cuenta?' : '¿No tienes una cuenta?'}
-          <button onClick={() => setIsSigningUp(!isSigningUp)} className={styles.toggleButton}>
+          <button onClick={() => { setIsSigningUp(!isSigningUp); setError(''); }} className={styles.toggleButton}>
             {isSigningUp ? 'Inicia Sesión' : 'Regístrate'}
           </button>
         </p>

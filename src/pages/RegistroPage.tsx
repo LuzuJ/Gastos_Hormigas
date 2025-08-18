@@ -1,29 +1,32 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { useExpensesController } from '../hooks/useExpensesController';
+// 1. Eliminamos el controlador antiguo e importamos los hooks de contexto.
+import { useExpensesContext, useCategoriesContext } from '../contexts/AppContext';
 import { ExpenseList } from '../components/ExpenseList/ExpenseList';
 import { EditExpenseModal } from '../components/modals/EditExpenseModal/EditExpenseModal';
 import { ExpenseFilter, type DateRange, type FilterPeriod } from '../components/ExpenseFilter/ExpenseFilter';
 import { Download } from 'lucide-react'; 
 import styles from './RegistroPage.module.css';
 
-
 const formatDate = (date: Date) => date.toISOString().split('T')[0];
+
 interface RegistroPageProps {
-  userId: string | null;
+  // No necesita userId ya que usa contextos
 }
 
-export const RegistroPage: React.FC<RegistroPageProps> = ({ userId }) => {
+export const RegistroPage: React.FC<RegistroPageProps> = () => {
+  // 2. Consumimos los datos y funciones directamente de sus respectivos contextos.
   const { 
     expenses, 
-    categories, 
-    loading, 
+    loadingExpenses, // Usamos el nuevo estado de carga
     updateExpense, 
     deleteExpense,
     isEditing, 
     setIsEditing,
-    addSubCategory
-  } = useExpensesController(userId);
+  } = useExpensesContext();
+  
+  const { categories, addSubCategory } = useCategoriesContext();
 
+  // El resto del estado local y la lógica del componente se mantiene intacta.
   const [searchTerm, setSearchTerm] = useState('');
   const [filterPeriod, setFilterPeriod] = useState<FilterPeriod>('last7days');
   const [dateRange, setDateRange] = useState<DateRange>({ startDate: null, endDate: null });
@@ -111,7 +114,6 @@ export const RegistroPage: React.FC<RegistroPageProps> = ({ userId }) => {
     document.body.removeChild(link);
   };
 
-
   return (
     <div>
       <div className={styles.pageHeader}>
@@ -121,8 +123,6 @@ export const RegistroPage: React.FC<RegistroPageProps> = ({ userId }) => {
         </button>
       </div>
       
-      
-      {/* 1. Mueve el ExpenseFilter aquí, arriba de la lista */}
       <div style={{ marginTop: '2rem' }}>
         <ExpenseFilter 
           searchTerm={searchTerm}
@@ -138,12 +138,12 @@ export const RegistroPage: React.FC<RegistroPageProps> = ({ userId }) => {
       </div>
 
       <div style={{ marginTop: '2rem' }}>
-        {/* 2. Pasa la lista ya filtrada al componente ExpenseList */}
         <ExpenseList 
           expenses={filteredExpenses} 
           categories={categories}
           onDelete={deleteExpense} 
-          loading={loading}
+          // 3. Pasamos el nuevo estado de carga al componente de la lista.
+          loading={loadingExpenses}
           onEdit={(expense) => setIsEditing(expense)} 
         />
       </div>
@@ -159,4 +159,4 @@ export const RegistroPage: React.FC<RegistroPageProps> = ({ userId }) => {
       )}
     </div>
   );
-}
+};

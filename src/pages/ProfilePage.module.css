@@ -1,5 +1,22 @@
 .container { max-width: 600px; margin: 0 auto; }
 
+.errorContainer {
+    background-color: var(--background-card);
+    padding: 2rem;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.errorContainer p {
+    color: var(--danger-color);
+    margin: 0;
+}
+
 .header {
     display: flex;
     justify-content: space-between;
@@ -77,4 +94,71 @@
   .planningGrid {
     grid-template-columns: 1fr;
   }
+}
+
+.guestForm {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.guestIcon {
+    color: var(--primary-accent);
+    margin-bottom: 1rem;
+}
+.guestForm h3 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.5rem;
+}
+.guestForm p {
+    color: var(--text-secondary);
+    max-width: 400px;
+    margin-bottom: 2rem;
+}
+.guestActions {
+    width: 100%;
+    max-width: 350px;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+.passwordWrapper {
+    position: relative;
+    width: 100%;
+}
+.passwordToggleInForm {
+    position: absolute;
+    right: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-secondary);
+}
+.divider {
+  margin: 1.5rem 0;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  font-weight: 600;
+  width: 100%;
+  max-width: 350px;
+}
+.googleButton {
+    border: 1px solid var(--border-color);
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    font-weight: 500;
+    width: 100%;
+    max-width: 350px;
+    background-color: var(--background-secondary);
+    color: var(--text-primary);
+}
+.error {
+    color: var(--danger-color);
+    font-size: 0.875rem;
+    width: 100%;
 }

@@ -1,0 +1,159 @@
+/* Contenedor principal para centrar la tarjeta de autenticación */
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: var(--background-primary);
+  padding: 1rem;
+}
+
+/* La tarjeta que contiene el formulario */
+.card {
+  background-color: var(--background-card);
+  padding: 2.5rem;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  width: 100%;
+  max-width: 420px;
+  position: relative; 
+}
+
+.card h1 {
+  margin-top: 0;
+  color: var(--text-headings);
+  font-size: 1.75rem;
+}
+
+.card p {
+    color: var(--text-secondary);
+}
+
+/* Formulario principal */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--border-color);
+  background-color: var(--background-primary);
+  color: var(--text-primary);
+  border-radius: 0.5rem;
+  font-size: 1rem;
+}
+
+/* Contenedor para el input de contraseña y el botón de mostrar/ocultar */
+.passwordWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.passwordWrapper .input {
+  padding-right: 2.5rem; /* Espacio para el icono */
+}
+
+.passwordToggle {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-secondary);
+  padding: 0.25rem;
+}
+
+/* Botón de acción principal (Iniciar Sesión, Registrarse) */
+.primaryButton {
+  background-color: var(--primary-accent);
+  color: white;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  border-radius: 0.5rem;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+.primaryButton:hover:not(:disabled) {
+    background-color: var(--primary-accent-hover);
+}
+.primaryButton:disabled {
+  background-color: var(--primary-accent-disabled);
+  cursor: not-allowed;
+}
+
+/* Divisor "o" */
+.divider {
+  margin: 1.5rem 0;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+/* Contenedor para botones de Google e Invitado */
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.googleButton, .guestButton {
+  border: 1px solid var(--border-color);
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  font-weight: 500;
+  background-color: var(--background-secondary);
+  color: var(--text-primary);
+}
+.googleButton:hover, .guestButton:hover {
+    background-color: var(--background-hover);
+}
+.googleButton:disabled, .guestButton:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Texto para cambiar entre login y registro */
+.toggleText {
+  margin-top: 1.5rem;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+.toggleButton {
+  background: none;
+  border: none;
+  color: var(--primary-accent);
+  font-weight: 600;
+  cursor: pointer;
+  margin-left: 0.25rem;
+}
+
+/* Mensaje de error */
+.error {
+  color: var(--danger-color);
+  background-color: var(--danger-color-light);
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  text-align: center;
+}
+
+/* Contenedor para el ThemeToggler */
+.togglerContainer {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+}

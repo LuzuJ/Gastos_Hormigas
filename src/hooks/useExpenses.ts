@@ -5,13 +5,25 @@ import type { Expense, ExpenseFormData } from '../types';
 export const useExpenses = (userId: string | null) => {
     const [expenses, setExpenses] = useState<Expense[]>([]);
     const [isEditing, setIsEditing] = useState<Expense | null>(null);
+    // 1. Añadimos un estado para saber si los gastos se están cargando.
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         if (!userId) {
             setExpenses([]);
+            setLoading(false); // Si no hay usuario, dejamos de cargar.
             return;
         }
-        const unsubscribe = expensesService.onExpensesUpdate(userId, (data) => setExpenses(data));
+        setLoading(true); // Empezamos a cargar al obtener un userId.
+        const unsubscribe = expensesService.onExpensesUpdate(userId, (data, error) => {
+            if (error) {
+                console.error("Error al obtener los gastos:", error);
+                setLoading(false); // Dejamos de cargar incluso si hay un error.
+                return;
+            }
+            setExpenses(data);
+            setLoading(false); // Dejamos de cargar cuando los datos llegan.
+        });
         return () => unsubscribe();
     }, [userId]);
 
@@ -53,6 +65,8 @@ export const useExpenses = (userId: string | null) => {
         expenses,
         isEditing,
         setIsEditing,
+        // 2. Exportamos el estado de carga con un nombre descriptivo.
+        loadingExpenses: loading,
         totalExpensesToday,
         addExpense,
         updateExpense,

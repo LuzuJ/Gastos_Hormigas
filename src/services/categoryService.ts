@@ -1,77 +1,128 @@
 import { db } from '../config/firebase';
 import {
     collection, onSnapshot, addDoc, doc, deleteDoc,
-    query, writeBatch, getDocs, updateDoc, type DocumentData, type Unsubscribe,
+    query, writeBatch, getDocs, updateDoc, type Unsubscribe,
     arrayUnion,
     arrayRemove
 } from 'firebase/firestore';
 import type { Category, SubCategory } from '../types';
-import { FIRESTORE_PATHS } from '../constants';
-import { nanoid } from 'nanoid'; 
+import { FIRESTORE_PATHS, defaultCategoriesStructure } from '../constants';
+import { nanoid } from 'nanoid';
 
-const appId = import.meta.env.VITE_FIREBASE_PROJECT_ID || 'default-app';
-type CategoriesCallback = (data: Category[]) => void;
-
+/**
+ * Obtiene la referencia a la colección de categorías de un usuario específico.
+ * @param userId - El ID del usuario.
+ * @returns Una referencia a la colección de Firestore.
+ */
 const getCategoriesCollectionRef = (userId: string) => 
     collection(db, FIRESTORE_PATHS.USERS, userId, FIRESTORE_PATHS.CATEGORIES);
 
-const getSubCategoriesCollectionRef = (userId: string, categoryId: string) => 
-    collection(db, FIRESTORE_PATHS.USERS, userId, FIRESTORE_PATHS.CATEGORIES, categoryId, FIRESTORE_PATHS.SUBCATEGORIES);
-
-// Definimos las categorías y subcategorías que se crearán para nuevos usuarios
-const defaultCategoriesStructure = [
-    { name: 'Alimento', icon: 'Pizza', color: '#FFC300', subcategories: ['Supermercado', 'Restaurante', 'Delivery'] },
-    { name: 'Transporte', icon: 'Car', color: '#FF5733', subcategories: ['Gasolina', 'Transporte Público', 'Taxi/Uber'] },
-    { name: 'Hogar', icon: 'Home', color: '#C70039', subcategories: ['Servicios (Luz, Agua)', 'Decoración', 'Reparaciones'] },
-    { name: 'Entretenimiento', icon: 'Gamepad2', color: '#900C3F', subcategories: ['Suscripciones', 'Cine', 'Salidas'] },
-    { name: 'Salud', icon: 'HeartPulse', color: '#581845', subcategories: ['Farmacia', 'Consulta Médica'] },
-    { name: 'Otro', icon: 'ShoppingBag', color: '#2a9d8f', subcategories: ['General'] }
-];
-
+// --- Objeto del Servicio ---
 
 export const categoryService = {
+    /**
+     * Crea las categorías por defecto para un usuario nuevo si no tiene ninguna.
+     */
     initializeDefaultCategories: async (userId: string): Promise<boolean> => {
         const categoriesRef = getCategoriesCollectionRef(userId);
-        const q = query(categoriesRef);
-        const existingCategories = await getDocs(q);
+        const existingCategories = await getDocs(query(categoriesRef));
         
         if (existingCategories.empty) {
             const batch = writeBatch(db);
             defaultCategoriesStructure.forEach(category => {
                 const categoryDocRef = doc(categoriesRef);
-                batch.set(categoryDocRef, {
-                    name: category.name,
-                    icon: category.icon, 
-                    color: category.color, 
+                const subcategories: SubCategory[] = category.subcategories.map(subName => ({
+                    id: nanoid(10), // Usamos nanoid para generar IDs consistentes y únicos
+                    name: subName
+                }));
+
+                batch.set(categoryDocRef, { 
+                    name: category.name, 
                     isDefault: true,
-                    subcategories: category.subcategories.map(subName => ({
-                        id: nanoid(10), 
-                        name: subName
-                    }))
+                    icon: category.icon,
+                    color: category.color,
+                    subcategories: subcategories
                 });
             });
             await batch.commit();
             console.log("Categorías por defecto inicializadas para el usuario:", userId);
-            return true;
+            return true; 
         }
-        return false;
+        return false; 
     },
-    onCategoriesUpdate: (userId: string, callback: CategoriesCallback): Unsubscribe => {
+
+    /**
+     * Se suscribe a los cambios en las categorías de un usuario y ejecuta un callback.
+     */
+    onCategoriesUpdate: (userId: string, callback: (data: Category[]) => void): Unsubscribe => {
         const q = query(getCategoriesCollectionRef(userId));
-        return onSnapshot(q, (snapshot: DocumentData) => {
-            const categories = snapshot.docs.map((doc: DocumentData) => ({
+        return onSnapshot(q, (snapshot) => {
+            const categories = snapshot.docs.map((doc) => ({
                 ...doc.data(),
                 id: doc.id,
                 subcategories: doc.data().subcategories || [] 
             } as Category));
             
-            callback(categories.sort((a: Category, b: Category) => a.name.localeCompare(b.name)));
+            callback(categories.sort((a, b) => a.name.localeCompare(b.name)));
         });
     },
-     updateCategoryBudget: (userId: string, categoryId: string, budget: number) => {
+
+    /**
+     * Añade una nueva categoría para un usuario.
+     */
+    addCategory: (userId: string, categoryName: string) => {
+        return addDoc(getCategoriesCollectionRef(userId), { 
+            name: categoryName, 
+            isDefault: false,
+            subcategories: [],
+            icon: 'Tag', // Icono por defecto
+            color: '#607D8B' // Color por defecto
+        });
+    },
+
+    /**
+     * Elimina una categoría por su ID.
+     */
+    deleteCategory: (userId: string, categoryId: string) => {
+        return deleteDoc(doc(getCategoriesCollectionRef(userId), categoryId));
+    },
+
+    /**
+     * Añade una nueva subcategoría a una categoría existente.
+     */
+    addSubCategory: (userId: string, categoryId: string, subCategoryName: string) => {
+        const categoryDocRef = doc(getCategoriesCollectionRef(userId), categoryId);
+        const newSubCategory: SubCategory = {
+            id: nanoid(10),
+            name: subCategoryName
+        };
+        return updateDoc(categoryDocRef, {
+            subcategories: arrayUnion(newSubCategory)
+        });
+    },
+
+    /**
+     * CORRECCIÓN: La firma de la función ahora es más simple.
+     * Solo necesita el objeto completo de la subcategoría a eliminar.
+     */
+    deleteSubCategory: (userId: string, categoryId: string, subCategoryToDelete: SubCategory) => {
+        const categoryDocRef = doc(getCategoriesCollectionRef(userId), categoryId);
+        return updateDoc(categoryDocRef, {
+            subcategories: arrayRemove(subCategoryToDelete)
+        });
+    },
+
+    /**
+     * Actualiza el presupuesto de una categoría.
+     */
+    updateCategoryBudget: (userId: string, categoryId: string, budget: number) => {
         const categoryDocRef = doc(getCategoriesCollectionRef(userId), categoryId);
         return updateDoc(categoryDocRef, { budget });
     },
+
+    /**
+     * Actualiza el estilo (icono y color) de una categoría.
+     */
     updateCategoryStyle: (userId: string, categoryId: string, style: { icon: string; color: string }) => {
         const categoryDocRef = doc(getCategoriesCollectionRef(userId), categoryId);
         return updateDoc(categoryDocRef, {
@@ -79,32 +130,4 @@ export const categoryService = {
             color: style.color
         });
     },
-    addCategory: (userId: string, categoryName: string) => {
-        return addDoc(getCategoriesCollectionRef(userId), {
-            name: categoryName,
-            isDefault: false,
-            subcategories: [],
-            icon: 'Tag', 
-            color: '#8d99ae'
-        });
-    },
-    deleteCategory: (userId: string, categoryId: string) => {
-        return deleteDoc(doc(getCategoriesCollectionRef(userId), categoryId));
-    },
-    addSubCategory: (userId: string, categoryId: string, subCategoryName: string) => {
-        const categoryDocRef = doc(getCategoriesCollectionRef(userId), categoryId);
-        const newSubCategory: SubCategory = {
-            id: nanoid(10), 
-            name: subCategoryName
-        };
-        return updateDoc(categoryDocRef, {
-            subcategories: arrayUnion(newSubCategory)
-        });
-    },
-    deleteSubCategory: (userId: string, categoryId: string, subCategoryId: string, subCategoryName: string) => {
-        const categoryDocRef = doc(getCategoriesCollectionRef(userId), categoryId);
-        return updateDoc(categoryDocRef, {
-            subcategories: arrayRemove({ id: subCategoryId, name: subCategoryName })
-        });
-    }
 };
