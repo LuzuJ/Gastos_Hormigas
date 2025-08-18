@@ -23,7 +23,6 @@ export const userService = {
                     currency: 'USD' as const,
                 };
                 await setDoc(userDocRef, profileData);
-                console.log('Perfil de usuario creado exitosamente');
             }
         } catch (error) {
             console.error('Error al crear el perfil de usuario:', error);

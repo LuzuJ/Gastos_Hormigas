@@ -47,44 +47,36 @@ export default function App() {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-      console.log('🔄 Auth state changed:', currentUser ? currentUser.uid : 'null');
       setIsValidatingUser(true);
       
       if (currentUser && !currentUser.isAnonymous) {
         // Para usuarios registrados, verificar que tengan perfil completo
-        console.log('👤 Verificando perfil para usuario registrado');
         try {
           const { userService } = await import('./services/userService');
           const userProfile = await userService.getUserProfile(currentUser.uid);
-          console.log('📋 Perfil en App.tsx:', userProfile ? 'ENCONTRADO' : 'NO ENCONTRADO');
           
           if (!userProfile) {
             // Intentar crear el perfil automáticamente en lugar de rechazar
-            console.log('🔧 Intentando crear perfil automáticamente');
             await userService.createUserProfile(currentUser);
             const newProfile = await userService.getUserProfile(currentUser.uid);
             
             if (newProfile) {
-              console.log('✅ Perfil creado exitosamente');
               setUser(currentUser);
             } else {
               // Solo rechazar si realmente no se puede crear el perfil
-              console.log('❌ No se pudo crear perfil, cerrando sesión');
               await signOut(auth);
               setUser(null);
             }
           } else {
-            console.log('✅ Perfil válido, permitiendo acceso');
             setUser(currentUser);
           }
         } catch (error) {
-          console.error('🚫 Error verificando perfil de usuario:', error);
+          console.error('Error verificando perfil de usuario:', error);
           // En caso de error, permitir el acceso pero loggear el problema
           setUser(currentUser);
         }
       } else {
         // Usuario anónimo o no autenticado
-        console.log('👤 Usuario anónimo o no autenticado');
         setUser(currentUser);
       }
       

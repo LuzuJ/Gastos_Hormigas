@@ -45,7 +45,6 @@ export const categoryService = {
                 });
             });
             await batch.commit();
-            console.log("Categorías por defecto inicializadas para el usuario:", userId);
             return true; 
         }
         return false; 

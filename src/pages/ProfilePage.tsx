@@ -35,7 +35,6 @@ const RegisteredUserProfile: React.FC = () => {
             setMessage('¡Perfil guardado con éxito!');
             setTimeout(() => setMessage(''), 3000);
         } catch (error) {
-            console.error("Error al guardar el perfil:", error);
             setMessage('Error al guardar. Inténtalo de nuevo.');
         }
     };
@@ -137,7 +136,7 @@ const GuestProfile: React.FC<{ setCurrentPage: (page: Page) => void }> = ({ setC
             <div className={`${styles.form} ${styles.guestForm}`}>
                 <UserPlus size={48} className={styles.guestIcon} />
                 <h3>Guarda tu Progreso</h3>
-                <p>Crea una cuenta gratuita para guardar todos tus gastos y planificación. ¡Tus datos actuales se conservarán!</p>
+                <p>Crea una cuenta gratuita para guardar todos tus gastos y planificación financiera. ¡Tu información actual se conservará automáticamente!</p>
                 
                 <form onSubmit={handleEmailSignUp} className={styles.guestActions}>
                     <input className={styles.input} type="email" placeholder="Correo electrónico" value={email} onChange={e => setEmail(e.target.value)} required />

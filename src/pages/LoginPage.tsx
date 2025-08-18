@@ -47,7 +47,6 @@ export const LoginPage: React.FC = () => {
       case 'auth/network-request-failed':
         return 'Error de conexión. Verifica tu conexión a internet.';
       default:
-        console.error("Firebase Auth Error Code:", errorCode);
         return 'Ocurrió un error inesperado. Por favor, inténtalo de nuevo.';
     }
   };
@@ -69,7 +68,6 @@ export const LoginPage: React.FC = () => {
       // Si el inicio de sesión es exitoso, onAuthStateChanged en App.tsx se encarga del resto.
       // No cambiamos setLoading(false) aquí para que se mantenga el estado de carga hasta la redirección
     } catch (error) {
-      console.error('Error inesperado en handleSubmit:', error);
       setError('Ocurrió un error inesperado. Por favor, inténtalo de nuevo.');
       setLoading(false);
     }

@@ -5,14 +5,14 @@ import type { Category } from '../types';
 
 export const automationService = {
   checkAndPostFixedExpenses: async (userId: string, categories: Category[]) => {
-    console.log('Verificando gastos fijos para registrar...');
-    const today = new Date();
-    const currentDay = today.getDate();
-    const currentMonth = today.getMonth(); // 0-11
-    const currentYear = today.getFullYear();
-    const currentMonthMarker = `${currentYear}-${currentMonth}`;
-
     try {
+      // Obtener gastos fijos del usuario
+      const today = new Date();
+      const currentDay = today.getDate();
+      const currentMonth = today.getMonth(); // 0-11
+      const currentYear = today.getFullYear();
+      const currentMonthMarker = `${currentYear}-${currentMonth}`;
+
       const fixedExpenses = await fixedExpenseService.getFixedExpensesOnce(userId);
 
       for (const fixed of fixedExpenses) {
@@ -20,8 +20,6 @@ export const automationService = {
         const isDue = currentDay >= fixed.dayOfMonth;
 
         if (!hasBeenPostedThisMonth && isDue) {
-          console.log(`Registrando gasto fijo: ${fixed.description}`);
-          
           const category = categories.find(c => c.id === fixed.category);
           const subCategory = category?.subcategories.find(s => s.name === 'Gasto Fijo') || category?.subcategories[0];
 

@@ -83,18 +83,14 @@ export const authService = {
 
   signInWithEmail: async (email: string, password: string) => {
     try {
-      console.log('🔐 Intentando autenticar:', email);
       const result = await signInWithEmailAndPassword(auth, email, password);
-      console.log('✅ Firebase Auth exitoso:', result.user.uid);
       
       // Verificar que el usuario tenga un perfil creado en nuestra base de datos
       const userProfile = await userService.getUserProfile(result.user.uid);
-      console.log('📋 Perfil encontrado:', userProfile ? 'SÍ' : 'NO');
       
       if (!userProfile) {
         // Si el usuario fue autenticado por Firebase pero no tiene perfil en nuestra DB,
         // esto indica que es un usuario que no se registró correctamente
-        console.log('❌ Usuario sin perfil, cerrando sesión');
         await signOut(auth);
         return { 
           success: false, 
@@ -102,11 +98,9 @@ export const authService = {
         };
       }
       
-      console.log('🎉 Inicio de sesión exitoso');
       return { success: true, user: result.user };
     } catch (error) {
       const authError = error as AuthError;
-      console.log('🚫 Error de autenticación:', authError.code);
       
       // Manejar específicamente los errores de credenciales incorrectas
       if (authError.code === 'auth/user-not-found' || 
