@@ -1,8 +1,11 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import type { Liability } from '../../types';
-import { Trash2, CreditCard, DollarSign, Calendar, TrendingDown, Plus, Target } from 'lucide-react';
+import { Trash2, CreditCard, DollarSign, Calendar, Plus, Edit3, Target, TrendingDown, List, BarChart3 } from 'lucide-react';
+import { DebtPaymentPlanner } from './DebtPaymentPlanner';
+import styles from './DebtManager.module.css';
 
 type PaymentType = 'regular' | 'extra' | 'interest_only';
+type ViewMode = 'list' | 'planner';
 
 interface DebtManagerProps {
   liabilities: Liability[];
@@ -15,392 +18,47 @@ interface DebtManagerProps {
   onUpdateExtraBudget?: (amount: number) => void;
 }
 
-const LiabilityForm: React.FC<{ 
-  onAdd: (data: any) => void; 
-  onClose: () => void; 
-}> = ({ onAdd, onClose }) => {
-  const [formData, setFormData] = useState({
-    name: '',
-    amount: '',
-    originalAmount: '',
-    type: 'credit_card' as const,
-    interestRate: '',
-    monthlyPayment: '',
-    dueDate: '',
-    description: ''
-  });
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const amount = parseFloat(formData.amount);
-    const originalAmount = parseFloat(formData.originalAmount) || amount;
-    const interestRate = parseFloat(formData.interestRate) || undefined;
-    const monthlyPayment = parseFloat(formData.monthlyPayment) || undefined;
-
-    if (formData.name.trim() && !isNaN(amount) && amount > 0) {
-      onAdd({
-        name: formData.name.trim(),
-        amount,
-        originalAmount,
-        type: formData.type,
-        interestRate,
-        monthlyPayment,
-        dueDate: formData.dueDate || undefined,
-        description: formData.description || undefined
-      });
-      onClose();
-    }
-  };
-
-  const inputStyle = {
-    width: '100%',
-    padding: '0.5rem',
-    border: '1px solid #ddd',
-    borderRadius: '4px',
-    fontSize: '1rem'
-  };
-
-  const labelStyle = {
-    display: 'block',
-    marginBottom: '0.5rem',
-    fontWeight: 'bold',
-    color: '#333'
-  };
-
-  const formGroupStyle = {
-    marginBottom: '1rem'
-  };
-
-  return (
-    <div style={{
-      position: 'fixed',
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      backgroundColor: 'rgba(0,0,0,0.5)',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      zIndex: 1000
-    }}>
-      <div style={{
-        backgroundColor: 'white',
-        padding: '2rem',
-        borderRadius: '8px',
-        width: '90%',
-        maxWidth: '600px',
-        maxHeight: '90vh',
-        overflow: 'auto'
-      }}>
-        <h3 style={{ marginTop: 0 }}>Agregar Nueva Deuda</h3>
-        
-        <form onSubmit={handleSubmit}>
-          <div style={formGroupStyle}>
-            <label style={labelStyle}>Nombre de la deuda:</label>
-            <input
-              type="text"
-              value={formData.name}
-              onChange={e => setFormData({...formData, name: e.target.value})}
-              placeholder="Ej: Tarjeta de Crédito VISA"
-              required
-              style={inputStyle}
-            />
-          </div>
-
-          <div style={{ display: 'flex', gap: '1rem', marginBottom: '1rem' }}>
-            <div style={{ flex: 1 }}>
-              <label style={labelStyle}>Monto actual:</label>
-              <input
-                type="number"
-                value={formData.amount}
-                onChange={e => setFormData({...formData, amount: e.target.value})}
-                placeholder="0.00"
-                step="0.01"
-                min="0"
-                required
-                style={inputStyle}
-              />
-            </div>
-
-            <div style={{ flex: 1 }}>
-              <label style={labelStyle}>Monto original (opcional):</label>
-              <input
-                type="number"
-                value={formData.originalAmount}
-                onChange={e => setFormData({...formData, originalAmount: e.target.value})}
-                placeholder="0.00"
-                step="0.01"
-                min="0"
-                style={inputStyle}
-              />
-            </div>
-          </div>
-
-          <div style={formGroupStyle}>
-            <label style={labelStyle}>Tipo de deuda:</label>
-            <select 
-              value={formData.type} 
-              onChange={e => setFormData({...formData, type: e.target.value as any})}
-              style={inputStyle}
-            >
-              <option value="credit_card">Tarjeta de Crédito</option>
-              <option value="loan">Préstamo Personal</option>
-              <option value="mortgage">Hipoteca</option>
-              <option value="student_loan">Préstamo Estudiantil</option>
-              <option value="other">Otro</option>
-            </select>
-          </div>
-
-          <div style={{ display: 'flex', gap: '1rem', marginBottom: '1rem' }}>
-            <div style={{ flex: 1 }}>
-              <label style={labelStyle}>Tasa de interés (% anual):</label>
-              <input
-                type="number"
-                value={formData.interestRate}
-                onChange={e => setFormData({...formData, interestRate: e.target.value})}
-                placeholder="15.5"
-                step="0.1"
-                min="0"
-                max="100"
-                style={inputStyle}
-              />
-            </div>
-
-            <div style={{ flex: 1 }}>
-              <label style={labelStyle}>Pago mensual mínimo:</label>
-              <input
-                type="number"
-                value={formData.monthlyPayment}
-                onChange={e => setFormData({...formData, monthlyPayment: e.target.value})}
-                placeholder="0.00"
-                step="0.01"
-                min="0"
-                style={inputStyle}
-              />
-            </div>
-          </div>
-
-          <div style={formGroupStyle}>
-            <label style={labelStyle}>Fecha de vencimiento:</label>
-            <input
-              type="date"
-              value={formData.dueDate}
-              onChange={e => setFormData({...formData, dueDate: e.target.value})}
-              style={inputStyle}
-            />
-          </div>
-
-          <div style={formGroupStyle}>
-            <label style={labelStyle}>Descripción:</label>
-            <input
-              type="text"
-              value={formData.description}
-              onChange={e => setFormData({...formData, description: e.target.value})}
-              placeholder="Información adicional..."
-              style={inputStyle}
-            />
-          </div>
-
-          <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end' }}>
-            <button 
-              type="button" 
-              onClick={onClose}
-              style={{
-                padding: '0.75rem 1.5rem',
-                backgroundColor: '#6c757d',
-                color: 'white',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: 'pointer'
-              }}
-            >
-              Cancelar
-            </button>
-            <button 
-              type="submit"
-              style={{
-                padding: '0.75rem 1.5rem',
-                backgroundColor: '#28a745',
-                color: 'white',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: 'pointer'
-              }}
-            >
-              Agregar Deuda
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-  );
-};
-
-interface PaymentModalProps {
-  liability: Liability;
-  onClose: () => void;
-  onMakePayment: (amount: number, paymentType: PaymentType, description?: string) => void;
+interface DebtFormData {
+  name: string;
+  amount: number;
+  type: string;
+  interestRate: number;
+  monthlyPayment: number;
+  description?: string;
 }
-
-const PaymentModal: React.FC<PaymentModalProps> = ({ liability, onClose, onMakePayment }) => {
-  const [amount, setAmount] = useState('');
-  const [paymentType, setPaymentType] = useState<PaymentType>('regular');
-  const [description, setDescription] = useState('');
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const numAmount = parseFloat(amount);
-    if (!isNaN(numAmount) && numAmount > 0) {
-      onMakePayment(numAmount, paymentType, description || undefined);
-      onClose();
-    }
-  };
-
-  const inputStyle = {
-    width: '100%',
-    padding: '0.5rem',
-    border: '1px solid #ddd',
-    borderRadius: '4px',
-    fontSize: '1rem'
-  };
-
-  const labelStyle = {
-    display: 'block',
-    marginBottom: '0.5rem',
-    fontWeight: 'bold',
-    color: '#333'
-  };
-
-  const formGroupStyle = {
-    marginBottom: '1rem'
-  };
-
-  return (
-    <div style={{
-      position: 'fixed',
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      backgroundColor: 'rgba(0,0,0,0.5)',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      zIndex: 1000
-    }}>
-      <div style={{
-        backgroundColor: 'white',
-        padding: '2rem',
-        borderRadius: '8px',
-        width: '90%',
-        maxWidth: '500px',
-        maxHeight: '90vh',
-        overflow: 'auto'
-      }}>
-        <h3 style={{ marginTop: 0 }}>Realizar Pago - {liability.name}</h3>
-        <p style={{ color: '#666', marginBottom: '1.5rem' }}>
-          Deuda actual: <strong>${liability.amount.toFixed(2)}</strong>
-        </p>
-        
-        <form onSubmit={handleSubmit}>
-          <div style={formGroupStyle}>
-            <label style={labelStyle}>Monto del pago:</label>
-            <input
-              type="number"
-              value={amount}
-              onChange={e => setAmount(e.target.value)}
-              placeholder="0.00"
-              step="0.01"
-              min="0"
-              required
-              style={inputStyle}
-            />
-          </div>
-
-          <div style={formGroupStyle}>
-            <label style={labelStyle}>Tipo de pago:</label>
-            <select 
-              value={paymentType} 
-              onChange={e => setPaymentType(e.target.value as PaymentType)}
-              style={inputStyle}
-            >
-              <option value="regular">Pago Regular</option>
-              <option value="extra">Pago Extra (reduce capital)</option>
-              <option value="interest_only">Solo Intereses</option>
-            </select>
-          </div>
-
-          <div style={formGroupStyle}>
-            <label style={labelStyle}>Descripción (opcional):</label>
-            <input
-              type="text"
-              value={description}
-              onChange={e => setDescription(e.target.value)}
-              placeholder="Ej: Pago mensual abril"
-              style={inputStyle}
-            />
-          </div>
-
-          <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end' }}>
-            <button 
-              type="button" 
-              onClick={onClose}
-              style={{
-                padding: '0.75rem 1.5rem',
-                backgroundColor: '#6c757d',
-                color: 'white',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: 'pointer'
-              }}
-            >
-              Cancelar
-            </button>
-            <button 
-              type="submit"
-              style={{
-                padding: '0.75rem 1.5rem',
-                backgroundColor: '#28a745',
-                color: 'white',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: 'pointer'
-              }}
-            >
-              Realizar Pago
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-  );
-};
 
 const DebtManager: React.FC<DebtManagerProps> = ({ 
   liabilities, 
   onAddLiability, 
-  onDeleteLiability, 
+  onDeleteLiability,  
   onUpdateLiability,
   onMakePayment,
   getDebtAnalysis,
   monthlyExtraBudget = 0,
   onUpdateExtraBudget = () => {}
 }) => {
+  const [viewMode, setViewMode] = useState<ViewMode>('list');
   const [showAddForm, setShowAddForm] = useState(false);
-  const [selectedDebt, setSelectedDebt] = useState<Liability | null>(null);
-  const [currentView, setCurrentView] = useState<'list' | 'planner'>('list');
-
-  const debtAnalysis = typeof getDebtAnalysis === 'function' ? getDebtAnalysis() : [];
+  const [editingDebt, setEditingDebt] = useState<string | null>(null);
+  const [formData, setFormData] = useState<DebtFormData>({
+    name: '',
+    amount: 0,
+    type: 'credit_card',
+    interestRate: 0,
+    monthlyPayment: 0,
+    description: ''
+  });
 
   const formatCurrency = (value: number) => {
-    return value.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+    return value.toLocaleString('es-ES', { style: 'currency', currency: 'EUR' });
   };
 
   const getDebtTypeIcon = (type: string) => {
     switch (type) {
       case 'credit_card': return <CreditCard size={20} />;
       case 'mortgage': return <Calendar size={20} />;
+      case 'loan': return <DollarSign size={20} />;
+      case 'student_loan': return <Target size={20} />;
       default: return <DollarSign size={20} />;
     }
   };
@@ -416,56 +74,140 @@ const DebtManager: React.FC<DebtManagerProps> = ({
     return labels[type as keyof typeof labels] || 'Deuda';
   };
 
+  const calculateMonthsToPayOff = (debt: Liability) => {
+    if (!debt.monthlyPayment || !debt.interestRate || debt.monthlyPayment <= 0) {
+      return Infinity;
+    }
+
+    const monthlyRate = (debt.interestRate || 0) / 100 / 12;
+    const monthlyPayment = debt.monthlyPayment;
+    const balance = debt.amount;
+
+    if (monthlyRate === 0) {
+      return Math.ceil(balance / monthlyPayment);
+    }
+
+    if (monthlyPayment <= balance * monthlyRate) {
+      return Infinity; // Nunca se pagará
+    }
+
+    const months = -Math.log(1 - (balance * monthlyRate) / monthlyPayment) / Math.log(1 + monthlyRate);
+    return Math.ceil(months);
+  };
+
+  const formatTimeToPayOff = (months: number) => {
+    if (months === Infinity) return 'Nunca';
+    if (months <= 12) return `${months} meses`;
+    
+    const years = Math.floor(months / 12);
+    const remainingMonths = months % 12;
+    
+    if (remainingMonths === 0) {
+      return `${years} ${years === 1 ? 'año' : 'años'}`;
+    }
+    
+    return `${years}a ${remainingMonths}m`;
+  };
+
+  const getTotalDebt = () => {
+    return liabilities.reduce((total, debt) => total + debt.amount, 0);
+  };
+
+  const getTotalMonthlyPayments = () => {
+    return liabilities.reduce((total, debt) => total + (debt.monthlyPayment || 0), 0);
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (editingDebt) {
+      onUpdateLiability(editingDebt, formData);
+      setEditingDebt(null);
+    } else {
+      onAddLiability({
+        ...formData,
+        id: Date.now().toString(),
+        category: 'debt'
+      });
+    }
+    
+    setFormData({
+      name: '',
+      amount: 0,
+      type: 'credit_card',
+      interestRate: 0,
+      monthlyPayment: 0,
+      description: ''
+    });
+    setShowAddForm(false);
+  };
+
+  const handleEdit = (debt: Liability) => {
+    setFormData({
+      name: debt.name,
+      amount: debt.amount,
+      type: debt.type,
+      interestRate: debt.interestRate || 0,
+      monthlyPayment: debt.monthlyPayment || 0,
+      description: debt.description || ''
+    });
+    setEditingDebt(debt.id);
+    setShowAddForm(true);
+  };
+
+  const handleCancel = () => {
+    setShowAddForm(false);
+    setEditingDebt(null);
+    setFormData({
+      name: '',
+      amount: 0,
+      type: 'credit_card',
+      interestRate: 0,
+      monthlyPayment: 0,
+      description: ''
+    });
+  };
+
+  const getMotivationalMessage = () => {
+    const totalDebt = getTotalDebt();
+    if (totalDebt === 0) return "¡Felicidades! No tienes deudas registradas.";
+    if (liabilities.length === 1) return "¡Excelente! Una sola deuda es más fácil de manejar.";
+    if (totalDebt < 5000) return "¡Vas por buen camino! Esta cantidad es manejable.";
+    if (totalDebt < 20000) return "¡Mantén el enfoque! Cada pago te acerca a la libertad financiera.";
+    return "¡No te rindas! Los grandes objetivos requieren determinación.";
+  };
+
   return (
-    <div style={{ width: '100%', maxWidth: '800px', margin: '0 auto' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
-        <h3 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 'bold' }}>Gestión de Deudas</h3>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          <div style={{ display: 'flex', gap: '0.5rem' }}>
+    <div className={styles.container}>
+      <div className={styles.header}>
+        <h3 className={styles.title}>
+          <CreditCard size={24} />
+          Gestión de Deudas
+        </h3>
+        
+        {liabilities.length > 0 && (
+          <div className={styles.viewToggle}>
             <button 
-              onClick={() => setCurrentView('list')}
-              style={{
-                padding: '0.5rem 1rem',
-                border: '1px solid #ccc',
-                backgroundColor: currentView === 'list' ? '#007bff' : 'white',
-                color: currentView === 'list' ? 'white' : 'black',
-                borderRadius: '4px',
-                cursor: 'pointer'
-              }}
+              onClick={() => setViewMode('list')}
+              className={`${styles.toggleButton} ${viewMode === 'list' ? styles.active : ''}`}
             >
-              Ver Lista
+              <List size={16} />
+              Lista
             </button>
             <button 
-              onClick={() => setCurrentView('planner')}
-              style={{
-                padding: '0.5rem 1rem',
-                border: '1px solid #ccc',
-                backgroundColor: currentView === 'planner' ? '#007bff' : 'white',
-                color: currentView === 'planner' ? 'white' : 'black',
-                borderRadius: '4px',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.5rem'
-              }}
+              onClick={() => setViewMode('planner')}
+              className={`${styles.toggleButton} ${viewMode === 'planner' ? styles.active : ''}`}
             >
-              <Target size={16} />
+              <BarChart3 size={16} />
               Planificador
             </button>
           </div>
+        )}
+
+        <div className={styles.headerActions}>
           <button 
             onClick={() => setShowAddForm(true)}
-            style={{
-              padding: '0.5rem 1rem',
-              backgroundColor: '#28a745',
-              color: 'white',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.5rem'
-            }}
+            className={styles.addButton}
           >
             <Plus size={16} />
             Agregar Deuda
@@ -473,230 +215,267 @@ const DebtManager: React.FC<DebtManagerProps> = ({
         </div>
       </div>
 
-      {currentView === 'planner' ? (
-        <div style={{ padding: '2rem', textAlign: 'center', backgroundColor: '#f8f9fa', borderRadius: '8px' }}>
-          <h4>Planificador de Deudas</h4>
-          <p>Esta funcionalidad estará disponible próximamente.</p>
-        </div>
+      {viewMode === 'planner' && liabilities.length > 0 ? (
+        <DebtPaymentPlanner 
+          debts={liabilities}
+          onMakePayment={(debtId: string, amount: number) => 
+            onMakePayment(debtId, amount, 'extra', 'Pago desde planificador')
+          }
+        />
       ) : (
-        <div>
-          {liabilities.length === 0 ? (
-            <div style={{ padding: '2rem', textAlign: 'center', backgroundColor: '#f8f9fa', borderRadius: '8px' }}>
-              <p>No tienes deudas registradas.</p>
-              <button 
-                onClick={() => setShowAddForm(true)}
-                style={{
-                  padding: '0.75rem 1.5rem',
-                  backgroundColor: '#007bff',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '4px',
-                  cursor: 'pointer',
-                  fontSize: '1rem'
-                }}
-              >
-                Agregar primera deuda
-              </button>
-            </div>
-          ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              {debtAnalysis.length > 0 ? debtAnalysis.map((analysis: any) => (
-                <div key={analysis.liability.id} style={{
-                  border: '1px solid #e0e0e0',
-                  borderRadius: '8px',
-                  padding: '1.5rem',
-                  backgroundColor: 'white'
-                }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
-                    <div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
-                        {getDebtTypeIcon(analysis.liability.type)}
-                        <span style={{ fontSize: '1.1rem', fontWeight: 'bold' }}>{analysis.liability.name}</span>
-                      </div>
-                      <span style={{ fontSize: '0.9rem', color: '#666' }}>
-                        {getDebtTypeLabel(analysis.liability.type)}
-                      </span>
-                    </div>
-                    <div style={{ display: 'flex', gap: '0.5rem' }}>
-                      <button 
-                        onClick={() => setSelectedDebt(analysis.liability)}
-                        style={{
-                          padding: '0.5rem',
-                          backgroundColor: '#28a745',
-                          color: 'white',
-                          border: 'none',
-                          borderRadius: '4px',
-                          cursor: 'pointer',
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '0.25rem'
-                        }}
-                      >
-                        <TrendingDown size={16} />
-                        Pagar
-                      </button>
-                      <button 
-                        onClick={() => onDeleteLiability(analysis.liability.id)}
-                        style={{
-                          padding: '0.5rem',
-                          backgroundColor: '#dc3545',
-                          color: 'white',
-                          border: 'none',
-                          borderRadius: '4px',
-                          cursor: 'pointer'
-                        }}
-                      >
-                        <Trash2 size={16} />
-                      </button>
-                    </div>
+        <>
+          {liabilities.length > 0 && (
+            <div className={styles.summary}>
+              <div className={styles.summaryCard}>
+                <h4>Resumen de Deudas</h4>
+                <div className={styles.summaryGrid}>
+                  <div className={styles.summaryItem}>
+                    <span className={styles.label}>Total adeudado:</span>
+                    <span className={styles.amount}>{formatCurrency(getTotalDebt())}</span>
                   </div>
-
-                  <div>
-                    <div style={{ marginBottom: '1rem' }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-                        <span style={{ color: '#666' }}>Deuda actual:</span>
-                        <span style={{ fontWeight: 'bold', fontSize: '1.2rem' }}>{formatCurrency(analysis.liability.amount)}</span>
-                      </div>
-                      {analysis.originalAmount > analysis.liability.amount && (
-                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-                          <span style={{ color: '#666' }}>Monto original:</span>
-                          <span style={{ fontWeight: 'bold' }}>{formatCurrency(analysis.originalAmount)}</span>
-                        </div>
-                      )}
-                    </div>
-
-                    {analysis.progressPercentage > 0 && (
-                      <div style={{ marginBottom: '1rem' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', fontSize: '0.9rem' }}>
-                          <span>Progreso: {analysis.progressPercentage.toFixed(1)}%</span>
-                          <span>Pagado: {formatCurrency(analysis.totalPaid)}</span>
-                        </div>
-                        <div style={{
-                          width: '100%',
-                          height: '8px',
-                          backgroundColor: '#e0e0e0',
-                          borderRadius: '4px',
-                          overflow: 'hidden'
-                        }}>
-                          <div style={{
-                            height: '100%',
-                            width: `${Math.min(100, analysis.progressPercentage)}%`,
-                            backgroundColor: '#28a745',
-                            transition: 'width 0.3s ease'
-                          }} />
-                        </div>
-                      </div>
-                    )}
-
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', fontSize: '0.9rem', color: '#666' }}>
-                      {analysis.liability.interestRate && (
-                        <span>Interés: {analysis.liability.interestRate}% anual</span>
-                      )}
-                      {analysis.liability.monthlyPayment && (
-                        <span>Pago mensual: {formatCurrency(analysis.liability.monthlyPayment)}</span>
-                      )}
-                      {analysis.monthsToPayOff > 0 && (
-                        <span>Tiempo estimado: {analysis.monthsToPayOff} meses</span>
-                      )}
-                    </div>
+                  <div className={styles.summaryItem}>
+                    <span className={styles.label}>Pagos mensuales:</span>
+                    <span className={styles.amount}>{formatCurrency(getTotalMonthlyPayments())}</span>
+                  </div>
+                  <div className={styles.summaryItem}>
+                    <span className={styles.label}>Número de deudas:</span>
+                    <span className={styles.count}>{liabilities.length}</span>
                   </div>
                 </div>
-              )) : (
-                liabilities.map(liability => (
-                <div key={liability.id} style={{
-                  border: '1px solid #e0e0e0',
-                  borderRadius: '8px',
-                  padding: '1.5rem',
-                  backgroundColor: 'white'
-                }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
-                    <div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
-                        {getDebtTypeIcon(liability.type)}
-                        <span style={{ fontSize: '1.1rem', fontWeight: 'bold' }}>{liability.name}</span>
-                      </div>
-                      <span style={{ fontSize: '0.9rem', color: '#666' }}>
-                        {getDebtTypeLabel(liability.type)}
-                      </span>
+                <div className={styles.motivationalMessage}>
+                  <TrendingDown size={16} />
+                  {getMotivationalMessage()}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {showAddForm && (
+            <div className={styles.formOverlay}>
+              <div className={styles.formContainer}>
+                <h4>{editingDebt ? 'Editar Deuda' : 'Agregar Nueva Deuda'}</h4>
+                <form onSubmit={handleSubmit} className={styles.debtForm}>
+                  <div className={styles.formGroup}>
+                    <label htmlFor="name">Nombre de la deuda *</label>
+                    <input
+                      id="name"
+                      type="text"
+                      value={formData.name}
+                      onChange={(e) => setFormData({...formData, name: e.target.value})}
+                      placeholder="Ej: Tarjeta Visa, Préstamo auto..."
+                      required
+                    />
+                  </div>
+
+                  <div className={styles.formRow}>
+                    <div className={styles.formGroup}>
+                      <label htmlFor="amount">Monto adeudado *</label>
+                      <input
+                        id="amount"
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        value={formData.amount || ''}
+                        onChange={(e) => setFormData({...formData, amount: parseFloat(e.target.value) || 0})}
+                        placeholder="0.00"
+                        required
+                      />
                     </div>
-                    <div style={{ display: 'flex', gap: '0.5rem' }}>
-                      <button 
-                        onClick={() => setSelectedDebt(liability)}
-                        style={{
-                          padding: '0.5rem',
-                          backgroundColor: '#28a745',
-                          color: 'white',
-                          border: 'none',
-                          borderRadius: '4px',
-                          cursor: 'pointer',
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '0.25rem'
-                        }}
+
+                    <div className={styles.formGroup}>
+                      <label htmlFor="type">Tipo de deuda</label>
+                      <select
+                        id="type"
+                        value={formData.type}
+                        onChange={(e) => setFormData({...formData, type: e.target.value})}
                       >
-                        <TrendingDown size={16} />
-                        Pagar
+                        <option value="credit_card">Tarjeta de Crédito</option>
+                        <option value="loan">Préstamo Personal</option>
+                        <option value="mortgage">Hipoteca</option>
+                        <option value="student_loan">Préstamo Estudiantil</option>
+                        <option value="other">Otro</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className={styles.formRow}>
+                    <div className={styles.formGroup}>
+                      <label htmlFor="interestRate">Tasa de interés anual (%)</label>
+                      <input
+                        id="interestRate"
+                        type="number"
+                        min="0"
+                        max="100"
+                        step="0.01"
+                        value={formData.interestRate || ''}
+                        onChange={(e) => setFormData({...formData, interestRate: parseFloat(e.target.value) || 0})}
+                        placeholder="12.5"
+                      />
+                    </div>
+
+                    <div className={styles.formGroup}>
+                      <label htmlFor="monthlyPayment">Pago mensual mínimo</label>
+                      <input
+                        id="monthlyPayment"
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        value={formData.monthlyPayment || ''}
+                        onChange={(e) => setFormData({...formData, monthlyPayment: parseFloat(e.target.value) || 0})}
+                        placeholder="150.00"
+                      />
+                    </div>
+                  </div>
+
+                  <div className={styles.formGroup}>
+                    <label htmlFor="description">Descripción (opcional)</label>
+                    <textarea
+                      id="description"
+                      value={formData.description || ''}
+                      onChange={(e) => setFormData({...formData, description: e.target.value})}
+                      placeholder="Notas adicionales sobre esta deuda..."
+                      rows={3}
+                    />
+                  </div>
+
+                  <div className={styles.formActions}>
+                    <button type="button" onClick={handleCancel} className={styles.cancelButton}>
+                      Cancelar
+                    </button>
+                    <button type="submit" className={styles.submitButton}>
+                      {editingDebt ? 'Actualizar' : 'Agregar'} Deuda
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          )}
+
+          <div className={styles.debtsList}>
+            {liabilities.map(liability => {
+              const monthsToPayOff = calculateMonthsToPayOff(liability);
+              const totalInterest = liability.monthlyPayment && monthsToPayOff !== Infinity 
+                ? (liability.monthlyPayment * monthsToPayOff) - liability.amount 
+                : 0;
+
+              return (
+                <div 
+                  key={liability.id} 
+                  className={styles.debtCard}
+                >
+                  <div className={styles.debtHeader}>
+                    <div className={styles.debtInfo}>
+                      <div className={styles.debtName}>
+                        {getDebtTypeIcon(liability.type)}
+                        {liability.name}
+                      </div>
+                      <div className={styles.debtType}>
+                        {getDebtTypeLabel(liability.type)}
+                      </div>
+                    </div>
+                    <div className={styles.debtActions}>
+                      <button 
+                        onClick={() => handleEdit(liability)}
+                        className={styles.editButton}
+                        title="Editar deuda"
+                      >
+                        <Edit3 size={16} />
                       </button>
                       <button 
                         onClick={() => onDeleteLiability(liability.id)}
-                        style={{
-                          padding: '0.5rem',
-                          backgroundColor: '#dc3545',
-                          color: 'white',
-                          border: 'none',
-                          borderRadius: '4px',
-                          cursor: 'pointer'
-                        }}
+                        className={styles.deleteButton}
+                        title="Eliminar deuda"
                       >
                         <Trash2 size={16} />
                       </button>
                     </div>
                   </div>
 
-                  <div>
-                    <div style={{ marginBottom: '1rem' }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-                        <span style={{ color: '#666' }}>Deuda actual:</span>
-                        <span style={{ fontWeight: 'bold', fontSize: '1.2rem' }}>{formatCurrency(liability.amount)}</span>
+                  <div className={styles.debtDetails}>
+                    <div className={styles.amountInfo}>
+                      <div className={styles.currentAmount}>
+                        <span className={styles.label}>Deuda actual:</span>
+                        <span className={styles.amount}>{formatCurrency(liability.amount)}</span>
                       </div>
                     </div>
 
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', fontSize: '0.9rem', color: '#666' }}>
+                    <div className={styles.additionalInfo}>
                       {liability.interestRate && (
-                        <span>Interés: {liability.interestRate}% anual</span>
+                        <div className={styles.infoItem}>
+                          <span className={styles.infoLabel}>Interés:</span>
+                          <span className={styles.infoValue}>{liability.interestRate}% anual</span>
+                        </div>
                       )}
                       {liability.monthlyPayment && (
-                        <span>Pago mensual: {formatCurrency(liability.monthlyPayment)}</span>
+                        <div className={styles.infoItem}>
+                          <span className={styles.infoLabel}>Pago mensual:</span>
+                          <span className={styles.infoValue}>{formatCurrency(liability.monthlyPayment)}</span>
+                        </div>
+                      )}
+                      {monthsToPayOff !== Infinity && liability.monthlyPayment && (
+                        <div className={styles.infoItem}>
+                          <span className={styles.infoLabel}>Tiempo estimado:</span>
+                          <span className={styles.infoValue}>{formatTimeToPayOff(monthsToPayOff)}</span>
+                        </div>
+                      )}
+                      {totalInterest > 0 && (
+                        <div className={styles.infoItem}>
+                          <span className={styles.infoLabel}>Interés total:</span>
+                          <span className={styles.infoValue}>{formatCurrency(totalInterest)}</span>
+                        </div>
                       )}
                     </div>
+
+                    {liability.description && (
+                      <div className={styles.description}>
+                        <span className={styles.descriptionLabel}>Notas:</span>
+                        <span className={styles.descriptionText}>{liability.description}</span>
+                      </div>
+                    )}
+
+                    {liability.monthlyPayment && (
+                      <div className={styles.paymentActions}>
+                        <button
+                          onClick={() => onMakePayment(liability.id, liability.monthlyPayment!, 'regular', 'Pago mínimo mensual')}
+                          className={styles.paymentButton}
+                        >
+                          Registrar Pago Mínimo
+                        </button>
+                        <button
+                          onClick={() => onMakePayment(liability.id, liability.monthlyPayment! * 1.5, 'extra', 'Pago extra')}
+                          className={styles.extraPaymentButton}
+                        >
+                          Pago Extra (+50%)
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
-              ))
-              )}
-            </div>
-          )}
-        </div>
-      )}
+              );
+            })}
 
-      {showAddForm && (
-        <LiabilityForm
-          onAdd={onAddLiability}
-          onClose={() => setShowAddForm(false)}
-        />
-      )}
-
-      {selectedDebt && (
-        <PaymentModal
-          liability={selectedDebt}
-          onClose={() => setSelectedDebt(null)}
-          onMakePayment={(amount, paymentType, description) => {
-            onMakePayment(selectedDebt.id, amount, paymentType, description);
-            setSelectedDebt(null);
-          }}
-        />
+            {liabilities.length === 0 && (
+              <div className={styles.emptyState}>
+                <div className={styles.emptyIcon}>
+                  <TrendingDown size={48} />
+                </div>
+                <h4>No tienes deudas registradas</h4>
+                <p>¡Excelente! Si no tienes deudas o quieres empezar a gestionar las que tienes, puedes agregar tu primera deuda.</p>
+                <button 
+                  onClick={() => setShowAddForm(true)}
+                  className={styles.addFirstButton}
+                >
+                  <Plus size={16} />
+                  Agregar primera deuda
+                </button>
+              </div>
+            )}
+          </div>
+        </>
       )}
     </div>
   );
 };
 
+export { DebtManager };
 export default DebtManager;

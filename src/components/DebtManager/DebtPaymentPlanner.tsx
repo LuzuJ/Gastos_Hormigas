@@ -1,423 +1,525 @@
-import React, { useState, useMemo } from 'react';
-import styles from './DebtPaymentPlanner.module.css';
+import React, { useState, useCallback, useMemo } from 'react';
+import { useDebtPaymentStrategies } from '../../hooks/useDebtPaymentStrategies';
+import { DebtMotivationCard } from './DebtMotivationCard';
 import type { Liability } from '../../types';
-import DebtMotivationCard from './DebtMotivationCard';
-import { 
-  Snowflake, 
-  Mountain, 
-  Calculator, 
-  Target, 
-  TrendingDown, 
-  Clock, 
-  DollarSign,
-  BarChart3,
-  AlertCircle,
-  CheckCircle2
-} from 'lucide-react';
+import styles from './DebtPaymentPlanner.module.css';
 
 interface DebtPaymentPlannerProps {
-  liabilities: Liability[];
-  monthlyExtraBudget: number;
-  onUpdateExtraBudget: (amount: number) => void;
-  onApplyStrategy: (strategy: PaymentStrategy) => void;
+  debts: Liability[];
+  onMakePayment: (debtId: string, amount: number) => void;
 }
 
-type PaymentStrategyType = 'snowball' | 'avalanche' | 'custom';
-
-interface PaymentStrategy {
-  type: PaymentStrategyType;
-  name: string;
-  description: string;
-  priorityOrder: string[]; // IDs de deudas en orden de prioridad
-  monthlyExtraPayment: number;
-  estimatedMonthsToPayoff: number;
-  totalInterestSaved: number;
-}
-
-interface DebtAnalysis {
-  liability: Liability;
-  monthlyPayment: number;
-  estimatedMonths: number;
-  totalInterest: number;
-  priorityScore: number;
-}
-
-const DebtPaymentPlanner: React.FC<DebtPaymentPlannerProps> = ({
-  liabilities,
-  monthlyExtraBudget,
-  onUpdateExtraBudget,
-  onApplyStrategy
+export const DebtPaymentPlanner: React.FC<DebtPaymentPlannerProps> = ({
+  debts,
+  onMakePayment
 }) => {
-  const [selectedStrategy, setSelectedStrategy] = useState<PaymentStrategyType>('snowball');
-  const [showCalculations, setShowCalculations] = useState(false);
+  const [monthlyBudget, setMonthlyBudget] = useState<number>(0);
+  const [showPaymentSchedule, setShowPaymentSchedule] = useState<boolean>(false);
+  const [showComparison, setShowComparison] = useState<boolean>(false);
+  
+  const {
+    currentStrategy,
+    paymentPlan,
+    setStrategyType,
+    setMonthlyExtraBudget,
+    compareStrategies,
+    getProgress,
+    getMotivationalMessage,
+    getTotalDebtAmount,
+    getTotalMonthlyMinimums
+  } = useDebtPaymentStrategies(debts);
 
-  // Análisis de deudas para cada estrategia
-  const debtAnalysis = useMemo(() => {
-    return liabilities.map(liability => {
-      const monthlyPayment = liability.monthlyPayment || Math.max(liability.amount * 0.02, 25); // Mínimo 2% o $25
-      const interestRate = (liability.interestRate || 0) / 100 / 12; // Tasa mensual
-      
-      // Cálculo estimado de meses para pagar (sin pagos extra)
-      let estimatedMonths = 0;
-      if (interestRate > 0) {
-        estimatedMonths = Math.ceil(
-          -Math.log(1 - (liability.amount * interestRate) / monthlyPayment) / Math.log(1 + interestRate)
-        );
-      } else {
-        estimatedMonths = Math.ceil(liability.amount / monthlyPayment);
-      }
+  // Actualizar el presupuesto extra cuando cambie el input
+  React.useEffect(() => {
+    setMonthlyExtraBudget(monthlyBudget);
+  }, [monthlyBudget, setMonthlyExtraBudget]);
 
-      // Cálculo de interés total
-      const totalPayments = estimatedMonths * monthlyPayment;
-      const totalInterest = Math.max(0, totalPayments - liability.amount);
-
-      // Score de prioridad para cada estrategia
-      const priorityScore = {
-        snowball: -liability.amount, // Menor deuda primero (negativo para ordenar ascendente)
-        avalanche: -(liability.interestRate || 0), // Mayor interés primero (negativo para ordenar descendente)
-        custom: 0
+  const comparison = useMemo(() => compareStrategies(), [compareStrategies]);
+  
+  // Generar cronograma de pagos detallado
+  const generatePaymentSchedule = useCallback(() => {
+    if (!paymentPlan || monthlyBudget <= 0) return [];
+    
+    const schedule = [];
+    let remainingDebts = [...paymentPlan.debts];
+    let currentMonth = 1;
+    
+    while (remainingDebts.length > 0 && currentMonth <= 60) { // Máximo 5 años
+      const monthData = {
+        month: currentMonth,
+        payments: [] as Array<{
+          debtId: string;
+          debtName: string;
+          payment: number;
+          principal: number;
+          interest: number;
+          remainingBalance: number;
+        }>,
+        totalPaid: 0,
+        totalPrincipal: 0,
+        totalInterest: 0
       };
-
-      return {
-        liability,
-        monthlyPayment,
-        estimatedMonths: isFinite(estimatedMonths) ? estimatedMonths : 999,
-        totalInterest,
-        priorityScore: priorityScore[selectedStrategy]
-      };
-    });
-  }, [liabilities, selectedStrategy]);
-
-  // Estrategias de pago calculadas
-  const paymentStrategies = useMemo(() => {
-    const strategies: PaymentStrategy[] = [];
-
-    // Estrategia Bola de Nieve (Snowball)
-    const snowballOrder = [...debtAnalysis]
-      .sort((a, b) => a.liability.amount - b.liability.amount)
-      .map(d => d.liability.id);
-
-    strategies.push({
-      type: 'snowball',
-      name: 'Bola de Nieve',
-      description: 'Paga primero las deudas más pequeñas para obtener victorias rápidas y motivación.',
-      priorityOrder: snowballOrder,
-      monthlyExtraPayment: monthlyExtraBudget,
-      estimatedMonthsToPayoff: calculatePayoffTime(snowballOrder),
-      totalInterestSaved: calculateInterestSaved(snowballOrder)
-    });
-
-    // Estrategia Avalancha (Avalanche)
-    const avalancheOrder = [...debtAnalysis]
-      .sort((a, b) => (b.liability.interestRate || 0) - (a.liability.interestRate || 0))
-      .map(d => d.liability.id);
-
-    strategies.push({
-      type: 'avalanche',
-      name: 'Avalancha',
-      description: 'Paga primero las deudas con mayor interés para minimizar el costo total.',
-      priorityOrder: avalancheOrder,
-      monthlyExtraPayment: monthlyExtraBudget,
-      estimatedMonthsToPayoff: calculatePayoffTime(avalancheOrder),
-      totalInterestSaved: calculateInterestSaved(avalancheOrder)
-    });
-
-    return strategies;
-  }, [debtAnalysis, monthlyExtraBudget]);
-
-  function calculatePayoffTime(priorityOrder: string[]): number {
-    let totalMonths = 0;
-    let extraBudget = monthlyExtraBudget;
-    
-    priorityOrder.forEach(debtId => {
-      const debt = debtAnalysis.find(d => d.liability.id === debtId);
-      if (!debt) return;
-
-      const totalMonthlyPayment = debt.monthlyPayment + extraBudget;
-      const interestRate = (debt.liability.interestRate || 0) / 100 / 12;
       
-      let months = 0;
-      if (interestRate > 0) {
-        months = Math.ceil(
-          -Math.log(1 - (debt.liability.amount * interestRate) / totalMonthlyPayment) / 
-          Math.log(1 + interestRate)
-        );
-      } else {
-        months = Math.ceil(debt.liability.amount / totalMonthlyPayment);
-      }
-
-      totalMonths = Math.max(totalMonths, months);
-      // Una vez pagada esta deuda, el presupuesto extra se suma al siguiente
-      extraBudget += debt.monthlyPayment;
-    });
-
-    return isFinite(totalMonths) ? totalMonths : 999;
-  }
-
-  function calculateInterestSaved(priorityOrder: string[]): number {
-    // Comparar con el escenario de pagos mínimos
-    const baseInterest = debtAnalysis.reduce((total, debt) => total + debt.totalInterest, 0);
-    
-    let strategyInterest = 0;
-    let extraBudget = monthlyExtraBudget;
-
-    priorityOrder.forEach(debtId => {
-      const debt = debtAnalysis.find(d => d.liability.id === debtId);
-      if (!debt) return;
-
-      const totalMonthlyPayment = debt.monthlyPayment + extraBudget;
-      const interestRate = (debt.liability.interestRate || 0) / 100 / 12;
+      remainingDebts = remainingDebts.filter(debt => debt.liability.amount > 0);
       
-      if (interestRate > 0) {
-        const months = Math.ceil(
-          -Math.log(1 - (debt.liability.amount * interestRate) / totalMonthlyPayment) / 
-          Math.log(1 + interestRate)
-        );
-        const totalPayments = isFinite(months) ? months * totalMonthlyPayment : debt.liability.amount;
-        strategyInterest += Math.max(0, totalPayments - debt.liability.amount);
+      for (const debt of remainingDebts) {
+        const monthlyRate = (debt.liability.interestRate || 0) / 100 / 12;
+        const interestPayment = debt.liability.amount * monthlyRate;
+        const payment = Math.min(debt.suggestedPayment, debt.liability.amount + interestPayment);
+        const principalPayment = payment - interestPayment;
+        
+        debt.liability.amount = Math.max(0, debt.liability.amount - principalPayment);
+        
+        monthData.payments.push({
+          debtId: debt.liability.id,
+          debtName: debt.liability.name,
+          payment,
+          principal: principalPayment,
+          interest: interestPayment,
+          remainingBalance: debt.liability.amount
+        });
+        
+        monthData.totalPaid += payment;
+        monthData.totalPrincipal += principalPayment;
+        monthData.totalInterest += interestPayment;
       }
-
-      extraBudget += debt.monthlyPayment;
-    });
-
-    return Math.max(0, baseInterest - strategyInterest);
-  }
-
-  const handleStrategySelect = (strategy: PaymentStrategy) => {
-    setSelectedStrategy(strategy.type);
-    onApplyStrategy(strategy);
-  };
-
-  // Calcular datos para la tarjeta de motivación
-  const motivationData = useMemo(() => {
-    const totalDebt = liabilities.reduce((sum, debt) => sum + debt.amount, 0);
-    const totalOriginalDebt = liabilities.reduce((sum, debt) => sum + (debt.originalAmount || debt.amount), 0);
-    const totalPaid = totalOriginalDebt - totalDebt;
-    
-    const selectedStrategyData = paymentStrategies.find(s => s.type === selectedStrategy);
-    
-    // Encontrar la próxima deuda a pagar según la estrategia
-    const nextDebtId = selectedStrategyData?.priorityOrder.find(debtId => {
-      const debt = liabilities.find(l => l.id === debtId);
-      return debt && debt.amount > 0;
-    });
-    
-    const nextDebt = nextDebtId ? liabilities.find(l => l.id === nextDebtId) : null;
-    
-    return {
-      totalDebt: totalOriginalDebt,
-      totalPaid,
-      estimatedMonthsRemaining: selectedStrategyData?.estimatedMonthsToPayoff || 0,
-      interestSaved: selectedStrategyData?.totalInterestSaved || 0,
-      strategyName: selectedStrategyData?.name,
-      nextMilestone: nextDebt ? {
-        debtName: nextDebt.name,
-        amount: nextDebt.amount,
-        estimatedCompletion: new Date(Date.now() + (selectedStrategyData?.estimatedMonthsToPayoff || 0) * 30 * 24 * 60 * 60 * 1000).toLocaleDateString()
-      } : undefined
-    };
-  }, [liabilities, selectedStrategy, paymentStrategies]);
-
-  const formatCurrency = (value: number) => {
-    return value.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
-  };
-
-  const getStrategyIcon = (type: PaymentStrategyType) => {
-    switch (type) {
-      case 'snowball': return <Snowflake size={24} />;
-      case 'avalanche': return <Mountain size={24} />;
-      default: return <Target size={24} />;
+      
+      schedule.push(monthData);
+      currentMonth++;
+      
+      if (remainingDebts.every(debt => debt.liability.amount <= 0)) break;
     }
+    
+    return schedule.slice(0, 12); // Mostrar solo los próximos 12 meses
+  }, [paymentPlan, monthlyBudget]);
+
+  const handleMakePayment = useCallback((debtId: string, amount: number) => {
+    onMakePayment(debtId, amount);
+  }, [onMakePayment]);
+
+  const formatCurrency = (amount: number): string => {
+    return new Intl.NumberFormat('es-ES', {
+      style: 'currency',
+      currency: 'EUR'
+    }).format(amount);
   };
 
-  if (liabilities.length === 0) {
+  const formatMonths = (months: number): string => {
+    if (months === Infinity) return 'Nunca';
+    const years = Math.floor(months / 12);
+    const remainingMonths = Math.round(months % 12);
+    
+    if (years === 0) {
+      return `${remainingMonths} ${remainingMonths === 1 ? 'mes' : 'meses'}`;
+    }
+    
+    if (remainingMonths === 0) {
+      return `${years} ${years === 1 ? 'año' : 'años'}`;
+    }
+    
+    return `${years} ${years === 1 ? 'año' : 'años'} y ${remainingMonths} ${remainingMonths === 1 ? 'mes' : 'meses'}`;
+  };
+
+  if (debts.length === 0) {
     return (
-      <div className={styles.container}>
-        <div className={styles.emptyState}>
-          <AlertCircle size={48} />
-          <h3>No hay deudas para planificar</h3>
-          <p>Agrega algunas deudas primero para usar el planificador de pagos.</p>
-        </div>
+      <div className={styles.emptyState}>
+        <div className={styles.emptyIcon}>📊</div>
+        <h3 className={styles.emptyTitle}>No hay deudas registradas</h3>
+        <p className={styles.emptyDescription}>
+          Agrega algunas deudas para comenzar a planificar tu estrategia de pago.
+        </p>
       </div>
     );
   }
 
+  const paymentSchedule = generatePaymentSchedule();
+  const totalMinimums = getTotalMonthlyMinimums();
+  const availableForExtra = Math.max(0, monthlyBudget - totalMinimums);
+
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <div className={styles.titleSection}>
-          <h2 className={styles.title}>
-            <Calculator size={24} />
-            Planificador de Pago de Deudas
-          </h2>
-          <p className={styles.subtitle}>
-            Optimiza tu estrategia de pago para liberarte de deudas más rápido
-          </p>
-        </div>
-      </div>
-
-      {/* Tarjeta de motivación */}
-      <DebtMotivationCard
-        totalDebt={motivationData.totalDebt}
-        totalPaid={motivationData.totalPaid}
-        estimatedMonthsRemaining={motivationData.estimatedMonthsRemaining}
-        interestSaved={motivationData.interestSaved}
-        strategyName={motivationData.strategyName}
-        nextMilestone={motivationData.nextMilestone}
-      />
-
-      {/* Configuración de presupuesto extra */}
-      <div className={styles.budgetSection}>
-        <div className={styles.budgetHeader}>
-          <DollarSign size={20} />
-          <h3>Presupuesto Extra Mensual</h3>
-        </div>
-        <div className={styles.budgetInput}>
-          <input
-            type="number"
-            value={monthlyExtraBudget}
-            onChange={(e) => onUpdateExtraBudget(Number(e.target.value) || 0)}
-            placeholder="0.00"
-            step="0.01"
-            min="0"
-            className={styles.input}
-          />
-          <span className={styles.inputLabel}>USD adicionales por mes</span>
-        </div>
-        <p className={styles.budgetHelp}>
-          Cantidad extra que puedes destinar mensualmente al pago de deudas
+        <h2 className={styles.title}>
+          <span className={styles.titleIcon}>🎯</span>{' '}
+          Planificador Inteligente de Pagos
+        </h2>
+        <p className={styles.subtitle}>
+          Optimiza tu estrategia de pago y libérate de deudas más rápido
         </p>
       </div>
-
-      {/* Estrategias de pago */}
-      <div className={styles.strategiesSection}>
-        <div className={styles.strategiesHeader}>
-          <BarChart3 size={20} />
-          <h3>Estrategias de Pago</h3>
-          <button
-            onClick={() => setShowCalculations(!showCalculations)}
-            className={styles.toggleButton}
-          >
-            {showCalculations ? 'Ocultar' : 'Ver'} Cálculos
-          </button>
-        </div>
-
-        <div className={styles.strategiesGrid}>
-          {paymentStrategies.map((strategy) => (
-            <div
-              key={strategy.type}
-              className={`${styles.strategyCard} ${
-                selectedStrategy === strategy.type ? styles.selected : ''
-              }`}
-              onClick={() => handleStrategySelect(strategy)}
-            >
-              <div className={styles.strategyHeader}>
-                <div className={styles.strategyIcon}>
-                  {getStrategyIcon(strategy.type)}
-                </div>
+      
+      {/* Configuración Principal */}
+      <div className={styles.strategyConfig}>
+        <div className={styles.configGrid}>
+          {/* Selección de Estrategia */}
+          <div className={styles.strategySelection}>
+            <h3 className={styles.sectionTitle}>
+              <span>⚡</span>{' '}
+              Estrategia de Pago
+            </h3>
+            <div className={styles.strategyOptions}>
+              <button
+                className={`${styles.strategyButton} ${currentStrategy.type === 'snowball' ? styles.active : ''}`}
+                onClick={() => setStrategyType('snowball')}
+              >
+                <div className={styles.strategyIcon}>❄️</div>
                 <div className={styles.strategyInfo}>
-                  <h4 className={styles.strategyName}>{strategy.name}</h4>
-                  <p className={styles.strategyDescription}>{strategy.description}</p>
+                  <div className={styles.strategyName}>Bola de Nieve</div>
+                  <div className={styles.strategyDesc}>
+                    Primero las deudas con menor saldo para ganar impulso psicológico
+                  </div>
                 </div>
-              </div>
-
-              <div className={styles.strategyMetrics}>
-                <div className={styles.metric}>
-                  <Clock size={16} />
-                  <span className={styles.metricLabel}>Tiempo estimado:</span>
-                  <span className={styles.metricValue}>
-                    {strategy.estimatedMonthsToPayoff} meses
-                  </span>
+              </button>
+              <button
+                className={`${styles.strategyButton} ${currentStrategy.type === 'avalanche' ? styles.active : ''}`}
+                onClick={() => setStrategyType('avalanche')}
+              >
+                <div className={styles.strategyIcon}>🏔️</div>
+                <div className={styles.strategyInfo}>
+                  <div className={styles.strategyName}>Avalancha</div>
+                  <div className={styles.strategyDesc}>
+                    Primero las deudas con mayor interés para ahorrar más dinero
+                  </div>
                 </div>
-                <div className={styles.metric}>
-                  <TrendingDown size={16} />
-                  <span className={styles.metricLabel}>Interés ahorrado:</span>
-                  <span className={styles.metricValue}>
-                    {formatCurrency(strategy.totalInterestSaved)}
-                  </span>
-                </div>
-              </div>
-
-              {selectedStrategy === strategy.type && (
-                <div className={styles.selectedIndicator}>
-                  <CheckCircle2 size={16} />
-                  Estrategia seleccionada
-                </div>
-              )}
+              </button>
             </div>
-          ))}
+          </div>
+
+          {/* Configuración de Presupuesto */}
+          <div className={styles.budgetConfig}>
+            <h3 className={styles.sectionTitle}>
+              <span>💰</span>{' '}
+              Presupuesto Mensual
+            </h3>
+            <div className={styles.budgetInputGroup}>
+              <input
+                type="number"
+                min="0"
+                step="0.01"
+                value={monthlyBudget || ''}
+                onChange={(e) => setMonthlyBudget(parseFloat(e.target.value) || 0)}
+                placeholder="0.00"
+                className={styles.budgetInput}
+              />
+              <span className={styles.currency}>€</span>
+            </div>
+            
+            {monthlyBudget > 0 && (
+              <div className={styles.budgetInfo}>
+                <div className={styles.budgetStat}>
+                  <span>Pagos mínimos:</span>
+                  <span>{formatCurrency(totalMinimums)}</span>
+                </div>
+                <div className={styles.budgetStat}>
+                  <span>Disponible extra:</span>
+                  <span className={availableForExtra > 0 ? styles.positive : styles.negative}>
+                    {formatCurrency(availableForExtra)}
+                  </span>
+                </div>
+              </div>
+            )}
+            
+            {monthlyBudget > 0 && availableForExtra < 0 && (
+              <div className={styles.warningMessage}>
+                <span>⚠️</span>{' '}
+                Tu presupuesto es menor que los pagos mínimos requeridos
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
-      {/* Orden de pago y cálculos detallados */}
-      {showCalculations && selectedStrategy && (
-        <div className={styles.calculationsSection}>
-          <h3 className={styles.calculationsTitle}>
-            Plan de Pago Detallado - {paymentStrategies.find(s => s.type === selectedStrategy)?.name}
-          </h3>
-          
-          <div className={styles.paymentOrder}>
-            {paymentStrategies
-              .find(s => s.type === selectedStrategy)
-              ?.priorityOrder.map((debtId, index) => {
-                const debt = debtAnalysis.find(d => d.liability.id === debtId);
-                if (!debt) return null;
+      {/* Resultados y Análisis */}
+      {monthlyBudget > 0 && paymentPlan && availableForExtra >= 0 && (
+        <>
+          {/* Tarjeta de Motivación */}
+          <DebtMotivationCard 
+            paymentPlan={paymentPlan}
+            progress={getProgress()}
+            motivationalMessage={getMotivationalMessage()}
+            totalDebtAmount={getTotalDebtAmount()}
+          />
 
-                return (
-                  <div key={debtId} className={styles.paymentStep}>
-                    <div className={styles.stepNumber}>{index + 1}</div>
-                    <div className={styles.stepContent}>
-                      <div className={styles.stepHeader}>
-                        <h4 className={styles.debtName}>{debt.liability.name}</h4>
-                        <span className={styles.debtAmount}>
-                          {formatCurrency(debt.liability.amount)}
-                        </span>
-                      </div>
-                      <div className={styles.stepDetails}>
-                        <div className={styles.stepDetail}>
-                          <span>Pago mensual mínimo:</span>
-                          <span>{formatCurrency(debt.monthlyPayment)}</span>
-                        </div>
-                        {debt.liability.interestRate && (
-                          <div className={styles.stepDetail}>
-                            <span>Tasa de interés:</span>
-                            <span>{debt.liability.interestRate}% anual</span>
-                          </div>
-                        )}
-                        <div className={styles.stepDetail}>
-                          <span>Tiempo estimado:</span>
-                          <span>{debt.estimatedMonths} meses</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
+          {/* Resumen de Estrategia */}
+          <div className={styles.summaryCard}>
+            <h3 className={styles.sectionTitle}>
+              <span>📊</span>
+              {' '}
+              Resumen de tu Estrategia {currentStrategy.type === 'snowball' ? 'Bola de Nieve' : 'Avalancha'}
+            </h3>
+            
+            <div className={styles.summaryGrid}>
+              <div className={styles.summaryMetric}>
+                <div className={styles.metricIcon}>⏱️</div>
+                <div className={styles.metricInfo}>
+                  <span className={styles.metricLabel}>Tiempo para liquidar</span>
+                  <span className={styles.metricValue}>{formatMonths(paymentPlan.totalMonthsToPayOff)}</span>
+                </div>
+              </div>
+              
+              <div className={styles.summaryMetric}>
+                <div className={styles.metricIcon}>💸</div>
+                <div className={styles.metricInfo}>
+                  <span className={styles.metricLabel}>Intereses ahorrados</span>
+                  <span className={styles.metricValue}>{formatCurrency(paymentPlan.totalInterestSaved)}</span>
+                </div>
+              </div>
+              
+              <div className={styles.summaryMetric}>
+                <div className={styles.metricIcon}>💰</div>
+                <div className={styles.metricInfo}>
+                  <span className={styles.metricLabel}>Total a pagar</span>
+                  <span className={styles.metricValue}>{formatCurrency(getTotalDebtAmount())}</span>
+                </div>
+              </div>
+              
+              <div className={styles.summaryMetric}>
+                <div className={styles.metricIcon}>📈</div>
+                <div className={styles.metricInfo}>
+                  <span className={styles.metricLabel}>Progreso actual</span>
+                  <span className={styles.metricValue}>{Math.round(getProgress() * 100)}%</span>
+                </div>
+              </div>
+            </div>
           </div>
 
-          <div className={styles.strategyTips}>
-            <h4>Consejos para esta estrategia:</h4>
-            {selectedStrategy === 'snowball' && (
-              <ul>
-                <li>Concéntrate en pagar la deuda más pequeña primero</li>
-                <li>Haz pagos mínimos en todas las demás deudas</li>
-                <li>Una vez pagada la primera deuda, aplica ese pago a la siguiente</li>
-                <li>Celebra cada deuda pagada para mantener la motivación</li>
-              </ul>
-            )}
-            {selectedStrategy === 'avalanche' && (
-              <ul>
-                <li>Prioriza la deuda con la tasa de interés más alta</li>
-                <li>Haz pagos mínimos en todas las demás deudas</li>
-                <li>Aplica todo el dinero extra a la deuda de mayor interés</li>
-                <li>Continúa con la siguiente deuda de mayor interés</li>
-              </ul>
-            )}
+          {/* Navegación de Secciones */}
+          <div className={styles.sectionTabs}>
+            <button
+              className={`${styles.tab} ${!showComparison && !showPaymentSchedule ? styles.active : ''}`}
+              onClick={() => {
+                setShowComparison(false);
+                setShowPaymentSchedule(false);
+              }}
+            >
+              📋 Plan de Pago
+            </button>
+            <button
+              className={`${styles.tab} ${showComparison ? styles.active : ''}`}
+              onClick={() => {
+                setShowComparison(!showComparison);
+                setShowPaymentSchedule(false);
+              }}
+            >
+              ⚖️ Comparar Estrategias
+            </button>
+            <button
+              className={`${styles.tab} ${showPaymentSchedule ? styles.active : ''}`}
+              onClick={() => {
+                setShowPaymentSchedule(!showPaymentSchedule);
+                setShowComparison(false);
+              }}
+            >
+              📅 Cronograma Detallado
+            </button>
+          </div>
+
+          {/* Sección Principal - Plan de Pago */}
+          {!showComparison && !showPaymentSchedule && (
+            <div className={styles.paymentPlan}>
+              <h3 className={styles.sectionTitle}>
+                <span>🎯</span>
+                {' '}
+                Orden de Pago Recomendado
+              </h3>
+              
+              <div className={styles.debtList}>
+                {paymentPlan.debts.map((debtAnalysis, index) => (
+                  <div 
+                    key={debtAnalysis.liability.id} 
+                    className={`${styles.debtCard} ${index === 0 ? styles.focused : ''}`}
+                  >
+                    <div className={styles.debtHeader}>
+                      <div className={styles.debtName}>
+                        <span className={styles.priority}>#{index + 1}</span>
+                        <h4>{debtAnalysis.liability.name}</h4>
+                        {index === 0 && <span className={styles.focusLabel}>ENFOQUE ACTUAL</span>}
+                      </div>
+                      <div className={styles.debtAmount}>
+                        {formatCurrency(debtAnalysis.liability.amount)}
+                      </div>
+                    </div>
+                    
+                    <div className={styles.debtDetails}>
+                      <div className={styles.debtStat}>
+                        <span className={styles.statLabel}>Interés</span>
+                        <span className={styles.statValue}>{debtAnalysis.liability.interestRate || 0}%</span>
+                      </div>
+                      <div className={styles.debtStat}>
+                        <span className={styles.statLabel}>Pago mínimo</span>
+                        <span className={styles.statValue}>{formatCurrency(debtAnalysis.minimumPayment)}</span>
+                      </div>
+                      <div className={styles.debtStat}>
+                        <span className={styles.statLabel}>Pago sugerido</span>
+                        <span className={styles.statValue}>{formatCurrency(debtAnalysis.suggestedPayment)}</span>
+                      </div>
+                      <div className={styles.debtStat}>
+                        <span className={styles.statLabel}>Tiempo estimado</span>
+                        <span className={styles.statValue}>
+                          {formatMonths(debtAnalysis.liability.amount / debtAnalysis.suggestedPayment)}
+                        </span>
+                      </div>
+                    </div>
+                    
+                    <div className={styles.paymentActions}>
+                      <button
+                        onClick={() => handleMakePayment(debtAnalysis.liability.id, debtAnalysis.minimumPayment)}
+                        className={styles.paymentButton}
+                      >
+                        💳 Pagar Mínimo
+                      </button>
+                      <button
+                        onClick={() => handleMakePayment(debtAnalysis.liability.id, debtAnalysis.suggestedPayment)}
+                        className={`${styles.paymentButton} ${styles.primary}`}
+                      >
+                        🚀 Pago Sugerido
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Sección de Comparación */}
+          {showComparison && (
+            <div className={styles.comparison}>
+              <h3 className={styles.sectionTitle}>
+                <span>⚖️</span>
+                {' '}
+                Comparación de Estrategias
+              </h3>
+              
+              <div className={styles.comparisonGrid}>
+                <div className={`${styles.comparisonCard} ${currentStrategy.type === 'snowball' ? styles.active : ''}`}>
+                  <div className={styles.comparisonTitle}>
+                    <span>❄️</span>
+                    {' '}
+                    Bola de Nieve
+                  </div>
+                  <p className={styles.comparisonDesc}>Menor saldo primero - Victoria psicológica</p>
+                  <div className={styles.comparisonStats}>
+                    <div className={styles.comparisonStat}>
+                      <span>Tiempo:</span>
+                      <span>{formatMonths(comparison.snowball.totalMonthsToPayOff)}</span>
+                    </div>
+                    <div className={styles.comparisonStat}>
+                      <span>Intereses ahorrados:</span>
+                      <span>{formatCurrency(comparison.snowball.totalInterestSaved)}</span>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className={`${styles.comparisonCard} ${currentStrategy.type === 'avalanche' ? styles.active : ''}`}>
+                  <div className={styles.comparisonTitle}>
+                    <span>🏔️</span>
+                    {' '}
+                    Avalancha
+                  </div>
+                  <p className={styles.comparisonDesc}>Mayor interés primero - Ahorro máximo</p>
+                  <div className={styles.comparisonStats}>
+                    <div className={styles.comparisonStat}>
+                      <span>Tiempo:</span>
+                      <span>{formatMonths(comparison.avalanche.totalMonthsToPayOff)}</span>
+                    </div>
+                    <div className={styles.comparisonStat}>
+                      <span>Intereses ahorrados:</span>
+                      <span>{formatCurrency(comparison.avalanche.totalInterestSaved)}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <div className={styles.recommendation}>
+                <div className={styles.recommendationIcon}>💡</div>
+                <div className={styles.recommendationContent}>
+                  <h4>Recomendación Personalizada</h4>
+                  <p>
+                    {comparison.avalanche.totalInterestSaved > comparison.snowball.totalInterestSaved
+                      ? `La estrategia Avalancha te ahorrará ${formatCurrency(
+                          comparison.avalanche.totalInterestSaved - comparison.snowball.totalInterestSaved
+                        )} más en intereses.`
+                      : 'Ambas estrategias tienen resultados similares. Elige la que más te motive.'
+                    }
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Sección de Cronograma */}
+          {showPaymentSchedule && (
+            <div className={styles.scheduleSection}>
+              <h3 className={styles.sectionTitle}>
+                <span>📅</span>
+                {' '}
+                Cronograma de Pagos (Próximos 12 meses)
+              </h3>
+              
+              <div className={styles.scheduleGrid}>
+                {paymentSchedule.slice(0, 6).map((month) => (
+                  <div key={month.month} className={styles.monthCard}>
+                    <div className={styles.monthHeader}>
+                      <span className={styles.monthNumber}>Mes {month.month}</span>
+                      <span className={styles.monthTotal}>{formatCurrency(month.totalPaid)}</span>
+                    </div>
+                    
+                    <div className={styles.monthBreakdown}>
+                      <div className={styles.breakdownItem}>
+                        <span>Principal:</span>
+                        <span>{formatCurrency(month.totalPrincipal)}</span>
+                      </div>
+                      <div className={styles.breakdownItem}>
+                        <span>Intereses:</span>
+                        <span>{formatCurrency(month.totalInterest)}</span>
+                      </div>
+                    </div>
+                    
+                    <div className={styles.monthPayments}>
+                      {month.payments.slice(0, 2).map((payment) => (
+                        <div key={payment.debtId} className={styles.paymentItem}>
+                          <span className={styles.debtNameSmall}>{payment.debtName}</span>
+                          <span className={styles.paymentAmount}>{formatCurrency(payment.payment)}</span>
+                        </div>
+                      ))}
+                      {month.payments.length > 2 && (
+                        <div className={styles.morePayments}>
+                          +{month.payments.length - 2} más
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </>
+      )}
+
+      {/* Estado de presupuesto vacío */}
+      {monthlyBudget === 0 && (
+        <div className={styles.prompt}>
+          <div className={styles.promptIcon}>💡</div>
+          <div className={styles.promptContent}>
+            <h3>¡Comienza tu planificación!</h3>
+            <p>Ingresa tu presupuesto mensual para ver tu plan de pago personalizado.</p>
+          </div>
+        </div>
+      )}
+
+      {/* Estado de presupuesto insuficiente */}
+      {monthlyBudget > 0 && availableForExtra < 0 && (
+        <div className={styles.insufficientBudget}>
+          <div className={styles.warningIcon}>⚠️</div>
+          <div className={styles.warningContent}>
+            <h3>Presupuesto Insuficiente</h3>
+            <p>
+              Necesitas al menos {formatCurrency(totalMinimums)} para cubrir los pagos mínimos.
+              Considera aumentar tus ingresos o reestructurar tus deudas.
+            </p>
           </div>
         </div>
       )}
     </div>
   );
 };
-
-export default DebtPaymentPlanner;

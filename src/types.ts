@@ -92,7 +92,9 @@ export interface Liability {
 }
 export type LiabilityFormData = Omit<Liability, 'id' | 'lastUpdated'>;
 
-// Nueva interfaz para pagos de deuda
+// === DEBT MANAGEMENT TYPES ===
+
+// Interfaz para pagos de deuda
 export interface DebtPayment {
   id: string;
   liabilityId: string;
@@ -102,15 +104,37 @@ export interface DebtPayment {
   paymentType: 'regular' | 'extra' | 'interest_only';
 }
 
-// Nueva interfaz para estrategias de pago de deudas
+// Tipos para estrategias de pago de deudas
+export type DebtPaymentStrategyType = 'snowball' | 'avalanche';
+
+// Interfaz para la estrategia de pago
 export interface DebtPaymentStrategy {
-  id: string;
+  type: DebtPaymentStrategyType;
   name: string;
-  type: 'snowball' | 'avalanche' | 'custom';
-  priorityOrder: string[]; // IDs de deudas en orden de prioridad
+  description: string;
   monthlyExtraBudget: number;
-  isActive: boolean;
-  description?: string;
-  createdAt: Timestamp;
-  lastUpdated: Timestamp;
+}
+
+// Interfaz para el análisis de una deuda individual
+export interface DebtAnalysis {
+  liability: Liability;
+  monthsToPayOff: number;
+  totalInterestPaid: number;
+  minimumPayment: number;
+  suggestedPayment: number;
+  priority: number;
+}
+
+// Interfaz para el plan de pago completo
+export interface DebtPaymentPlan {
+  strategy: DebtPaymentStrategy;
+  debts: DebtAnalysis[];
+  totalMonthsToPayOff: number;
+  totalInterestSaved: number;
+  nextDebtToFocus: Liability | null;
+  monthlyBudgetDistribution: {
+    debtId: string;
+    amount: number;
+    type: 'minimum' | 'extra';
+  }[];
 }

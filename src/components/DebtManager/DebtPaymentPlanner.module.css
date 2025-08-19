@@ -1,560 +1,958 @@
-/* DebtPaymentPlanner.module.css */
+/* Contenedor principal */
 .container {
-    width: 100%;
-    max-width: 1000px;
-    margin: 0 auto;
-    padding: 1rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
 }
 
+/* Header del planificador */
 .header {
-    margin-bottom: 2rem;
-}
-
-.titleSection {
-    text-align: center;
+  text-align: center;
+  padding: 32px 24px;
+  background: linear-gradient(135deg, var(--primary-accent), var(--secondary-accent));
+  border-radius: 20px;
+  color: white;
+  margin-bottom: 8px;
 }
 
 .title {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.75rem;
-    margin: 0 0 0.5rem 0;
-    color: var(--text-headings);
-    font-size: 2rem;
-    font-weight: 700;
+  font-size: 32px;
+  font-weight: 800;
+  margin: 0 0 8px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
 }
 
-.title svg {
-    color: var(--primary-accent);
-    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+.titleIcon {
+  font-size: 36px;
 }
 
 .subtitle {
-    color: var(--text-secondary);
-    font-size: 1.1rem;
-    margin: 0 auto;
-    max-width: 600px;
+  font-size: 18px;
+  margin: 0;
+  opacity: 0.9;
+  font-weight: 400;
 }
 
-/* Sección de presupuesto */
-.budgetSection {
-    background: linear-gradient(135deg, var(--background-card) 0%, var(--background-secondary) 100%);
-    border-radius: 16px;
-    padding: 2rem;
-    margin-bottom: 2rem;
-    border: 1px solid var(--border-color);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+/* Estado vacío mejorado */
+.emptyState {
+  text-align: center;
+  padding: 80px 32px;
+  background: var(--background-card);
+  border-radius: 20px;
+  border: 2px dashed var(--border-color);
+  margin-bottom: 24px;
 }
 
-html[data-theme='dark'] .budgetSection {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+.emptyIcon {
+  font-size: 80px;
+  margin-bottom: 24px;
+  display: block;
 }
 
-.budgetHeader {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-bottom: 1rem;
+.emptyTitle {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text-headings);
+  margin: 0 0 12px 0;
 }
 
-.budgetHeader h3 {
-    margin: 0;
-    color: var(--text-headings);
-    font-size: 1.25rem;
-    font-weight: 600;
+.emptyDescription {
+  font-size: 18px;
+  color: var(--text-secondary);
+  margin: 0;
+  line-height: 1.6;
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
-.budgetHeader svg {
-    color: var(--success-color);
+/* Configuración principal */
+.strategyConfig {
+  background: var(--background-card);
+  border-radius: 20px;
+  padding: 32px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--border-color);
 }
 
-.budgetInput {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    margin-bottom: 0.75rem;
+.configGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
 }
 
-.input {
-    flex: 1;
-    max-width: 200px;
-    padding: 0.875rem 1rem;
-    border: 2px solid var(--border-color);
-    border-radius: 12px;
-    font-size: 1.1rem;
-    font-weight: 600;
-    background-color: var(--background-primary);
-    color: var(--text-primary);
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+.sectionTitle {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-headings);
+  margin: 0 0 24px 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
-.input:focus {
-    outline: none;
-    border-color: var(--primary-accent);
-    box-shadow: 0 0 0 3px var(--primary-accent-focus-ring), 0 4px 12px rgba(0, 0, 0, 0.15);
-    transform: translateY(-1px);
+.sectionTitle span {
+  font-size: 28px;
 }
 
-.inputLabel {
-    color: var(--text-secondary);
-    font-weight: 500;
+/* Selección de estrategia mejorada */
+.strategySelection {
+  display: flex;
+  flex-direction: column;
 }
 
-.budgetHelp {
-    color: var(--text-secondary);
-    font-size: 0.9rem;
-    margin: 0;
-    font-style: italic;
+.strategyOptions {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
-/* Sección de estrategias */
-.strategiesSection {
-    margin-bottom: 2rem;
+.strategyButton {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+  background: var(--background-hover);
+  border: 2px solid var(--border-color);
+  border-radius: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: left;
+  width: 100%;
 }
 
-.strategiesHeader {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    margin-bottom: 1.5rem;
+.strategyButton:hover {
+  border-color: var(--primary-accent);
+  background: var(--primary-accent-light);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px var(--primary-accent-focus-ring);
 }
 
-.strategiesHeader h3 {
-    margin: 0;
-    color: var(--text-headings);
-    font-size: 1.5rem;
-    font-weight: 600;
-    flex: 1;
-}
-
-.strategiesHeader svg {
-    color: var(--primary-accent);
-}
-
-.toggleButton {
-    padding: 0.5rem 1rem;
-    background: var(--background-secondary);
-    color: var(--text-primary);
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 0.875rem;
-    font-weight: 500;
-    transition: all 0.2s ease;
-}
-
-.toggleButton:hover {
-    background: var(--background-hover);
-    border-color: var(--primary-accent);
-    transform: translateY(-1px);
-}
-
-.strategiesGrid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-    gap: 1.5rem;
-}
-
-.strategyCard {
-    background: var(--background-card);
-    border: 2px solid var(--border-color);
-    border-radius: 16px;
-    padding: 2rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    position: relative;
-    overflow: hidden;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-}
-
-.strategyCard::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(135deg, transparent 0%, rgba(var(--primary-accent-rgb), 0.05) 100%);
-    opacity: 0;
-    transition: opacity 0.3s ease;
-}
-
-.strategyCard:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-    border-color: var(--primary-accent);
-}
-
-.strategyCard:hover::before {
-    opacity: 1;
-}
-
-.strategyCard.selected {
-    border-color: var(--primary-accent);
-    background: linear-gradient(135deg, var(--background-card) 0%, rgba(var(--primary-accent-rgb), 0.08) 100%);
-    box-shadow: 0 4px 20px rgba(var(--primary-accent-rgb), 0.2);
-}
-
-.strategyCard.selected::before {
-    opacity: 1;
-}
-
-html[data-theme='dark'] .strategyCard {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-}
-
-html[data-theme='dark'] .strategyCard:hover {
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
-}
-
-.strategyHeader {
-    display: flex;
-    align-items: flex-start;
-    gap: 1rem;
-    margin-bottom: 1.5rem;
+.strategyButton.active {
+  border-color: var(--primary-accent);
+  background: var(--primary-accent);
+  color: white;
+  box-shadow: 0 8px 24px var(--primary-accent-focus-ring);
 }
 
 .strategyIcon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 56px;
-    height: 56px;
-    background: linear-gradient(135deg, var(--primary-accent) 0%, var(--primary-accent-hover) 100%);
-    border-radius: 16px;
-    color: white;
-    box-shadow: 0 4px 12px rgba(var(--primary-accent-rgb), 0.3);
-    flex-shrink: 0;
+  font-size: 32px;
+  flex-shrink: 0;
 }
 
 .strategyInfo {
-    flex: 1;
+  flex: 1;
 }
 
 .strategyName {
-    margin: 0 0 0.5rem 0;
-    color: var(--text-headings);
-    font-size: 1.25rem;
-    font-weight: 600;
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 6px;
+  color: inherit;
 }
 
-.strategyDescription {
-    margin: 0;
-    color: var(--text-secondary);
-    font-size: 0.95rem;
-    line-height: 1.5;
+.strategyDesc {
+  font-size: 14px;
+  opacity: 0.8;
+  line-height: 1.4;
+  color: inherit;
 }
 
-.strategyMetrics {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
+.strategyButton.active .strategyDesc {
+  opacity: 0.9;
 }
 
-.metric {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.75rem;
-    background: var(--background-secondary);
-    border-radius: 12px;
-    border: 1px solid var(--border-color);
+/* Configuración de presupuesto mejorada */
+.budgetConfig {
+  display: flex;
+  flex-direction: column;
 }
 
-.metric svg {
-    color: var(--primary-accent);
-    flex-shrink: 0;
+.budgetInputGroup {
+  position: relative;
+  margin-bottom: 16px;
+}
+
+.budgetInput {
+  width: 100%;
+  padding: 16px 50px 16px 20px;
+  font-size: 24px;
+  font-weight: 700;
+  border: 2px solid var(--border-color);
+  border-radius: 12px;
+  background: var(--background-main);
+  color: var(--text-primary);
+  transition: all 0.3s ease;
+}
+
+.budgetInput:focus {
+  outline: none;
+  border-color: var(--primary-accent);
+  box-shadow: 0 0 0 4px var(--primary-accent-focus-ring);
+}
+
+.currency {
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
+.budgetInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.budgetStat {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 16px;
+}
+
+.budgetStat span:first-child {
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.budgetStat span:last-child {
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.positive {
+  color: var(--success-color) !important;
+}
+
+.negative {
+  color: var(--error-color) !important;
+}
+
+.warningMessage {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: var(--warning-light);
+  color: var(--warning-color);
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  margin-top: 12px;
+}
+
+/* Tarjeta de resumen mejorada */
+.summaryCard {
+  background: var(--background-card);
+  border-radius: 20px;
+  padding: 32px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--border-color);
+}
+
+.summaryGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 24px;
+}
+
+.summaryMetric {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+  background: var(--background-hover);
+  border-radius: 16px;
+  border: 1px solid var(--border-color);
+}
+
+.metricIcon {
+  font-size: 32px;
+  flex-shrink: 0;
+}
+
+.metricInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 .metricLabel {
-    color: var(--text-secondary);
-    font-size: 0.875rem;
-    flex: 1;
+  font-size: 14px;
+  color: var(--text-secondary);
+  font-weight: 500;
 }
 
 .metricValue {
-    color: var(--text-primary);
-    font-weight: 600;
-    font-size: 0.875rem;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-headings);
 }
 
-.selectedIndicator {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    margin-top: 1rem;
-    padding: 0.75rem;
-    background: linear-gradient(135deg, var(--success-color) 0%, var(--success-color-hover) 100%);
-    color: white;
-    border-radius: 12px;
-    font-weight: 600;
-    font-size: 0.875rem;
-    box-shadow: 0 2px 8px rgba(var(--success-color-rgb), 0.3);
+/* Navegación por pestañas */
+.sectionTabs {
+  display: flex;
+  background: var(--background-card);
+  border-radius: 16px;
+  padding: 8px;
+  gap: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--border-color);
 }
 
-/* Sección de cálculos */
-.calculationsSection {
-    background: var(--background-card);
-    border-radius: 16px;
-    padding: 2rem;
-    border: 1px solid var(--border-color);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+.tab {
+  flex: 1;
+  padding: 16px 24px;
+  background: transparent;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 
-html[data-theme='dark'] .calculationsSection {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+.tab:hover {
+  background: var(--background-hover);
+  color: var(--text-primary);
 }
 
-.calculationsTitle {
-    margin: 0 0 2rem 0;
-    color: var(--text-headings);
-    font-size: 1.5rem;
-    font-weight: 600;
-    text-align: center;
+.tab.active {
+  background: var(--primary-accent);
+  color: white;
+  box-shadow: 0 4px 12px var(--primary-accent-focus-ring);
 }
 
-.paymentOrder {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    margin-bottom: 2rem;
+/* Plan de pago principal */
+.paymentPlan {
+  background: var(--background-card);
+  border-radius: 20px;
+  padding: 32px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--border-color);
 }
 
-.paymentStep {
-    display: flex;
-    align-items: flex-start;
-    gap: 1rem;
-    padding: 1.5rem;
-    background: var(--background-secondary);
-    border-radius: 12px;
-    border: 1px solid var(--border-color);
-    transition: all 0.2s ease;
+.debtList {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
-.paymentStep:hover {
-    transform: translateX(4px);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+.debtCard {
+  background: var(--background-hover);
+  border: 2px solid var(--border-color);
+  border-radius: 16px;
+  padding: 24px;
+  transition: all 0.3s ease;
 }
 
-.stepNumber {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 32px;
-    height: 32px;
-    background: linear-gradient(135deg, var(--primary-accent) 0%, var(--primary-accent-hover) 100%);
-    color: white;
-    border-radius: 50%;
-    font-weight: 700;
-    font-size: 0.875rem;
-    flex-shrink: 0;
-    box-shadow: 0 2px 6px rgba(var(--primary-accent-rgb), 0.3);
+.debtCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
 }
 
-.stepContent {
-    flex: 1;
+.debtCard.focused {
+  border-color: var(--primary-accent);
+  background: var(--primary-accent-light);
+  box-shadow: 0 8px 24px var(--primary-accent-focus-ring);
 }
 
-.stepHeader {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 0.75rem;
+.debtHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
 }
 
 .debtName {
-    margin: 0;
-    color: var(--text-headings);
-    font-size: 1.1rem;
-    font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.debtName h4 {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-headings);
+  margin: 0;
+}
+
+.priority {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: var(--primary-accent);
+  color: white;
+  border-radius: 50%;
+  font-size: 14px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.debtCard.focused .priority {
+  background: white;
+  color: var(--primary-accent);
+}
+
+.focusLabel {
+  background: var(--primary-accent);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .debtAmount {
-    color: var(--primary-accent);
-    font-weight: 700;
-    font-size: 1.1rem;
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--text-headings);
 }
 
-.stepDetails {
-    display: grid;
+.debtDetails {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.debtStat {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.statLabel {
+  font-size: 12px;
+  color: var(--text-secondary);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.statValue {
+  font-size: 16px;
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
+.paymentActions {
+  display: flex;
+  gap: 12px;
+}
+
+.paymentButton {
+  flex: 1;
+  padding: 12px 20px;
+  border: 2px solid var(--border-color);
+  border-radius: 12px;
+  background: var(--background-main);
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.paymentButton:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.paymentButton.primary {
+  background: var(--primary-accent);
+  border-color: var(--primary-accent);
+  color: white;
+}
+
+.paymentButton.primary:hover {
+  background: var(--primary-accent-dark);
+  box-shadow: 0 4px 16px var(--primary-accent-focus-ring);
+}
+
+/* Sección de comparación mejorada */
+.comparison {
+  background: var(--background-card);
+  border-radius: 20px;
+  padding: 32px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--border-color);
+}
+
+.comparisonGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.comparisonCard {
+  background: var(--background-hover);
+  border: 2px solid var(--border-color);
+  border-radius: 16px;
+  padding: 24px;
+  transition: all 0.3s ease;
+}
+
+.comparisonCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+.comparisonCard.active {
+  border-color: var(--primary-accent);
+  background: var(--primary-accent-light);
+  box-shadow: 0 8px 24px var(--primary-accent-focus-ring);
+}
+
+.comparisonTitle {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-headings);
+  margin: 0 0 8px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.comparisonDesc {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin: 0 0 20px 0;
+  line-height: 1.5;
+}
+
+.comparisonStats {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.comparisonStat {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+}
+
+.comparisonStat span:first-child {
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.comparisonStat span:last-child {
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.recommendation {
+  background: var(--info-light);
+  border: 1px solid var(--info-color);
+  border-radius: 16px;
+  padding: 24px;
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.recommendationIcon {
+  font-size: 32px;
+  flex-shrink: 0;
+}
+
+.recommendationContent h4 {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-headings);
+  margin: 0 0 8px 0;
+}
+
+.recommendationContent p {
+  font-size: 16px;
+  color: var(--text-primary);
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Sección de cronograma */
+.scheduleSection {
+  background: var(--background-card);
+  border-radius: 20px;
+  padding: 32px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--border-color);
+}
+
+.scheduleGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.monthCard {
+  background: var(--background-hover);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 20px;
+  transition: all 0.3s ease;
+}
+
+.monthCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+.monthHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.monthNumber {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-headings);
+}
+
+.monthTotal {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--primary-accent);
+}
+
+.monthBreakdown {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.breakdownItem {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+}
+
+.breakdownItem span:first-child {
+  color: var(--text-secondary);
+}
+
+.breakdownItem span:last-child {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.monthPayments {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.paymentItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  padding: 6px 8px;
+  background: var(--background-main);
+  border-radius: 6px;
+}
+
+.debtNameSmall {
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.paymentAmount {
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.morePayments {
+  font-size: 12px;
+  color: var(--text-secondary);
+  text-align: center;
+  font-style: italic;
+  padding: 4px;
+}
+
+/* Estados de prompt mejorados */
+.prompt, .insufficientBudget {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 32px;
+  border-radius: 20px;
+  text-align: left;
+}
+
+.prompt {
+  background: var(--info-light);
+  border: 2px solid var(--info-color);
+}
+
+.insufficientBudget {
+  background: var(--error-light);
+  border: 2px solid var(--error-color);
+}
+
+.promptIcon, .warningIcon {
+  font-size: 48px;
+  flex-shrink: 0;
+}
+
+.promptContent, .warningContent {
+  flex: 1;
+}
+
+.promptContent h3, .warningContent h3 {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-headings);
+  margin: 0 0 8px 0;
+}
+
+.promptContent p, .warningContent p {
+  font-size: 16px;
+  color: var(--text-primary);
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Responsive design mejorado */
+@media (max-width: 1024px) {
+  .container {
+    padding: 0 16px;
+    gap: 20px;
+  }
+  
+  .configGrid {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+  
+  .summaryGrid {
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 0.5rem;
+    gap: 16px;
+  }
+  
+  .comparisonGrid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  
+  .scheduleGrid {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+  }
 }
 
-.stepDetail {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 0.875rem;
-}
-
-.stepDetail span:first-child {
-    color: var(--text-secondary);
-}
-
-.stepDetail span:last-child {
-    color: var(--text-primary);
-    font-weight: 600;
-}
-
-.strategyTips {
-    background: linear-gradient(135deg, var(--background-secondary) 0%, var(--background-primary) 100%);
-    border-radius: 12px;
-    padding: 1.5rem;
-    border: 1px solid var(--border-color);
-}
-
-.strategyTips h4 {
-    margin: 0 0 1rem 0;
-    color: var(--text-headings);
-    font-size: 1.1rem;
-    font-weight: 600;
-}
-
-.strategyTips ul {
-    margin: 0;
-    padding-left: 1.5rem;
-    color: var(--text-secondary);
-    line-height: 1.6;
-}
-
-.strategyTips li {
-    margin-bottom: 0.5rem;
-}
-
-.strategyTips li:last-child {
-    margin-bottom: 0;
-}
-
-/* Estado vacío */
-.emptyState {
-    text-align: center;
-    padding: 4rem 2rem;
-    color: var(--text-secondary);
-}
-
-.emptyState svg {
-    color: var(--primary-accent);
-    opacity: 0.6;
-    margin-bottom: 1rem;
-}
-
-.emptyState h3 {
-    margin: 0 0 0.5rem 0;
-    color: var(--text-headings);
-    font-size: 1.5rem;
-}
-
-.emptyState p {
-    margin: 0 auto;
-    font-size: 1rem;
-    max-width: 400px;
-}
-
-/* Responsive Design */
 @media (max-width: 768px) {
-    .container {
-        padding: 0.5rem;
-    }
-
-    .strategiesGrid {
-        grid-template-columns: 1fr;
-        gap: 1rem;
-    }
-
-    .strategyCard {
-        padding: 1.5rem;
-    }
-
-    .budgetSection {
-        padding: 1.5rem;
-    }
-
-    .budgetInput {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 0.5rem;
-    }
-
-    .input {
-        max-width: none;
-    }
-
-    .stepDetails {
-        grid-template-columns: 1fr;
-        gap: 0.25rem;
-    }
-
-    .calculationsSection {
-        padding: 1.5rem;
-    }
-
-    .title {
-        font-size: 1.5rem;
-    }
-
-    .subtitle {
-        font-size: 1rem;
-    }
+  .header {
+    padding: 24px 20px;
+  }
+  
+  .title {
+    font-size: 28px;
+  }
+  
+  .subtitle {
+    font-size: 16px;
+  }
+  
+  .strategyConfig,
+  .summaryCard,
+  .paymentPlan,
+  .comparison,
+  .scheduleSection {
+    padding: 24px;
+  }
+  
+  .strategyOptions {
+    gap: 12px;
+  }
+  
+  .strategyButton {
+    padding: 16px;
+  }
+  
+  .strategyIcon {
+    font-size: 28px;
+  }
+  
+  .strategyName {
+    font-size: 16px;
+  }
+  
+  .strategyDesc {
+    font-size: 13px;
+  }
+  
+  .budgetInput {
+    font-size: 20px;
+    padding: 14px 45px 14px 16px;
+  }
+  
+  .currency {
+    font-size: 20px;
+    right: 16px;
+  }
+  
+  .sectionTabs {
+    flex-direction: column;
+    gap: 4px;
+  }
+  
+  .tab {
+    padding: 12px 16px;
+    font-size: 14px;
+  }
+  
+  .debtCard {
+    padding: 20px;
+  }
+  
+  .debtHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  .debtDetails {
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 12px;
+  }
+  
+  .paymentActions {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .recommendation {
+    flex-direction: column;
+    text-align: center;
+    gap: 12px;
+  }
+  
+  .prompt, .insufficientBudget {
+    flex-direction: column;
+    text-align: center;
+    gap: 16px;
+    padding: 24px 20px;
+  }
+  
+  .promptIcon, .warningIcon {
+    font-size: 40px;
+  }
 }
 
 @media (max-width: 480px) {
-    .paymentStep {
-        padding: 1rem;
-    }
-
-    .stepHeader {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0.5rem;
-    }
-
-    .strategiesHeader {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 1rem;
-    }
-
-    .toggleButton {
-        align-self: center;
-    }
-}
-
-/* Animaciones */
-@keyframes slideIn {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.calculationsSection.animated {
-    animation: slideIn 0.3s ease-out;
-}
-
-.paymentStep.animated {
-    animation: slideIn 0.3s ease-out;
-}
-
-.paymentStep.animated:nth-child(2) {
-    animation-delay: 0.1s;
-}
-
-.paymentStep.animated:nth-child(3) {
-    animation-delay: 0.2s;
-}
-
-.paymentStep.animated:nth-child(4) {
-    animation-delay: 0.3s;
-}
-
-.paymentStep.animated:nth-child(5) {
-    animation-delay: 0.4s;
+  .container {
+    gap: 16px;
+  }
+  
+  .emptyState {
+    padding: 60px 20px;
+  }
+  
+  .emptyIcon {
+    font-size: 64px;
+  }
+  
+  .emptyTitle {
+    font-size: 24px;
+  }
+  
+  .emptyDescription {
+    font-size: 16px;
+  }
+  
+  .header {
+    padding: 20px 16px;
+  }
+  
+  .title {
+    font-size: 24px;
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .titleIcon {
+    font-size: 32px;
+  }
+  
+  .subtitle {
+    font-size: 14px;
+  }
+  
+  .sectionTitle {
+    font-size: 20px;
+    gap: 8px;
+  }
+  
+  .sectionTitle span {
+    font-size: 24px;
+  }
+  
+  .summaryGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .summaryMetric {
+    padding: 16px;
+  }
+  
+  .metricIcon {
+    font-size: 28px;
+  }
+  
+  .metricValue {
+    font-size: 18px;
+  }
+  
+  .scheduleGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .monthCard {
+    padding: 16px;
+  }
+  
+  .debtCard {
+    padding: 16px;
+  }
+  
+  .debtDetails {
+    grid-template-columns: 1fr 1fr;
+  }
+  
+  .strategyButton {
+    padding: 12px;
+  }
 }

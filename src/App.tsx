@@ -6,7 +6,6 @@ import { AppProvider } from './contexts/AppContext';
 import { Layout, type Page } from './components/Layout/Layout';
 import { PageLoader } from './components/PageLoader/PageLoader';
 import { Toaster } from 'react-hot-toast';
-import './index.css';
 import { PAGE_ROUTES } from './constants';
 
 // Lazy loading de páginas para mejorar el code splitting

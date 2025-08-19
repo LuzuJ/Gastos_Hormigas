@@ -1,356 +1,248 @@
-/* DebtMotivationCard.module.css */
 .motivationCard {
-    background: linear-gradient(135deg, var(--background-card) 0%, var(--background-secondary) 100%);
-    border-radius: 16px;
-    padding: 2rem;
-    margin-bottom: 2rem;
-    border: 1px solid var(--border-color);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-    position: relative;
-    overflow: hidden;
+  background: var(--primary-accent);
+  border-radius: 16px;
+  padding: 24px;
+  color: white;
+  box-shadow: 0 10px 30px var(--primary-accent-focus-ring);
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
 }
 
 .motivationCard::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: linear-gradient(90deg, var(--primary-accent) 0%, var(--success-color) 50%, var(--info-color) 100%);
-}
-
-html[data-theme='dark'] .motivationCard {
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M 20 0 L 0 0 0 20" fill="none" stroke="rgba(255,255,255,0.03)" stroke-width="1"/></pattern></defs><rect width="100%" height="100%" fill="url(%23grid)"/></svg>');
+  pointer-events: none;
 }
 
 .header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 1.5rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 20px;
+  position: relative;
+  z-index: 1;
+}
+
+.iconContainer {
+  font-size: 32px;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+  flex-shrink: 0;
 }
 
 .titleSection {
-    display: flex;
-    align-items: flex-start;
-    gap: 1rem;
-    flex: 1;
-}
-
-.iconWrapper {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 48px;
-    height: 48px;
-    background: linear-gradient(135deg, var(--primary-accent) 0%, var(--primary-accent-hover) 100%);
-    border-radius: 12px;
-    color: white;
-    box-shadow: 0 4px 12px rgba(var(--primary-accent-rgb), 0.3);
-    flex-shrink: 0;
+  flex: 1;
 }
 
 .title {
-    margin: 0 0 0.25rem 0;
-    color: var(--text-headings);
-    font-size: 1.25rem;
-    font-weight: 600;
-    line-height: 1.2;
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0 0 4px 0;
+  color: white;
 }
 
-.strategy {
-    margin: 0;
-    color: var(--text-secondary);
-    font-size: 0.875rem;
-    font-style: italic;
-}
-
-.progressNumber {
-    font-size: 2rem;
-    font-weight: 700;
-    color: var(--primary-accent);
-    text-align: right;
-    line-height: 1;
-}
-
-.motivationMessage {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 1rem;
-    background: linear-gradient(135deg, rgba(var(--success-color-rgb), 0.1) 0%, rgba(var(--primary-accent-rgb), 0.1) 100%);
-    border-radius: 12px;
-    margin-bottom: 1.5rem;
-    border: 1px solid rgba(var(--success-color-rgb), 0.2);
-}
-
-.motivationMessage svg {
-    color: var(--success-color);
-    flex-shrink: 0;
-}
-
-.motivationMessage span {
-    color: var(--text-primary);
-    font-weight: 500;
-    font-size: 0.95rem;
+.subtitle {
+  font-size: 14px;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1.4;
 }
 
 .progressSection {
-    margin-bottom: 1.5rem;
+  margin-bottom: 20px;
+  position: relative;
+  z-index: 1;
+}
+
+.progressHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.progressLabel {
+  font-size: 14px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.progressPercentage {
+  font-size: 18px;
+  font-weight: 700;
+  color: white;
+}
+
+.progressBarContainer {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  height: 12px;
+  overflow: hidden;
+  margin-bottom: 12px;
+  position: relative;
 }
 
 .progressBar {
-    height: 12px;
-    background: var(--background-secondary);
-    border-radius: 6px;
-    overflow: hidden;
-    margin-bottom: 0.75rem;
-    border: 1px solid var(--border-color);
-    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+  height: 100%;
+  background: var(--success-color);
+  border-radius: 8px;
+  transition: width 0.6s ease;
+  position: relative;
+  overflow: hidden;
+  width: var(--progress-width, 0%);
 }
 
-.progressFill {
-    height: 100%;
-    border-radius: 6px;
-    transition: all 0.3s ease;
-    position: relative;
-    background: linear-gradient(90deg, currentColor 0%, rgba(255, 255, 255, 0.2) 50%, currentColor 100%);
-}
-
-.progressFill::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.3) 50%, transparent 100%);
-    animation: shimmer 2s infinite;
+.progressBar::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  animation: shimmer 2s infinite;
 }
 
 @keyframes shimmer {
-    0% { transform: translateX(-100%); }
-    100% { transform: translateX(100%); }
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
 }
 
-.progressLabels {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.875rem;
-    color: var(--text-secondary);
-    font-weight: 500;
+.progressStats {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
 }
 
-.metricsGrid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 1rem;
-    margin-bottom: 1.5rem;
+.stat {
+  flex: 1;
+  text-align: center;
 }
 
-.metric {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 1rem;
-    background: var(--background-secondary);
-    border-radius: 12px;
-    border: 1px solid var(--border-color);
-    transition: all 0.2s ease;
+.statLabel {
+  display: block;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 2px;
 }
 
-.metric:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+.statValue {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: white;
 }
 
-.metricIcon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+.nextTarget {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+  backdrop-filter: blur(10px);
+  position: relative;
+  z-index: 1;
+}
+
+.nextTargetTitle {
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0 0 8px 0;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.nextTargetInfo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.nextTargetName {
+  font-size: 16px;
+  font-weight: 500;
+  color: white;
+}
+
+.nextTargetAmount {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--success-color);
+}
+
+.savings {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(34, 197, 94, 0.2);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  border-radius: 12px;
+  padding: 12px 16px;
+  position: relative;
+  z-index: 1;
+}
+
+.savingsIcon {
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.savingsText {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.savingsText strong {
+  color: var(--success-color);
+  font-weight: 700;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .motivationCard {
+    padding: 20px;
+  }
+  
+  .header {
+    gap: 12px;
+  }
+  
+  .iconContainer {
     width: 40px;
     height: 40px;
-    background: linear-gradient(135deg, var(--info-color) 0%, var(--info-color-hover) 100%);
-    border-radius: 8px;
-    color: white;
-    flex-shrink: 0;
-}
-
-.metricContent {
-    display: flex;
+    font-size: 24px;
+  }
+  
+  .title {
+    font-size: 18px;
+  }
+  
+  .progressStats {
     flex-direction: column;
-    gap: 0.125rem;
-    flex: 1;
-}
-
-.metricValue {
-    font-size: 1rem;
-    font-weight: 700;
-    color: var(--text-primary);
-    line-height: 1.2;
-}
-
-.metricLabel {
-    font-size: 0.75rem;
-    color: var(--text-secondary);
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.nextMilestone {
-    background: linear-gradient(135deg, var(--background-primary) 0%, var(--background-secondary) 100%);
-    border-radius: 12px;
-    padding: 1.25rem;
-    margin-bottom: 1.5rem;
-    border: 2px solid var(--primary-accent);
-    position: relative;
-}
-
-.nextMilestone::before {
-    content: '🎯';
-    position: absolute;
-    top: -8px;
-    left: 16px;
-    background: var(--background-card);
-    padding: 0 8px;
-    font-size: 1rem;
-}
-
-.milestoneHeader h4 {
-    margin: 0 0 0.75rem 0;
-    color: var(--primary-accent);
-    font-size: 1rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.milestoneContent {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-}
-
-.milestoneInfo {
-    display: flex;
+    gap: 8px;
+  }
+  
+  .stat {
+    text-align: left;
+  }
+  
+  .nextTargetInfo {
     flex-direction: column;
-    gap: 0.25rem;
-}
-
-.milestoneName {
-    font-weight: 600;
-    color: var(--text-primary);
-    font-size: 1rem;
-}
-
-.milestoneAmount {
-    font-weight: 700;
-    color: var(--primary-accent);
-    font-size: 1.1rem;
-}
-
-.milestoneDate {
-    color: var(--text-secondary);
-    font-size: 0.875rem;
-    font-weight: 500;
-}
-
-.encouragement {
-    background: linear-gradient(135deg, rgba(var(--warning-color-rgb), 0.1) 0%, rgba(var(--info-color-rgb), 0.1) 100%);
-    border-radius: 12px;
-    padding: 1rem;
-    border: 1px solid rgba(var(--warning-color-rgb), 0.2);
-    text-align: center;
-}
-
-.encouragement p {
-    margin: 0;
-    color: var(--text-primary);
-    font-weight: 500;
-    font-size: 0.95rem;
-    line-height: 1.4;
-    font-style: italic;
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-    .motivationCard {
-        padding: 1.5rem;
-    }
-
-    .header {
-        flex-direction: column;
-        gap: 1rem;
-        align-items: stretch;
-    }
-
-    .titleSection {
-        align-items: center;
-    }
-
-    .progressNumber {
-        text-align: center;
-        font-size: 1.75rem;
-    }
-
-    .metricsGrid {
-        grid-template-columns: 1fr;
-        gap: 0.75rem;
-    }
-
-    .milestoneContent {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0.75rem;
-    }
-
-    .title {
-        font-size: 1.1rem;
-    }
-}
-
-@media (max-width: 480px) {
-    .motivationCard {
-        padding: 1rem;
-    }
-
-    .titleSection {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0.75rem;
-    }
-
-    .iconWrapper {
-        width: 40px;
-        height: 40px;
-    }
-
-    .progressNumber {
-        font-size: 1.5rem;
-    }
-
-    .motivationMessage {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0.5rem;
-        text-align: left;
-    }
-}
-
-/* Animations */
-@keyframes pulseGlow {
-    0%, 100% {
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-    }
-    50% {
-        box-shadow: 0 4px 30px rgba(var(--primary-accent-rgb), 0.3);
-    }
-}
-
-.motivationCard:hover {
-    animation: pulseGlow 2s ease-in-out infinite;
+    align-items: flex-start;
+    gap: 4px;
+  }
 }

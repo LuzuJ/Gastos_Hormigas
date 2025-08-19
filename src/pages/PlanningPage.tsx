@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { IncomeForm } from '../components/IncomeForm/IncomeForm';
 import { FixedExpenses } from '../components/FixedExpenses/FixedExpenses';
-import { SavingsGoals } from '../components/SavingsGoals/SavingsGoals';
-import { NetWorthSummary } from '../components/NetWorthSummary/NetWorthSummary';
 import { NetWorthManager } from '../components/NetWorthManager/NetWorthManager';
-import DebtManager from '../components/DebtManager/DebtManager';
 import { GuestBlockedFeature } from '../components/GuestBlockedFeature/GuestBlockedFeature';
 import { LoadingStateWrapper } from '../components/LoadingState/LoadingState';
+import { NetWorthSection } from '../components/PlanningPage/NetWorthSection';
+import { SavingsGoalsSection } from '../components/PlanningPage/SavingsGoalsSection';
+import { DebtManagerSection } from '../components/PlanningPage/DebtManagerSection';
 import {
     useCategoriesContext,
     useFinancialsContext,
@@ -20,7 +20,6 @@ export interface PlanningPageProps {
 }
 
 export const PlanningPage: React.FC<PlanningPageProps> = ({ isGuest }) => {
-    const [monthlyExtraBudget, setMonthlyExtraBudget] = useState(0);
     
     const { 
         categories, 
@@ -60,8 +59,6 @@ export const PlanningPage: React.FC<PlanningPageProps> = ({ isGuest }) => {
         addLiability, 
         updateLiability,
         deleteLiability,
-        makeDebtPayment,
-        getDebtAnalysis,
         loadingNetWorth,
         netWorthError,
         clearNetWorthError
@@ -77,20 +74,18 @@ export const PlanningPage: React.FC<PlanningPageProps> = ({ isGuest }) => {
                 <h2 className={`section-title ${styles.title}`}>Planificación Financiera</h2>
             </div>
             
-            <LoadingStateWrapper
-                loading={loadingNetWorth}
-                error={netWorthError}
-                onDismissError={clearNetWorthError}
-                loadingMessage="Cargando datos de patrimonio..."
-            >
+            {!isGuest && (
                 <div className={styles.section}>
-                    <NetWorthSummary 
+                    <NetWorthSection
                         totalAssets={totalAssets}
                         totalLiabilities={totalLiabilities}
                         netWorth={netWorth}
+                        loading={loadingNetWorth}
+                        error={netWorthError}
+                        onDismissError={clearNetWorthError}
                     />
                 </div>
-            </LoadingStateWrapper>
+            )}
             
             {isGuest ? (
                 <div className={styles.section}>
@@ -121,15 +116,11 @@ export const PlanningPage: React.FC<PlanningPageProps> = ({ isGuest }) => {
                         </div>
 
                         <div className={styles.section}>
-                            <DebtManager
+                            <DebtManagerSection
                                 liabilities={liabilities}
                                 onAddLiability={addLiability}
-                                onDeleteLiability={deleteLiability}
                                 onUpdateLiability={updateLiability}
-                                onMakePayment={makeDebtPayment}
-                                getDebtAnalysis={getDebtAnalysis}
-                                monthlyExtraBudget={monthlyExtraBudget}
-                                onUpdateExtraBudget={setMonthlyExtraBudget}
+                                onDeleteLiability={deleteLiability}
                             />
                         </div>
 
@@ -151,23 +142,19 @@ export const PlanningPage: React.FC<PlanningPageProps> = ({ isGuest }) => {
                             />
                         </div>
                         
-                        <LoadingStateWrapper
-                            loading={loadingSavingsGoals}
-                            error={savingsGoalsError}
-                            onDismissError={clearSavingsGoalsError}
-                            loadingMessage="Cargando metas de ahorro..."
-                        >
-                            <div className={styles.section}>
-                                <SavingsGoals 
-                                    savingsGoals={savingsGoals}
-                                    onAdd={addSavingsGoal}
-                                    onDelete={async (id: string) => { await deleteSavingsGoal(id); }}
-                                    onAddFunds={addToSavingsGoal}
-                                    onRemoveFunds={removeFromSavingsGoal}
-                                    isGuest={isGuest}
-                                />
-                            </div>
-                        </LoadingStateWrapper>
+                        <div className={styles.section}>
+                            <SavingsGoalsSection
+                                savingsGoals={savingsGoals}
+                                onAdd={addSavingsGoal}
+                                onDelete={deleteSavingsGoal}
+                                onAddFunds={addToSavingsGoal}
+                                onRemoveFunds={removeFromSavingsGoal}
+                                loading={loadingSavingsGoals}
+                                error={savingsGoalsError}
+                                onDismissError={clearSavingsGoalsError}
+                                isGuest={isGuest}
+                            />
+                        </div>
                     </>
                 </LoadingStateWrapper>
             )}

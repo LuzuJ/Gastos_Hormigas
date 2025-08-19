@@ -13,12 +13,30 @@ const firebaseConfig = {
   measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
 };
 
-// Se realiza una validación para asegurar que las variables de entorno se cargaron
-if (!firebaseConfig.apiKey) {
-    throw new Error("No se encontraron las variables de entorno de Firebase. Asegúrate de tener un archivo .env con el prefijo VITE_");
-}
+// Configuración de desarrollo por defecto cuando no hay variables de entorno
+const defaultDevConfig = {
+  apiKey: "demo-api-key",
+  authDomain: "demo-project.firebaseapp.com",
+  projectId: "demo-project",
+  storageBucket: "demo-project.appspot.com",
+  messagingSenderId: "123456789",
+  appId: "1:123456789:web:abcdef",
+  measurementId: "G-ABCDEF"
+};
 
-const app = initializeApp(firebaseConfig);
+// Usar configuración de desarrollo si no hay variables de entorno
+const config = firebaseConfig.apiKey ? firebaseConfig : defaultDevConfig;
+
+console.log('Firebase config status:', {
+  hasApiKey: !!firebaseConfig.apiKey,
+  usingDevConfig: !firebaseConfig.apiKey,
+  projectId: config.projectId
+});
+
+const app = initializeApp(config);
 
 export const auth = getAuth(app);
 export const db = getFirestore(app);
+
+// Indicador para saber si estamos en modo de desarrollo
+export const isDevMode = !firebaseConfig.apiKey;

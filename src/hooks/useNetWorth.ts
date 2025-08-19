@@ -2,7 +2,6 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { assetService } from '../services/assetService';
 import { liabilityService } from '../services/liabilityService';
 import { useLoadingState, handleAsyncOperation } from './useLoadingState';
-import { useDebtPayments } from './useDebtPayments';
 import type { Asset, Liability, AssetFormData, LiabilityFormData } from '../types';
 
 export const useNetWorth = (userId: string | null) => {
@@ -15,9 +14,6 @@ export const useNetWorth = (userId: string | null) => {
         stopLoading, 
         clearError 
     } = useLoadingState(true);
-
-    // Integrar el hook de pagos de deuda
-    const debtPaymentsHook = useDebtPayments(userId);
 
     useEffect(() => {
         if (!userId) {
@@ -123,30 +119,7 @@ export const useNetWorth = (userId: string | null) => {
         );
     }, [userId]);
 
-    // Funciones adicionales para análisis de deudas
-    const getDebtAnalysis = useCallback(() => {
-        return liabilities.map(liability => {
-            const progress = debtPaymentsHook.getPaymentProgress(liability);
-            const monthlyPayment = liability.monthlyPayment || 0;
-            const interestRate = liability.interestRate || 0;
-            
-            // Estimación simple de tiempo para pagar (sin considerar interés compuesto)
-            let monthsToPayOff = 0;
-            if (monthlyPayment > 0 && progress.remainingAmount > 0) {
-                monthsToPayOff = Math.ceil(progress.remainingAmount / monthlyPayment);
-            }
-
-            return {
-                liability,
-                ...progress,
-                monthlyPayment,
-                interestRate,
-                monthsToPayOff,
-                totalInterestPaid: monthsToPayOff * monthlyPayment - progress.remainingAmount
-            };
-        });
-    }, [liabilities, debtPaymentsHook]);
-
+    // Funciones adicionales para análisis básico de deudas
     const getTotalMonthlyDebtPayments = useMemo(() => {
         return liabilities.reduce((total, liability) => {
             return total + (liability.monthlyPayment || 0);
@@ -156,12 +129,9 @@ export const useNetWorth = (userId: string | null) => {
     return {
         assets,
         liabilities,
-        loadingNetWorth: loadingNetWorth || debtPaymentsHook.loadingPayments,
-        netWorthError: netWorthError || debtPaymentsHook.paymentsError,
-        clearNetWorthError: () => {
-            clearError();
-            debtPaymentsHook.clearPaymentsError();
-        },
+        loadingNetWorth,
+        netWorthError,
+        clearNetWorthError: clearError,
         totalAssets,
         totalLiabilities,
         netWorth,
@@ -171,9 +141,6 @@ export const useNetWorth = (userId: string | null) => {
         addLiability,
         updateLiability,
         deleteLiability,
-        // Funcionalidades de pagos de deuda
-        ...debtPaymentsHook,
-        getDebtAnalysis,
         getTotalMonthlyDebtPayments
     };
 };

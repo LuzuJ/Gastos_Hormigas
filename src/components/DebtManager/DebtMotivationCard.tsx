@@ -1,159 +1,107 @@
 import React from 'react';
+import type { DebtPaymentPlan } from '../../types';
 import styles from './DebtMotivationCard.module.css';
-import { Trophy, TrendingUp, Calendar, DollarSign, Zap } from 'lucide-react';
 
 interface DebtMotivationCardProps {
-  totalDebt: number;
-  totalPaid: number;
-  estimatedMonthsRemaining: number;
-  interestSaved: number;
-  strategyName?: string;
-  nextMilestone?: {
-    debtName: string;
-    amount: number;
-    estimatedCompletion: string;
-  };
+  paymentPlan: DebtPaymentPlan;
+  progress: number;
+  motivationalMessage: string;
+  totalDebtAmount: number;
 }
 
-const DebtMotivationCard: React.FC<DebtMotivationCardProps> = ({
-  totalDebt,
-  totalPaid,
-  estimatedMonthsRemaining,
-  interestSaved,
-  strategyName,
-  nextMilestone
+export const DebtMotivationCard: React.FC<DebtMotivationCardProps> = ({
+  paymentPlan,
+  progress,
+  motivationalMessage,
+  totalDebtAmount
 }) => {
-  const progressPercentage = totalDebt > 0 ? (totalPaid / totalDebt) * 100 : 0;
-  const remainingDebt = totalDebt - totalPaid;
-
-  const formatCurrency = (value: number) => {
-    return value.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('es-ES', {
+      style: 'currency',
+      currency: 'EUR',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(amount);
   };
 
-  const getMotivationalMessage = () => {
-    if (progressPercentage === 0) {
-      return "¡Es hora de empezar tu camino hacia la libertad financiera!";
-    } else if (progressPercentage < 25) {
-      return "¡Cada pago te acerca más a tu meta!";
-    } else if (progressPercentage < 50) {
-      return "¡Vas por buen camino! Ya tienes un cuarto del camino recorrido.";
-    } else if (progressPercentage < 75) {
-      return "¡Excelente progreso! Ya estás más cerca de la libertad financiera.";
-    } else if (progressPercentage < 100) {
-      return "¡Casi lo logras! Estás en la recta final.";
-    } else {
-      return "¡Felicitaciones! Has alcanzado la libertad financiera.";
+  const formatMonths = (months: number) => {
+    if (months === Infinity || isNaN(months)) return 'No aplicable';
+    if (months <= 12) return `${months} meses`;
+    
+    const years = Math.floor(months / 12);
+    const remainingMonths = months % 12;
+    
+    if (remainingMonths === 0) {
+      return `${years} ${years === 1 ? 'año' : 'años'}`;
     }
+    
+    return `${years}a ${remainingMonths}m`;
   };
 
-  const getProgressColor = () => {
-    if (progressPercentage < 25) return 'var(--danger-color)';
-    if (progressPercentage < 50) return 'var(--warning-color)';
-    if (progressPercentage < 75) return 'var(--info-color)';
-    return 'var(--success-color)';
-  };
+  const progressPercentage = Math.round(progress * 100);
+  const remainingDebt = totalDebtAmount * (1 - progress);
 
   return (
     <div className={styles.motivationCard}>
       <div className={styles.header}>
+        <div className={styles.iconContainer}>
+          {paymentPlan.strategy.type === 'snowball' ? '❄️' : '🏔️'}
+        </div>
         <div className={styles.titleSection}>
-          <div className={styles.iconWrapper}>
-            <Trophy size={24} />
-          </div>
-          <div>
-            <h3 className={styles.title}>Tu Progreso Hacia la Libertad Financiera</h3>
-            {strategyName && (
-              <p className={styles.strategy}>Estrategia: {strategyName}</p>
-            )}
-          </div>
+          <h3 className={styles.title}>{paymentPlan.strategy.name}</h3>
+          <p className={styles.subtitle}>{motivationalMessage}</p>
         </div>
-        <div className={styles.progressNumber}>
-          {progressPercentage.toFixed(1)}%
-        </div>
-      </div>
-
-      <div className={styles.motivationMessage}>
-        <Zap size={20} />
-        <span>{getMotivationalMessage()}</span>
       </div>
 
       <div className={styles.progressSection}>
-        <div className={styles.progressBar}>
+        <div className={styles.progressHeader}>
+          <span className={styles.progressLabel}>Progreso Total</span>
+          <span className={styles.progressPercentage}>{progressPercentage}%</span>
+        </div>
+        
+        <div className={styles.progressBarContainer}>
           <div 
-            className={styles.progressFill}
-            style={{ 
-              width: `${Math.min(100, progressPercentage)}%`,
-              backgroundColor: getProgressColor()
-            }}
+            className={styles.progressBar}
+            style={{ '--progress-width': `${progressPercentage}%` } as React.CSSProperties}
           />
         </div>
-        <div className={styles.progressLabels}>
-          <span>{formatCurrency(totalPaid)} pagado</span>
-          <span>{formatCurrency(remainingDebt)} restante</span>
+        
+        <div className={styles.progressStats}>
+          <div className={styles.stat}>
+            <span className={styles.statLabel}>Restante</span>
+            <span className={styles.statValue}>{formatCurrency(remainingDebt)}</span>
+          </div>
+          <div className={styles.stat}>
+            <span className={styles.statLabel}>Tiempo estimado</span>
+            <span className={styles.statValue}>{formatMonths(paymentPlan.totalMonthsToPayOff)}</span>
+          </div>
         </div>
       </div>
 
-      <div className={styles.metricsGrid}>
-        <div className={styles.metric}>
-          <div className={styles.metricIcon}>
-            <Calendar size={20} />
-          </div>
-          <div className={styles.metricContent}>
-            <span className={styles.metricValue}>
-              {estimatedMonthsRemaining === 999 ? 'N/A' : `${estimatedMonthsRemaining} meses`}
+      {paymentPlan.nextDebtToFocus && (
+        <div className={styles.nextTarget}>
+          <h4 className={styles.nextTargetTitle}>🎯 Próximo objetivo</h4>
+          <div className={styles.nextTargetInfo}>
+            <span className={styles.nextTargetName}>
+              {paymentPlan.nextDebtToFocus.name}
             </span>
-            <span className={styles.metricLabel}>Tiempo estimado</span>
-          </div>
-        </div>
-
-        <div className={styles.metric}>
-          <div className={styles.metricIcon}>
-            <TrendingUp size={20} />
-          </div>
-          <div className={styles.metricContent}>
-            <span className={styles.metricValue}>{formatCurrency(interestSaved)}</span>
-            <span className={styles.metricLabel}>Interés ahorrado</span>
-          </div>
-        </div>
-
-        <div className={styles.metric}>
-          <div className={styles.metricIcon}>
-            <DollarSign size={20} />
-          </div>
-          <div className={styles.metricContent}>
-            <span className={styles.metricValue}>{formatCurrency(totalDebt)}</span>
-            <span className={styles.metricLabel}>Deuda total</span>
-          </div>
-        </div>
-      </div>
-
-      {nextMilestone && (
-        <div className={styles.nextMilestone}>
-          <div className={styles.milestoneHeader}>
-            <h4>Próxima Meta:</h4>
-          </div>
-          <div className={styles.milestoneContent}>
-            <div className={styles.milestoneInfo}>
-              <span className={styles.milestoneName}>{nextMilestone.debtName}</span>
-              <span className={styles.milestoneAmount}>{formatCurrency(nextMilestone.amount)}</span>
-            </div>
-            <div className={styles.milestoneDate}>
-              Estimado: {nextMilestone.estimatedCompletion}
-            </div>
+            <span className={styles.nextTargetAmount}>
+              {formatCurrency(paymentPlan.nextDebtToFocus.amount)}
+            </span>
           </div>
         </div>
       )}
 
-      <div className={styles.encouragement}>
-        <p>
-          {progressPercentage > 0 
-            ? "¡Mantén el impulso! Cada pago te acerca más a tus objetivos financieros."
-            : "¡Comienza hoy! El primer paso es el más importante hacia tu libertad financiera."
-          }
-        </p>
-      </div>
+      {paymentPlan.totalInterestSaved > 0 && (
+        <div className={styles.savings}>
+          <div className={styles.savingsIcon}>💰</div>
+          <div className={styles.savingsText}>
+            <span>Ahorrarás </span>
+            <strong>{formatCurrency(paymentPlan.totalInterestSaved)}</strong>
+            <span> en intereses</span>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
-
-export default DebtMotivationCard;
