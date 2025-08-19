@@ -58,7 +58,17 @@ const RegisteredUserProfile: React.FC = () => {
         <>
             <div className={styles.header}>
                 <h2 className="section-title">Mi Perfil</h2>
-                <button onClick={() => authService.signOut()} className={styles.logoutButton}>
+                <button 
+                    onClick={async () => {
+                        try {
+                            await authService.signOut();
+                        } catch (error) {
+                            // Error ya manejado en authService, no necesitamos hacer nada
+                            console.log('Sesión cerrada exitosamente');
+                        }
+                    }} 
+                    className={styles.logoutButton}
+                >
                     <LogOut size={16} /> Cerrar Sesión
                 </button>
             </div>

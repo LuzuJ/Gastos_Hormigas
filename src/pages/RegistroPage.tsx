@@ -154,7 +154,9 @@ export const RegistroPage: React.FC<RegistroPageProps> = () => {
             categories={categories}
             onClose={() => setIsEditing(null)}
             onSave={updateExpense}
-            onAddSubCategory={addSubCategory}
+            onAddSubCategory={async (categoryId, subCategoryName) => {
+              await addSubCategory(categoryId, subCategoryName);
+            }}
         />
       )}
     </div>

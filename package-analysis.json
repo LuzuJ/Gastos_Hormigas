@@ -1,0 +1,8 @@
+{
+  "scripts": {
+    "analyze": "npm run build && npx vite-bundle-analyzer dist"
+  },
+  "devDependencies": {
+    "vite-bundle-analyzer": "^0.10.0"
+  }
+}

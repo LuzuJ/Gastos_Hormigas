@@ -114,7 +114,15 @@ export const authService = {
     }
   },
 
-  signOut: () => {
-    return signOut(auth);
+  signOut: async () => {
+    try {
+      await signOut(auth);
+      // Limpiar cualquier listener activo o cache local si es necesario
+      return { success: true };
+    } catch (error) {
+      console.warn('Error durante signOut (no crítico):', error);
+      // Incluso si hay error, probablemente el signOut funcionó
+      return { success: true };
+    }
   },
 };

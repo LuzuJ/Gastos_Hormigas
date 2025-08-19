@@ -1,18 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { onAuthStateChanged, signOut, type User } from 'firebase/auth';
 import { auth } from './config/firebase';
-import { AppProvider } from './contexts/AppContext'; // Importa el proveedor
+import { userService } from './services/userService';
+import { AppProvider } from './contexts/AppContext';
 import { Layout, type Page } from './components/Layout/Layout';
-import { DashboardPage } from './pages/DashboardPage';
-import { ReportsPage } from './pages/ReportsPage';
-import { PlanningPage } from './pages/PlanningPage';
-import { RegistroPage } from './pages/RegistroPage';
-import { LoginPage } from './pages/LoginPage';
-import { ProfilePage } from './pages/ProfilePage';
-import { ManageCategoriesPage } from './pages/ManageCategoriesPage';
+import { PageLoader } from './components/PageLoader/PageLoader';
 import { Toaster } from 'react-hot-toast';
 import './index.css';
 import { PAGE_ROUTES } from './constants';
+
+// Lazy loading de páginas para mejorar el code splitting
+const DashboardPage = lazy(() => import('./pages/DashboardPage').then(module => ({ default: module.DashboardPage })));
+const ReportsPage = lazy(() => import('./pages/ReportsPage').then(module => ({ default: module.ReportsPage })));
+const PlanningPage = lazy(() => import('./pages/PlanningPage').then(module => ({ default: module.PlanningPage })));
+const RegistroPage = lazy(() => import('./pages/RegistroPage').then(module => ({ default: module.RegistroPage })));
+const LoginPage = lazy(() => import('./pages/LoginPage').then(module => ({ default: module.LoginPage })));
+const ProfilePage = lazy(() => import('./pages/ProfilePage').then(module => ({ default: module.ProfilePage })));
+const ManageCategoriesPage = lazy(() => import('./pages/ManageCategoriesPage').then(module => ({ default: module.ManageCategoriesPage })));
 
 // Componente para la aplicación principal, se muestra cuando el usuario está logueado
 const MainApp: React.FC<{ user: User }> = ({ user }) => {
@@ -21,13 +25,48 @@ const MainApp: React.FC<{ user: User }> = ({ user }) => {
 
   const renderPage = () => {
     switch (currentPage) {
-      case PAGE_ROUTES.DASHBOARD: return <DashboardPage isGuest={isGuest} />;
-      case PAGE_ROUTES.REGISTRO: return <RegistroPage />;
-      case PAGE_ROUTES.PLANNING: return <PlanningPage isGuest={isGuest} />;
-      case PAGE_ROUTES.REPORTS: return <ReportsPage isGuest={isGuest} />;
-      case PAGE_ROUTES.ANALYSIS: return <ManageCategoriesPage isGuest={isGuest} />;
-      case PAGE_ROUTES.PROFILE: return <ProfilePage userId={user.uid} isGuest={isGuest} setCurrentPage={setCurrentPage} />;
-      default: return <DashboardPage isGuest={false} />;
+      case PAGE_ROUTES.DASHBOARD: 
+        return (
+          <Suspense fallback={<PageLoader message="Cargando Dashboard..." />}>
+            <DashboardPage isGuest={isGuest} />
+          </Suspense>
+        );
+      case PAGE_ROUTES.REGISTRO: 
+        return (
+          <Suspense fallback={<PageLoader message="Cargando Registro..." />}>
+            <RegistroPage />
+          </Suspense>
+        );
+      case PAGE_ROUTES.PLANNING: 
+        return (
+          <Suspense fallback={<PageLoader message="Cargando Planificación..." />}>
+            <PlanningPage isGuest={isGuest} />
+          </Suspense>
+        );
+      case PAGE_ROUTES.REPORTS: 
+        return (
+          <Suspense fallback={<PageLoader message="Cargando Reportes..." />}>
+            <ReportsPage isGuest={isGuest} />
+          </Suspense>
+        );
+      case PAGE_ROUTES.ANALYSIS: 
+        return (
+          <Suspense fallback={<PageLoader message="Cargando Análisis..." />}>
+            <ManageCategoriesPage isGuest={isGuest} />
+          </Suspense>
+        );
+      case PAGE_ROUTES.PROFILE: 
+        return (
+          <Suspense fallback={<PageLoader message="Cargando Perfil..." />}>
+            <ProfilePage userId={user.uid} isGuest={isGuest} setCurrentPage={setCurrentPage} />
+          </Suspense>
+        );
+      default: 
+        return (
+          <Suspense fallback={<PageLoader message="Cargando..." />}>
+            <DashboardPage isGuest={false} />
+          </Suspense>
+        );
     }
   };
 
@@ -52,7 +91,6 @@ export default function App() {
       if (currentUser && !currentUser.isAnonymous) {
         // Para usuarios registrados, verificar que tengan perfil completo
         try {
-          const { userService } = await import('./services/userService');
           const userProfile = await userService.getUserProfile(currentUser.uid);
           
           if (!userProfile) {
@@ -94,7 +132,13 @@ export default function App() {
     // AppProvider envuelve toda la lógica condicional
     <AppProvider userId={user?.uid || null}>
       <Toaster position="bottom-center" />
-      {user ? <MainApp user={user} /> : <LoginPage />}
+      {user ? (
+        <MainApp user={user} />
+      ) : (
+        <Suspense fallback={<PageLoader message="Cargando..." />}>
+          <LoginPage />
+        </Suspense>
+      )}
     </AppProvider>
   );
 }

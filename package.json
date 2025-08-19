@@ -8,7 +8,11 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "test": "vitest"
+    "test": "vitest",
+    "test:unit": "vitest run src/**/*.test.{ts,tsx} --exclude src/__tests__/integration/**",
+    "test:integration": "vitest run src/__tests__/integration/",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
     "firebase": "^11.9.1",

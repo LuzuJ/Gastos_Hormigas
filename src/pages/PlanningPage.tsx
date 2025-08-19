@@ -79,7 +79,9 @@ export const PlanningPage: React.FC<PlanningPageProps> = ({ isGuest }) => {
                     <div className={styles.section}>
                         <IncomeForm
                             currentIncome={financials?.monthlyIncome || 0}
-                            onSetIncome={setMonthlyIncome}
+                            onSetIncome={async (income: number) => {
+                                await setMonthlyIncome(income);
+                            }}
                         />
                     </div>
 
@@ -87,8 +89,8 @@ export const PlanningPage: React.FC<PlanningPageProps> = ({ isGuest }) => {
                         <FixedExpenses 
                             categories={categories} 
                             fixedExpenses={fixedExpenses}
-                            onAdd={addFixedExpense}
-                            onDelete={deleteFixedExpense}
+                            onAdd={async (data) => { await addFixedExpense(data); }}
+                            onDelete={async (id: string) => { await deleteFixedExpense(id); }}
                         />
                     </div>
                     
