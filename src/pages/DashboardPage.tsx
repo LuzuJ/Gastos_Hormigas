@@ -12,7 +12,7 @@ import {
   useCategoriesContext, 
   useExpensesContext, 
   useFinancialsContext, 
-  useSavingsGoalsContext, 
+  useSavingsGoalsContext,
   useCombinedCalculationsContext 
 } from '../contexts/AppContext';
 

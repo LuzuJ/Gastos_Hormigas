@@ -1,0 +1,560 @@
+/* DebtPaymentPlanner.module.css */
+.container {
+    width: 100%;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 1rem;
+}
+
+.header {
+    margin-bottom: 2rem;
+}
+
+.titleSection {
+    text-align: center;
+}
+
+.title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    margin: 0 0 0.5rem 0;
+    color: var(--text-headings);
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+.title svg {
+    color: var(--primary-accent);
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+.subtitle {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+    margin: 0 auto;
+    max-width: 600px;
+}
+
+/* Sección de presupuesto */
+.budgetSection {
+    background: linear-gradient(135deg, var(--background-card) 0%, var(--background-secondary) 100%);
+    border-radius: 16px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+html[data-theme='dark'] .budgetSection {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.budgetHeader {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.budgetHeader h3 {
+    margin: 0;
+    color: var(--text-headings);
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.budgetHeader svg {
+    color: var(--success-color);
+}
+
+.budgetInput {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0.75rem;
+}
+
+.input {
+    flex: 1;
+    max-width: 200px;
+    padding: 0.875rem 1rem;
+    border: 2px solid var(--border-color);
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    background-color: var(--background-primary);
+    color: var(--text-primary);
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.input:focus {
+    outline: none;
+    border-color: var(--primary-accent);
+    box-shadow: 0 0 0 3px var(--primary-accent-focus-ring), 0 4px 12px rgba(0, 0, 0, 0.15);
+    transform: translateY(-1px);
+}
+
+.inputLabel {
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.budgetHelp {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin: 0;
+    font-style: italic;
+}
+
+/* Sección de estrategias */
+.strategiesSection {
+    margin-bottom: 2rem;
+}
+
+.strategiesHeader {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+}
+
+.strategiesHeader h3 {
+    margin: 0;
+    color: var(--text-headings);
+    font-size: 1.5rem;
+    font-weight: 600;
+    flex: 1;
+}
+
+.strategiesHeader svg {
+    color: var(--primary-accent);
+}
+
+.toggleButton {
+    padding: 0.5rem 1rem;
+    background: var(--background-secondary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.toggleButton:hover {
+    background: var(--background-hover);
+    border-color: var(--primary-accent);
+    transform: translateY(-1px);
+}
+
+.strategiesGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 1.5rem;
+}
+
+.strategyCard {
+    background: var(--background-card);
+    border: 2px solid var(--border-color);
+    border-radius: 16px;
+    padding: 2rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.strategyCard::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, transparent 0%, rgba(var(--primary-accent-rgb), 0.05) 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.strategyCard:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    border-color: var(--primary-accent);
+}
+
+.strategyCard:hover::before {
+    opacity: 1;
+}
+
+.strategyCard.selected {
+    border-color: var(--primary-accent);
+    background: linear-gradient(135deg, var(--background-card) 0%, rgba(var(--primary-accent-rgb), 0.08) 100%);
+    box-shadow: 0 4px 20px rgba(var(--primary-accent-rgb), 0.2);
+}
+
+.strategyCard.selected::before {
+    opacity: 1;
+}
+
+html[data-theme='dark'] .strategyCard {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+html[data-theme='dark'] .strategyCard:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+.strategyHeader {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.strategyIcon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    background: linear-gradient(135deg, var(--primary-accent) 0%, var(--primary-accent-hover) 100%);
+    border-radius: 16px;
+    color: white;
+    box-shadow: 0 4px 12px rgba(var(--primary-accent-rgb), 0.3);
+    flex-shrink: 0;
+}
+
+.strategyInfo {
+    flex: 1;
+}
+
+.strategyName {
+    margin: 0 0 0.5rem 0;
+    color: var(--text-headings);
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.strategyDescription {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.strategyMetrics {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.metric {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    background: var(--background-secondary);
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+}
+
+.metric svg {
+    color: var(--primary-accent);
+    flex-shrink: 0;
+}
+
+.metricLabel {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    flex: 1;
+}
+
+.metricValue {
+    color: var(--text-primary);
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+
+.selectedIndicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    padding: 0.75rem;
+    background: linear-gradient(135deg, var(--success-color) 0%, var(--success-color-hover) 100%);
+    color: white;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 0.875rem;
+    box-shadow: 0 2px 8px rgba(var(--success-color-rgb), 0.3);
+}
+
+/* Sección de cálculos */
+.calculationsSection {
+    background: var(--background-card);
+    border-radius: 16px;
+    padding: 2rem;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+html[data-theme='dark'] .calculationsSection {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.calculationsTitle {
+    margin: 0 0 2rem 0;
+    color: var(--text-headings);
+    font-size: 1.5rem;
+    font-weight: 600;
+    text-align: center;
+}
+
+.paymentOrder {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.paymentStep {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1.5rem;
+    background: var(--background-secondary);
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    transition: all 0.2s ease;
+}
+
+.paymentStep:hover {
+    transform: translateX(4px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.stepNumber {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: linear-gradient(135deg, var(--primary-accent) 0%, var(--primary-accent-hover) 100%);
+    color: white;
+    border-radius: 50%;
+    font-weight: 700;
+    font-size: 0.875rem;
+    flex-shrink: 0;
+    box-shadow: 0 2px 6px rgba(var(--primary-accent-rgb), 0.3);
+}
+
+.stepContent {
+    flex: 1;
+}
+
+.stepHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+}
+
+.debtName {
+    margin: 0;
+    color: var(--text-headings);
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.debtAmount {
+    color: var(--primary-accent);
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+
+.stepDetails {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 0.5rem;
+}
+
+.stepDetail {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.875rem;
+}
+
+.stepDetail span:first-child {
+    color: var(--text-secondary);
+}
+
+.stepDetail span:last-child {
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+.strategyTips {
+    background: linear-gradient(135deg, var(--background-secondary) 0%, var(--background-primary) 100%);
+    border-radius: 12px;
+    padding: 1.5rem;
+    border: 1px solid var(--border-color);
+}
+
+.strategyTips h4 {
+    margin: 0 0 1rem 0;
+    color: var(--text-headings);
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.strategyTips ul {
+    margin: 0;
+    padding-left: 1.5rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+.strategyTips li {
+    margin-bottom: 0.5rem;
+}
+
+.strategyTips li:last-child {
+    margin-bottom: 0;
+}
+
+/* Estado vacío */
+.emptyState {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: var(--text-secondary);
+}
+
+.emptyState svg {
+    color: var(--primary-accent);
+    opacity: 0.6;
+    margin-bottom: 1rem;
+}
+
+.emptyState h3 {
+    margin: 0 0 0.5rem 0;
+    color: var(--text-headings);
+    font-size: 1.5rem;
+}
+
+.emptyState p {
+    margin: 0 auto;
+    font-size: 1rem;
+    max-width: 400px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .container {
+        padding: 0.5rem;
+    }
+
+    .strategiesGrid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .strategyCard {
+        padding: 1.5rem;
+    }
+
+    .budgetSection {
+        padding: 1.5rem;
+    }
+
+    .budgetInput {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.5rem;
+    }
+
+    .input {
+        max-width: none;
+    }
+
+    .stepDetails {
+        grid-template-columns: 1fr;
+        gap: 0.25rem;
+    }
+
+    .calculationsSection {
+        padding: 1.5rem;
+    }
+
+    .title {
+        font-size: 1.5rem;
+    }
+
+    .subtitle {
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .paymentStep {
+        padding: 1rem;
+    }
+
+    .stepHeader {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+
+    .strategiesHeader {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1rem;
+    }
+
+    .toggleButton {
+        align-self: center;
+    }
+}
+
+/* Animaciones */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.calculationsSection.animated {
+    animation: slideIn 0.3s ease-out;
+}
+
+.paymentStep.animated {
+    animation: slideIn 0.3s ease-out;
+}
+
+.paymentStep.animated:nth-child(2) {
+    animation-delay: 0.1s;
+}
+
+.paymentStep.animated:nth-child(3) {
+    animation-delay: 0.2s;
+}
+
+.paymentStep.animated:nth-child(4) {
+    animation-delay: 0.3s;
+}
+
+.paymentStep.animated:nth-child(5) {
+    animation-delay: 0.4s;
+}

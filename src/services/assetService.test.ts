@@ -25,6 +25,10 @@ vi.mock('firebase/firestore', () => {
     deleteDoc: vi.fn(),
     onSnapshot: vi.fn(),
     query: vi.fn(() => ({ type: 'query' })),
+    Timestamp: {
+      now: vi.fn(() => ({ seconds: Date.now() / 1000, nanoseconds: 0 })),
+      fromDate: vi.fn((date) => ({ seconds: date.getTime() / 1000, nanoseconds: 0 })),
+    },
   };
 });
 
@@ -121,7 +125,7 @@ describe('assetService', () => {
       );
       expect(addDoc).toHaveBeenCalledWith(
         { path: 'mock/collection' },
-        assetData
+        expect.objectContaining(assetData)
       );
     });
   });
@@ -142,7 +146,7 @@ describe('assetService', () => {
       );
       expect(updateDoc).toHaveBeenCalledWith(
         { id: 'mock-doc-id' },
-        updateData
+        expect.objectContaining(updateData)
       );
     });
 
@@ -158,7 +162,7 @@ describe('assetService', () => {
 
       expect(updateDoc).toHaveBeenCalledWith(
         { id: 'mock-doc-id' },
-        updateData
+        expect.objectContaining(updateData)
       );
     });
   });

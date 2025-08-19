@@ -97,7 +97,11 @@ describe('Integration: Liabilities Management Flow', () => {
       // Assert
       expect(mockAddDoc).toHaveBeenCalledWith(
         'mock-collection-ref',
-        mockLiabilityFormData
+        expect.objectContaining({
+          ...mockLiabilityFormData,
+          originalAmount: mockLiabilityFormData.amount, // Se añade automáticamente
+          lastUpdated: expect.any(Object)
+        })
       );
       expect(result).toEqual({ id: 'new-liability-id' });
     });
@@ -147,7 +151,10 @@ describe('Integration: Liabilities Management Flow', () => {
       await liabilityService.updateLiability(mockUserId, liabilityId, updateData);
 
       // Assert
-      expect(mockUpdateDoc).toHaveBeenCalledWith('mock-doc-ref', updateData);
+      expect(mockUpdateDoc).toHaveBeenCalledWith('mock-doc-ref', expect.objectContaining({
+        ...updateData,
+        lastUpdated: expect.any(Object)
+      }));
       expect(mockDoc).toHaveBeenCalledWith(
         expect.anything(), // db
         'users',
@@ -495,9 +502,18 @@ describe('Integration: Liabilities Management Flow', () => {
       expect(mockUpdateDoc).toHaveBeenCalledTimes(3);
       expect(results).toHaveLength(3);
       
-      expect(mockUpdateDoc).toHaveBeenNthCalledWith(1, 'mock-doc-ref', { amount: 500 });
-      expect(mockUpdateDoc).toHaveBeenNthCalledWith(2, 'mock-doc-ref', { amount: 1000 });
-      expect(mockUpdateDoc).toHaveBeenNthCalledWith(3, 'mock-doc-ref', { amount: 1500 });
+      expect(mockUpdateDoc).toHaveBeenNthCalledWith(1, 'mock-doc-ref', expect.objectContaining({
+        amount: 500,
+        lastUpdated: expect.any(Object)
+      }));
+      expect(mockUpdateDoc).toHaveBeenNthCalledWith(2, 'mock-doc-ref', expect.objectContaining({
+        amount: 1000,
+        lastUpdated: expect.any(Object)
+      }));
+      expect(mockUpdateDoc).toHaveBeenNthCalledWith(3, 'mock-doc-ref', expect.objectContaining({
+        amount: 1500,
+        lastUpdated: expect.any(Object)
+      }));
     });
 
     it('should handle sequential liability deletion (debt payoff)', async () => {

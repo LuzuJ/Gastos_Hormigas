@@ -93,3 +93,6 @@ export const LoadingStateWrapper: React.FC<LoadingStateWrapperProps> = ({
 
   return <>{children}</>;
 };
+
+// Re-exportar componentes de formulario
+export { FormLoadingWrapper, SubmitButton } from './FormLoadingWrapper';

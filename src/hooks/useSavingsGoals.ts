@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { savingsGoalService } from '../services/savingsGoalService';
 import { db } from '../config/firebase'; // Necesitamos la referencia a la DB
 import { doc, runTransaction, increment } from 'firebase/firestore';
+import { useLoadingState, handleAsyncOperation } from './useLoadingState';
 import type { SavingsGoal, SavingsGoalFormData } from '../types';
 import { FIRESTORE_PATHS } from '../constants';
 
@@ -9,38 +10,59 @@ const appId = import.meta.env.VITE_FIREBASE_PROJECT_ID || 'default-app';
 
 export const useSavingsGoals = (userId: string | null) => {
     const [savingsGoals, setSavingsGoals] = useState<SavingsGoal[]>([]);
-    const [loading, setLoading] = useState(true);
+    const { 
+        loading: loadingSavingsGoals, 
+        error: savingsGoalsError, 
+        startLoading, 
+        stopLoading, 
+        clearError 
+    } = useLoadingState(true);
 
     useEffect(() => {
         if (!userId) {
             setSavingsGoals([]);
-            setLoading(false);
+            stopLoading();
             return;
         }
 
-        setLoading(true);
-        const unsubscribe = savingsGoalService.onSavingsGoalsUpdate(userId, (data) => {
-            setSavingsGoals(data);
-            setLoading(false);
-        });
+        try {
+            startLoading();
+            clearError();
+            
+            const unsubscribe = savingsGoalService.onSavingsGoalsUpdate(userId, (data) => {
+                setSavingsGoals(data);
+                stopLoading();
+            });
 
-        return () => unsubscribe();
-    }, [userId]);
+            return () => unsubscribe();
+        } catch (error) {
+            console.error('Error en useSavingsGoals:', error);
+            stopLoading();
+            // No lanzar el error, solo registrarlo
+            setSavingsGoals([]);
+        }
+    }, [userId, startLoading, stopLoading, clearError]);
 
     const addSavingsGoal = useCallback(async (data: SavingsGoalFormData) => {
-        if (!userId) return { success: false, error: 'Usuario no autenticado.' };
-        try {
-            await savingsGoalService.addSavingsGoal(userId, data);
-            return { success: true };
-        } catch (err) {
-            console.error(err);
-            return { success: false, error: "Ocurrió un error al crear la meta." };
+        if (!userId) {
+            return { success: false, error: 'Usuario no autenticado' };
         }
+
+        return await handleAsyncOperation(
+            () => savingsGoalService.addSavingsGoal(userId, data),
+            'Error al crear la meta de ahorro'
+        );
     }, [userId]);
 
     const deleteSavingsGoal = useCallback(async (goalId: string) => {
-        if (!userId) return;
-        await savingsGoalService.deleteSavingsGoal(userId, goalId);
+        if (!userId) {
+            return { success: false, error: 'Usuario no autenticado' };
+        }
+
+        return await handleAsyncOperation(
+            () => savingsGoalService.deleteSavingsGoal(userId, goalId),
+            'Error al eliminar la meta de ahorro'
+        );
     }, [userId]);
 
     const addToSavingsGoal = useCallback(async (goalId: string, amount: number) => {
@@ -95,7 +117,9 @@ export const useSavingsGoals = (userId: string | null) => {
 
     return {
         savingsGoals,
-        loadingSavingsGoals: loading,
+        loadingSavingsGoals,
+        savingsGoalsError,
+        clearSavingsGoalsError: clearError,
         addSavingsGoal,
         deleteSavingsGoal,
         addToSavingsGoal,

@@ -97,7 +97,10 @@ describe('Integration: Assets Management Flow', () => {
       // Assert
       expect(mockAddDoc).toHaveBeenCalledWith(
         'mock-collection-ref',
-        mockAssetFormData
+        expect.objectContaining({
+          ...mockAssetFormData,
+          lastUpdated: expect.any(Object)
+        })
       );
       expect(result).toEqual({ id: 'new-asset-id' });
     });
@@ -150,7 +153,10 @@ describe('Integration: Assets Management Flow', () => {
       await assetService.updateAsset(mockUserId, assetId, updateData);
 
       // Assert
-      expect(mockUpdateDoc).toHaveBeenCalledWith('mock-doc-ref', updateData);
+      expect(mockUpdateDoc).toHaveBeenCalledWith('mock-doc-ref', expect.objectContaining({
+        ...updateData,
+        lastUpdated: expect.any(Object)
+      }));
       expect(mockDoc).toHaveBeenCalledWith(
         expect.anything(), // db
         'users',
@@ -483,9 +489,18 @@ describe('Integration: Assets Management Flow', () => {
       expect(mockUpdateDoc).toHaveBeenCalledTimes(3);
       expect(results).toHaveLength(3);
       
-      expect(mockUpdateDoc).toHaveBeenNthCalledWith(1, 'mock-doc-ref', { value: 1500 });
-      expect(mockUpdateDoc).toHaveBeenNthCalledWith(2, 'mock-doc-ref', { value: 3000 });
-      expect(mockUpdateDoc).toHaveBeenNthCalledWith(3, 'mock-doc-ref', { value: 4500 });
+      expect(mockUpdateDoc).toHaveBeenNthCalledWith(1, 'mock-doc-ref', expect.objectContaining({
+        value: 1500,
+        lastUpdated: expect.any(Object)
+      }));
+      expect(mockUpdateDoc).toHaveBeenNthCalledWith(2, 'mock-doc-ref', expect.objectContaining({
+        value: 3000,
+        lastUpdated: expect.any(Object)
+      }));
+      expect(mockUpdateDoc).toHaveBeenNthCalledWith(3, 'mock-doc-ref', expect.objectContaining({
+        value: 4500,
+        lastUpdated: expect.any(Object)
+      }));
     });
 
     it('should handle sequential asset deletion', async () => {

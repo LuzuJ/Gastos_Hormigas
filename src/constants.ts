@@ -27,6 +27,7 @@ export const FIRESTORE_PATHS = {
   SAVINGS_GOALS: 'savingsGoals',
   ASSETS: 'assets',
   LIABILITIES: 'liabilities',
+  DEBT_PAYMENTS: 'debtPayments',
 } as const;
 
 export const defaultCategoriesStructure = [

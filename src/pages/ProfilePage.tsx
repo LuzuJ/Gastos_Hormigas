@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { auth } from '../config/firebase';
 import { authService } from '../services/authService';
+import { LoadingStateWrapper } from '../components/LoadingState/LoadingState';
 import styles from './ProfilePage.module.css';
 import { LogOut, UserPlus, Eye, EyeOff } from 'lucide-react';
 import { useProfileContext } from '../contexts/AppContext';
@@ -15,7 +16,13 @@ interface ProfilePageProps {
 
 // Componente para el perfil de un usuario REGISTRADO
 const RegisteredUserProfile: React.FC = () => {
-    const { profile, updateUserProfile, loadingProfile } = useProfileContext();
+    const { 
+        profile, 
+        updateUserProfile, 
+        loadingProfile, 
+        profileError, 
+        clearProfileError 
+    } = useProfileContext();
     const [displayName, setDisplayName] = useState('');
     const [currency, setCurrency] = useState<'USD' | 'EUR'>('USD');
     const [message, setMessage] = useState('');
@@ -30,70 +37,74 @@ const RegisteredUserProfile: React.FC = () => {
     const handleSave = async (e: React.FormEvent) => {
         e.preventDefault();
         setMessage('');
-        try {
-            await updateUserProfile({ displayName, currency });
+        
+        const result = await updateUserProfile({ displayName, currency });
+        
+        if (result?.success) {
             setMessage('¡Perfil guardado con éxito!');
             setTimeout(() => setMessage(''), 3000);
-        } catch (error) {
-            setMessage('Error al guardar. Inténtalo de nuevo.');
+        } else {
+            setMessage(result?.error || 'Error al guardar. Inténtalo de nuevo.');
         }
     };
 
-    if (loadingProfile) {
-        return <div className="loading-screen">Cargando perfil...</div>;
-    }
-
-    if (!profile) {
-        return (
-            <div className={styles.errorContainer}>
-                <p>Error al cargar el perfil. Intenta cerrar sesión y volver a iniciar.</p>
-                <button onClick={() => authService.signOut()} className={styles.logoutButton}>
-                    <LogOut size={16} /> Cerrar Sesión
-                </button>
-            </div>
-        );
-    }
-
     return (
-        <>
-            <div className={styles.header}>
-                <h2 className="section-title">Mi Perfil</h2>
-                <button 
-                    onClick={async () => {
-                        try {
-                            await authService.signOut();
-                        } catch (error) {
-                            // Error ya manejado en authService, no necesitamos hacer nada
-                            console.log('Sesión cerrada exitosamente');
-                        }
-                    }} 
-                    className={styles.logoutButton}
-                >
-                    <LogOut size={16} /> Cerrar Sesión
-                </button>
-            </div>
-            <form onSubmit={handleSave} className={styles.form}>
-                <div className={styles.formGroup}>
-                    <label htmlFor="email">Correo Electrónico</label>
-                    <input id="email" type="email" value={profile.email} disabled className={styles.input} />
+        <LoadingStateWrapper
+            loading={loadingProfile}
+            error={profileError}
+            onDismissError={clearProfileError}
+            loadingMessage="Cargando perfil..."
+        >
+            <>
+                <div className={styles.header}>
+                    <h2 className="section-title">Mi Perfil</h2>
+                    <button 
+                        onClick={async () => {
+                            try {
+                                await authService.signOut();
+                            } catch (error) {
+                                // Error ya manejado en authService, no necesitamos hacer nada
+                                console.log('Sesión cerrada exitosamente');
+                            }
+                        }} 
+                        className={styles.logoutButton}
+                    >
+                        <LogOut size={16} /> Cerrar Sesión
+                    </button>
                 </div>
-                <div className={styles.formGroup}>
-                    <label htmlFor="displayName">Nombre a Mostrar</label>
-                    <input id="displayName" type="text" value={displayName} onChange={(e) => setDisplayName(e.target.value)} className={styles.input}/>
-                </div>
-                <div className={styles.formGroup}>
-                    <label htmlFor="currency">Moneda Principal</label>
-                    <select id="currency" value={currency} onChange={(e) => setCurrency(e.target.value as 'USD' | 'EUR')} className={styles.select}>
-                        <option value="USD">Dólar Estadounidense (USD)</option>
-                        <option value="EUR">Euro (EUR)</option>
-                    </select>
-                </div>
-                <div className={styles.actions}>
-                    <button type="submit" className={styles.button}>Guardar Cambios</button>
-                    {message && <span className={styles.savedMessage}>{message}</span>}
-                </div>
-            </form>
-        </>
+
+                {!profile ? (
+                    <div className={styles.errorContainer}>
+                        <p>Error al cargar el perfil. Intenta cerrar sesión y volver a iniciar.</p>
+                        <button onClick={() => authService.signOut()} className={styles.logoutButton}>
+                            <LogOut size={16} /> Cerrar Sesión
+                        </button>
+                    </div>
+                ) : (
+                    <form onSubmit={handleSave} className={styles.form}>
+                        <div className={styles.formGroup}>
+                            <label htmlFor="email">Correo Electrónico</label>
+                            <input id="email" type="email" value={profile.email} disabled className={styles.input} />
+                        </div>
+                        <div className={styles.formGroup}>
+                            <label htmlFor="displayName">Nombre a Mostrar</label>
+                            <input id="displayName" type="text" value={displayName} onChange={(e) => setDisplayName(e.target.value)} className={styles.input}/>
+                        </div>
+                        <div className={styles.formGroup}>
+                            <label htmlFor="currency">Moneda Principal</label>
+                            <select id="currency" value={currency} onChange={(e) => setCurrency(e.target.value as 'USD' | 'EUR')} className={styles.select}>
+                                <option value="USD">Dólar Estadounidense (USD)</option>
+                                <option value="EUR">Euro (EUR)</option>
+                            </select>
+                        </div>
+                        <div className={styles.actions}>
+                            <button type="submit" className={styles.button}>Guardar Cambios</button>
+                            {message && <span className={styles.savedMessage}>{message}</span>}
+                        </div>
+                    </form>
+                )}
+            </>
+        </LoadingStateWrapper>
     );
 };
 

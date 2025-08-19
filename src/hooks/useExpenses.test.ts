@@ -4,19 +4,85 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { useExpenses } from './useExpenses';
 import { expensesService } from '../services/expensesService';
 import type { Expense, ExpenseFormData } from '../types';
-import { Timestamp } from 'firebase/firestore';
 
-// 1. Mockeamos el servicio de gastos
+// Mock variables de entorno
+Object.defineProperty(import.meta, 'env', {
+  value: {
+    VITE_FIREBASE_API_KEY: 'mock-api-key',
+    VITE_FIREBASE_AUTH_DOMAIN: 'mock-auth-domain',
+    VITE_FIREBASE_PROJECT_ID: 'mock-project-id',
+    VITE_FIREBASE_STORAGE_BUCKET: 'mock-storage-bucket',
+    VITE_FIREBASE_MESSAGING_SENDER_ID: 'mock-sender-id',
+    VITE_FIREBASE_APP_ID: 'mock-app-id',
+    VITE_FIREBASE_MEASUREMENT_ID: 'mock-measurement-id'
+  },
+  writable: true
+});
+
+// Mock Firebase completo
+vi.mock('firebase/app', () => ({
+  initializeApp: vi.fn(() => ({})),
+}));
+
+vi.mock('firebase/auth', () => ({
+  getAuth: vi.fn(() => ({})),
+}));
+
+// Mock Firebase Timestamp
+const mockTimestamp = {
+  toDate: () => new Date(),
+  toMillis: () => Date.now(),
+  seconds: Math.floor(Date.now() / 1000),
+  nanoseconds: (Date.now() % 1000) * 1000000,
+  isEqual: vi.fn(() => false),
+  toJSON: vi.fn(() => ({}))
+};
+
+vi.mock('firebase/firestore', () => ({
+  getFirestore: vi.fn(() => ({})),
+  Timestamp: {
+    now: vi.fn(() => mockTimestamp),
+    fromDate: vi.fn((date: Date) => ({
+      toDate: () => date,
+      toMillis: () => date.getTime(),
+      seconds: Math.floor(date.getTime() / 1000),
+      nanoseconds: (date.getTime() % 1000) * 1000000,
+      isEqual: vi.fn(() => false),
+      toJSON: vi.fn(() => ({}))
+    }))
+  }
+}));
+
+// Mock del servicio de expenses
 vi.mock('../services/expensesService');
 
 // -- Mock de Datos --
 const yesterday = new Date();
 yesterday.setDate(yesterday.getDate() - 1);
 
+// Mock timestamps para diferentes fechas
+const todayTimestamp = {
+  toDate: () => new Date(),
+  toMillis: () => Date.now(),
+  seconds: Math.floor(Date.now() / 1000),
+  nanoseconds: (Date.now() % 1000) * 1000000,
+  isEqual: vi.fn(() => false),
+  toJSON: vi.fn(() => ({}))
+};
+
+const yesterdayTimestamp = {
+  toDate: () => yesterday,
+  toMillis: () => yesterday.getTime(),
+  seconds: Math.floor(yesterday.getTime() / 1000),
+  nanoseconds: (yesterday.getTime() % 1000) * 1000000,
+  isEqual: vi.fn(() => false),
+  toJSON: vi.fn(() => ({}))
+};
+
 const mockExpensesData: Expense[] = [
-  { id: 'exp-1', description: 'Café', amount: 3.50, categoryId: 'cat-1', subCategory: 'Cafetería', createdAt: Timestamp.now() },
-  { id: 'exp-2', description: 'Libro', amount: 25.00, categoryId: 'cat-2', subCategory: 'Librería', createdAt: Timestamp.fromDate(yesterday) },
-  { id: 'exp-3', description: 'Almuerzo', amount: 12.00, categoryId: 'cat-1', subCategory: 'Restaurante', createdAt: Timestamp.now() },
+  { id: 'exp-1', description: 'Café', amount: 3.50, categoryId: 'cat-1', subCategory: 'Cafetería', createdAt: todayTimestamp as any },
+  { id: 'exp-2', description: 'Libro', amount: 25.00, categoryId: 'cat-2', subCategory: 'Librería', createdAt: yesterdayTimestamp as any },
+  { id: 'exp-3', description: 'Almuerzo', amount: 12.00, categoryId: 'cat-1', subCategory: 'Restaurante', createdAt: todayTimestamp as any },
 ];
 
 describe('Hook useExpenses', () => {
@@ -59,7 +125,7 @@ describe('Hook useExpenses', () => {
     const { result } = renderHook(() => useExpenses('test-user-id'));
     const newExpense: ExpenseFormData = {
       description: 'Cena', amount: 30, categoryId: 'cat-1', subCategory: 'Restaurante',
-      createdAt: Timestamp.now()
+      createdAt: mockTimestamp as any
     };
 
     await act(async () => {

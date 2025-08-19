@@ -2,7 +2,23 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import { ExpenseList } from './ExpenseList';
 import type { Category, Expense } from '../../types';
-import { Timestamp } from 'firebase/firestore';
+
+// Mock Firebase Timestamp
+const mockTimestamp = {
+  toDate: () => new Date(),
+  toMillis: () => Date.now(),
+  seconds: Math.floor(Date.now() / 1000),
+  nanoseconds: (Date.now() % 1000) * 1000000,
+  isEqual: vi.fn(() => false),
+  toJSON: vi.fn(() => ({}))
+};
+
+vi.mock('firebase/firestore', () => ({
+  Timestamp: {
+    now: vi.fn(() => mockTimestamp),
+    fromDate: vi.fn((date: Date) => mockTimestamp)
+  }
+}));
 
 // -- Mock de Datos --
 const mockCategories: Category[] = [
@@ -17,7 +33,7 @@ const mockExpenses: Expense[] = [
     amount: 15.50, 
     categoryId: 'cat-1', 
     subCategory: 'Restaurante', 
-    createdAt: Timestamp.now() 
+    createdAt: mockTimestamp as any
   },
   { 
     id: 'exp-2', 
@@ -25,7 +41,7 @@ const mockExpenses: Expense[] = [
     amount: 2.75, 
     categoryId: 'cat-2', 
     subCategory: 'Transporte Público', 
-    createdAt: Timestamp.now() 
+    createdAt: mockTimestamp as any
   },
   {
     id: 'exp-3',
@@ -33,7 +49,7 @@ const mockExpenses: Expense[] = [
     amount: 50.00,
     categoryId: 'cat-desconocida', // Categoria que no existe en nuestro mock
     subCategory: 'Varios',
-    createdAt: Timestamp.now()
+    createdAt: mockTimestamp as any
   }
 ];
 

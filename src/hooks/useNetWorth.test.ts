@@ -9,6 +9,27 @@ import type { Asset, Liability } from '../types';
 vi.mock('../services/assetService');
 vi.mock('../services/liabilityService');
 
+// Mock del hook useDebtPayments
+vi.mock('./useDebtPayments', () => ({
+  useDebtPayments: vi.fn(() => ({
+    debtPayments: [],
+    loadingPayments: false,
+    paymentsError: null,
+    clearPaymentsError: vi.fn(),
+    addDebtPayment: vi.fn(),
+    deleteDebtPayment: vi.fn(),
+    makeDebtPayment: vi.fn(),
+    getPaymentsForLiability: vi.fn(() => []),
+    getTotalPaidForLiability: vi.fn(() => 0),
+    getPaymentProgress: vi.fn(() => ({
+      totalPaid: 0,
+      remainingAmount: 0,
+      progressPercentage: 0,
+      originalAmount: 0
+    }))
+  }))
+}));
+
 const mockAssets: Asset[] = [
   { id: '1', name: 'Cuenta Ahorros', value: 5000, type: 'cash' },
   { id: '2', name: 'Inversiones', value: 10000, type: 'investment' },

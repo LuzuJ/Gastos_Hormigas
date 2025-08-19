@@ -1,11 +1,22 @@
 import { db } from '../config/firebase';
 import {
-    collection, onSnapshot, addDoc, doc, deleteDoc, updateDoc, query
+    collection, onSnapshot, addDoc, doc, deleteDoc, updateDoc, query, Timestamp
 } from 'firebase/firestore';
 import type { Asset, AssetFormData } from '../types';
 import { FIRESTORE_PATHS } from '../constants';
 
 type AssetsCallback = (data: Asset[]) => void;
+
+// Helper para limpiar datos undefined antes de enviar a Firebase
+const cleanData = (data: any) => {
+    const cleaned: any = {};
+    Object.keys(data).forEach(key => {
+        if (data[key] !== undefined) {
+            cleaned[key] = data[key];
+        }
+    });
+    return cleaned;
+};
 
 const getAssetsCollectionRef = (userId: string) => {
     return collection(db, FIRESTORE_PATHS.USERS, userId, FIRESTORE_PATHS.ASSETS);
@@ -21,12 +32,20 @@ export const assetService = {
     },
 
     addAsset: (userId: string, data: AssetFormData) => {
-        return addDoc(getAssetsCollectionRef(userId), data);
+        const assetData = cleanData({
+            ...data,
+            lastUpdated: Timestamp.now()
+        });
+        return addDoc(getAssetsCollectionRef(userId), assetData);
     },
 
     updateAsset: (userId: string, assetId: string, data: Partial<AssetFormData>) => {
         const assetDocRef = doc(db, FIRESTORE_PATHS.USERS, userId, FIRESTORE_PATHS.ASSETS, assetId);
-        return updateDoc(assetDocRef, data);
+        const updateData = cleanData({
+            ...data,
+            lastUpdated: Timestamp.now()
+        });
+        return updateDoc(assetDocRef, updateData);
     },
 
     deleteAsset: (userId: string, assetId: string) => {

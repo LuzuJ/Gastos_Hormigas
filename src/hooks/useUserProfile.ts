@@ -1,14 +1,24 @@
 import { useState, useEffect, useCallback } from 'react';
 import { userService } from '../services/userService';
 import { auth } from '../config/firebase';
+import { useLoadingState, handleAsyncOperation } from './useLoadingState';
 import type { UserProfile } from '../types';
 
 export const useUserProfile = (userId: string | null) => {
     const [profile, setProfile] = useState<UserProfile | null>(null);
-    const [loading, setLoading] = useState(true);
+    const { 
+        loading: loadingProfile, 
+        error: profileError, 
+        startLoading, 
+        stopLoading, 
+        setErrorState, 
+        clearError 
+    } = useLoadingState(true);
 
     const fetchProfile = useCallback(async (id: string) => {
-        setLoading(true);
+        startLoading();
+        clearError();
+        
         try {
             let userProfile = await userService.getUserProfile(id);
             
@@ -19,28 +29,42 @@ export const useUserProfile = (userId: string | null) => {
             }
             
             setProfile(userProfile);
+            stopLoading();
         } catch (error) {
             console.error('Error al cargar el perfil:', error);
+            setErrorState(error instanceof Error ? error.message : 'Error al cargar el perfil');
             setProfile(null);
-        } finally {
-            setLoading(false);
         }
-    }, []);
+    }, [startLoading, stopLoading, setErrorState, clearError]);
 
     useEffect(() => {
         if (userId) {
             fetchProfile(userId);
         } else {
             setProfile(null);
-            setLoading(false);
+            stopLoading();
         }
+    }, [userId, fetchProfile, stopLoading]);
+
+    const updateUserProfile = useCallback(async (data: Partial<UserProfile>) => {
+        if (!userId) {
+            return { success: false, error: 'Usuario no autenticado' };
+        }
+
+        return await handleAsyncOperation(
+            async () => {
+                await userService.updateUserProfile(userId, data);
+                await fetchProfile(userId); // Vuelve a cargar el perfil para reflejar los cambios
+            },
+            'Error al actualizar el perfil'
+        );
     }, [userId, fetchProfile]);
 
-    const updateUserProfile = async (data: Partial<UserProfile>) => {
-        if (!userId) return;
-        await userService.updateUserProfile(userId, data);
-        await fetchProfile(userId); // Vuelve a cargar el perfil para reflejar los cambios
+    return { 
+        profile, 
+        loadingProfile, 
+        profileError, 
+        clearProfileError: clearError,
+        updateUserProfile 
     };
-
-    return { profile, loadingProfile: loading, updateUserProfile };
 };

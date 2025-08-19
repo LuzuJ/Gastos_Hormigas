@@ -97,7 +97,7 @@ describe('Hook useSavingsGoals', () => {
 
     expect(addResult).toEqual({ 
       success: false, 
-      error: "Ocurrió un error al crear la meta." 
+      error: "Database error"
     });
     expect(consoleErrorSpy).toHaveBeenCalled();
     consoleErrorSpy.mockRestore();
@@ -115,7 +115,7 @@ describe('Hook useSavingsGoals', () => {
 
     expect(addResult).toEqual({ 
       success: false, 
-      error: 'Usuario no autenticado.' 
+      error: 'Usuario no autenticado' 
     });
     expect(savingsGoalService.addSavingsGoal).not.toHaveBeenCalled();
   });

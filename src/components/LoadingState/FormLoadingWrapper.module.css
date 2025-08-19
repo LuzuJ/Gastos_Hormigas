@@ -1,0 +1,134 @@
+/* Estilos para FormLoadingWrapper */
+.formWrapper {
+  position: relative;
+}
+
+.errorSection {
+  margin-top: 1rem;
+}
+
+.loadingOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255, 255, 255, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  backdrop-filter: blur(2px);
+}
+
+.loadingText {
+  color: var(--text-secondary, #666);
+  font-weight: 500;
+}
+
+/* Estilos para SubmitButton */
+.submitButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background-color: var(--primary-color, #007bff);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  min-height: 2.5rem;
+}
+
+.submitButton:hover:not(:disabled) {
+  background-color: var(--primary-hover, #0056b3);
+  transform: translateY(-1px);
+}
+
+.submitButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.submitButton.submitting {
+  background-color: var(--primary-color, #007bff);
+  cursor: not-allowed;
+}
+
+.spinner {
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top: 2px solid white;
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Variantes de tamaño */
+.submitButton.small {
+  padding: 0.5rem 1rem;
+  font-size: 0.8rem;
+  min-height: 2rem;
+}
+
+.submitButton.large {
+  padding: 1rem 2rem;
+  font-size: 1rem;
+  min-height: 3rem;
+}
+
+/* Temas */
+.submitButton.secondary {
+  background-color: var(--secondary-color, #6c757d);
+}
+
+.submitButton.secondary:hover:not(:disabled) {
+  background-color: var(--secondary-hover, #545b62);
+}
+
+.submitButton.danger {
+  background-color: var(--danger-color, #dc3545);
+}
+
+.submitButton.danger:hover:not(:disabled) {
+  background-color: var(--danger-hover, #c82333);
+}
+
+.submitButton.success {
+  background-color: var(--success-color, #28a745);
+}
+
+.submitButton.success:hover:not(:disabled) {
+  background-color: var(--success-hover, #218838);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .submitButton {
+    width: 100%;
+    padding: 0.875rem 1rem;
+  }
+  
+  .loadingOverlay {
+    border-radius: 4px;
+  }
+}
+
+/* Dark theme support */
+[data-theme="dark"] .loadingOverlay {
+  background-color: rgba(0, 0, 0, 0.8);
+}
+
+[data-theme="dark"] .loadingText {
+  color: var(--text-secondary-dark, #ccc);
+}

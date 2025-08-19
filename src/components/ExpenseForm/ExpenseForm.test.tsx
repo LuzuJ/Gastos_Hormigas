@@ -4,6 +4,14 @@ import { describe, it, expect, vi } from 'vitest';
 import { ExpenseForm } from './ExpenseForm';
 import type { Category } from '../../types';
 
+// Mock específico para react-hot-toast en este test
+vi.mock('react-hot-toast', () => ({
+  default: {
+    success: vi.fn(),
+    error: vi.fn(),
+  },
+}));
+
 const mockCategories: Category[] = [
   {
     id: '1',

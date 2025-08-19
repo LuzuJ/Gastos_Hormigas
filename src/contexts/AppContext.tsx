@@ -5,6 +5,7 @@ import { FinancialsProvider } from './FinancialsContext';
 import { PlanningProvider } from './PlanningContext';
 import { NotificationsProvider } from './NotificationsContext';
 import { CombinedCalculationsProvider } from './CombinedCalculationsContext';
+import { ErrorBoundary } from '../components/ErrorBoundary/ErrorBoundary';
 
 // Re-exportar todos los hooks de contexto para mantener compatibilidad
 export { useAuthContext as useProfileContext } from './AuthContext';
@@ -32,13 +33,20 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children, userId }) =>
     <NotificationsProvider>
       <AuthProvider userId={userId}>
         <FinancialsProvider userId={userId}>
-          <PlanningProvider userId={userId}>
-            <ExpensesProvider userId={userId}>
-              <CombinedCalculationsProvider>
-                {children}
-              </CombinedCalculationsProvider>
-            </ExpensesProvider>
-          </PlanningProvider>
+          <ErrorBoundary fallback={
+            <div style={{ padding: '20px', textAlign: 'center' }}>
+              <h3>Error en la planificación financiera</h3>
+              <p>Hay un problema con los datos de patrimonio neto y metas de ahorro. La aplicación seguirá funcionando con funcionalidad limitada.</p>
+            </div>
+          }>
+            <PlanningProvider userId={userId}>
+              <ExpensesProvider userId={userId}>
+                <CombinedCalculationsProvider>
+                  {children}
+                </CombinedCalculationsProvider>
+              </ExpensesProvider>
+            </PlanningProvider>
+          </ErrorBoundary>
         </FinancialsProvider>
       </AuthProvider>
     </NotificationsProvider>

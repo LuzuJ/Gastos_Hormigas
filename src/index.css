@@ -125,6 +125,35 @@ body {
   box-sizing: border-box;
 }
 
+/* Estilos para placeholders en modo claro */
+:root input::placeholder,
+:root textarea::placeholder,
+:root select::placeholder {
+  color: var(--text-secondary);
+  opacity: 0.7;
+}
+
+/* Estilos para placeholders en modo oscuro */
+html[data-theme='dark'] input::placeholder,
+html[data-theme='dark'] textarea::placeholder,
+html[data-theme='dark'] select::placeholder {
+  color: var(--text-secondary);
+  opacity: 0.8;
+}
+
+/* Mejores estilos para inputs de fecha en modo oscuro */
+html[data-theme='dark'] input[type="date"] {
+  color-scheme: dark;
+}
+
+html[data-theme='dark'] input[type="time"] {
+  color-scheme: dark;
+}
+
+html[data-theme='dark'] input[type="datetime-local"] {
+  color-scheme: dark;
+}
+
 .export-button {
   background-color: var(--success-color-strong);
   color: white;
@@ -136,4 +165,114 @@ body {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+}
+
+/* === CORRECCIÓN ESPECÍFICA PARA TARJETAS DE DEUDA === */
+/* Estilos globales para asegurar que las tarjetas de deuda funcionen en modo oscuro */
+
+/* Modo oscuro - Tarjetas de deuda */
+html[data-theme='dark'] [class*="DebtManager_debtCard"] {
+  background-color: #1f2937 !important;
+  border-color: #374151 !important;
+  color: #f3f4f6 !important;
+}
+
+html[data-theme='dark'] [class*="DebtManager_debtCard"] * {
+  color: #f3f4f6 !important;
+}
+
+html[data-theme='dark'] [class*="DebtManager_debtCard"] [class*="DebtManager_debtType"] {
+  color: #9ca3af !important;
+}
+
+html[data-theme='dark'] [class*="DebtManager_debtCard"] [class*="DebtManager_label"] {
+  color: #9ca3af !important;
+}
+
+html[data-theme='dark'] [class*="DebtManager_debtCard"] [class*="DebtManager_interestRate"],
+html[data-theme='dark'] [class*="DebtManager_debtCard"] [class*="DebtManager_monthlyPayment"],
+html[data-theme='dark'] [class*="DebtManager_debtCard"] [class*="DebtManager_payoffTime"] {
+  background-color: #374151 !important;
+  border-color: #4b5563 !important;
+  color: #9ca3af !important;
+}
+
+/* Modo claro - Tarjetas de deuda */
+html[data-theme='light'] [class*="DebtManager_debtCard"],
+:root [class*="DebtManager_debtCard"] {
+  background-color: #ffffff !important;
+  border-color: #e5e7eb !important;
+  color: #1f2937 !important;
+}
+
+/* También usando clase global como fallback */
+html[data-theme='dark'] .debt-card-dark-mode {
+  background-color: #1f2937 !important;
+  border-color: #374151 !important;
+  color: #f3f4f6 !important;
+}
+
+html[data-theme='dark'] .debt-card-dark-mode * {
+  color: #f3f4f6 !important;
+}
+
+html[data-theme='light'] .debt-card-dark-mode,
+:root .debt-card-dark-mode {
+  background-color: #ffffff !important;
+  border-color: #e5e7eb !important;
+  color: #1f2937 !important;
+}
+
+/* Clase global adicional */
+html[data-theme='dark'] .debt-card-global {
+  background: #1f2937 !important;
+  background-color: #1f2937 !important;
+  border: 1px solid #374151 !important;
+  border-color: #374151 !important;
+}
+
+html[data-theme='light'] .debt-card-global,
+:root .debt-card-global {
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+  border: 1px solid #e5e7eb !important;
+  border-color: #e5e7eb !important;
+}
+
+/* === SUPER FORZADO - ANULAR ESTILOS INLINE === */
+/* Estos estilos tienen la máxima especificidad posible */
+html[data-theme='dark'] div[class*="DebtManager_debtCard"][style],
+html[data-theme='dark'] div[class*="DebtManager_debtCard"]:not([style]) {
+  background: #1f2937 !important;
+  background-color: #1f2937 !important;
+  color: #f3f4f6 !important;
+  border-color: #374151 !important;
+}
+
+html[data-theme='dark'] [data-theme-target="debt-card"] {
+  background: #1f2937 !important;
+  background-color: #1f2937 !important;
+  color: #f3f4f6 !important;
+  border-color: #374151 !important;
+}
+
+/* Anular cualquier estilo inline en elementos hijos */
+html[data-theme='dark'] [class*="DebtManager_debtCard"] > *,
+html[data-theme='dark'] [data-theme-target="debt-card"] > * {
+  color: #f3f4f6 !important;
+}
+
+/* Forzar estilos específicos para contenido de las tarjetas */
+html[data-theme='dark'] [class*="DebtManager_debtCard"] h3,
+html[data-theme='dark'] [class*="DebtManager_debtCard"] h4,
+html[data-theme='dark'] [class*="DebtManager_debtCard"] p,
+html[data-theme='dark'] [class*="DebtManager_debtCard"] span,
+html[data-theme='dark'] [class*="DebtManager_debtCard"] div {
+  color: #f3f4f6 !important;
+}
+
+/* Estilos para etiquetas de tipo de deuda */
+html[data-theme='dark'] [class*="DebtManager_debtType"] {
+  color: #9ca3af !important;
+  background-color: transparent !important;
 }
