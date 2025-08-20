@@ -100,6 +100,7 @@ export const PlanningPage: React.FC<PlanningPageProps> = ({ isGuest }) => {
                         clearFinancialsError();
                     }}
                     loadingMessage="Cargando datos de planificación..."
+                    retryButtonText="Reintentar Carga de Planificación"
                 >
                     <>
                         <div className={styles.section}>

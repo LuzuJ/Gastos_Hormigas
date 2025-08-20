@@ -92,6 +92,7 @@ export const SavingsGoalsSection: React.FC<SavingsGoalsSectionProps> = ({
         error={error}
         onDismissError={onDismissError}
         loadingMessage="Cargando metas de ahorro..."
+        retryButtonText="Reintentar Carga de Metas de Ahorro"
       >
         <SavingsGoals 
           savingsGoals={savingsGoals}

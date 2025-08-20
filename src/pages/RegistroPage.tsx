@@ -4,7 +4,8 @@ import { useExpensesContext, useCategoriesContext } from '../contexts/AppContext
 import { ExpenseList } from '../components/ExpenseList/ExpenseList';
 import { EditExpenseModal } from '../components/modals/EditExpenseModal/EditExpenseModal';
 import { ExpenseFilter, type DateRange, type FilterPeriod } from '../components/ExpenseFilter/ExpenseFilter';
-import { Download, BarChart3, TrendingUp } from 'lucide-react'; 
+import { LoadingStateWrapper } from '../components/LoadingState/LoadingState';
+import { BarChart3, TrendingUp } from 'lucide-react'; 
 import styles from './RegistroPage.module.css';
 
 const formatDate = (date: Date) => date.toISOString().split('T')[0];
@@ -18,10 +19,12 @@ export const RegistroPage: React.FC<RegistroPageProps> = () => {
   const { 
     expenses, 
     loadingExpenses, // Usamos el nuevo estado de carga
+    expensesError, // Agregamos manejo de errores
     updateExpense, 
     deleteExpense,
     isEditing, 
     setIsEditing,
+    clearExpensesError, // Para limpiar errores
   } = useExpensesContext();
   
   const { categories, addSubCategory } = useCategoriesContext();
@@ -114,36 +117,6 @@ export const RegistroPage: React.FC<RegistroPageProps> = () => {
     });
   }, [expenses, searchTerm, dateRange, selectedCategoryId]);
 
-  const handleExportCSV = () => {
-    if (filteredExpenses.length === 0) {
-      alert("No hay gastos para exportar.");
-      return;
-    }
-
-    const headers = ["Fecha", "Descripción", "Monto", "Categoría", "Subcategoría"];
-    const csvRows = [headers.join(',')];
-
-    filteredExpenses.forEach(expense => {
-      const date = expense.createdAt!.toDate().toLocaleDateString('es-EC');
-      const categoryName = categories.find(c => c.id === expense.categoryId)?.name || 'N/A';
-      const description = `"${expense.description.replace(/"/g, '""')}"`;
-      
-      csvRows.push([date, description, expense.amount, categoryName, expense.subCategory].join(','));
-    });
-
-    const csvString = csvRows.join('\n');
-    const blob = new Blob(['\uFEFF' + csvString], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    const url = URL.createObjectURL(blob);
-    
-    link.setAttribute('href', url);
-    link.setAttribute('download', 'gastos.csv');
-    link.style.visibility = 'hidden';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
-
   return (
     <div className={styles.registroPage}>
       {/* Header compacto */}
@@ -165,14 +138,6 @@ export const RegistroPage: React.FC<RegistroPageProps> = () => {
               <TrendingUp size={16} />
               <strong>${filteredExpenses.reduce((sum, expense) => sum + expense.amount, 0).toFixed(2)}</strong> total
             </span>
-            <button 
-              onClick={handleExportCSV} 
-              className={styles.exportButton}
-              disabled={filteredExpenses.length === 0}
-            >
-              <Download size={16}/>
-              Exportar
-            </button>
           </div>
         </div>
       </header>
@@ -194,23 +159,31 @@ export const RegistroPage: React.FC<RegistroPageProps> = () => {
       </div>
 
       {/* Lista de resultados */}
-      <div className={styles.resultsContainer}>
-        {filteredExpenses.length > 0 && (
-          <div className={styles.resultsInfo}>
-            <span className={styles.resultsCount}>
-              {filteredExpenses.length} {filteredExpenses.length === 1 ? 'resultado' : 'resultados'}
-            </span>
-          </div>
-        )}
-        
-        <ExpenseList 
-          expenses={filteredExpenses} 
-          categories={categories}
-          onDelete={deleteExpense} 
-          loading={loadingExpenses}
-          onEdit={(expense) => setIsEditing(expense)} 
-        />
-      </div>
+      <LoadingStateWrapper
+        loading={loadingExpenses}
+        error={expensesError}
+        onDismissError={clearExpensesError}
+        retryButtonText="Reintentar Carga de Gastos"
+        loadingMessage="Cargando gastos..."
+      >
+        <div className={styles.resultsContainer}>
+          {filteredExpenses.length > 0 && (
+            <div className={styles.resultsInfo}>
+              <span className={styles.resultsCount}>
+                {filteredExpenses.length} {filteredExpenses.length === 1 ? 'resultado' : 'resultados'}
+              </span>
+            </div>
+          )}
+          
+          <ExpenseList 
+            expenses={filteredExpenses} 
+            categories={categories}
+            onDelete={deleteExpense} 
+            loading={false} // Quitamos loading del ExpenseList ya que LoadingStateWrapper lo maneja
+            onEdit={(expense) => setIsEditing(expense)} 
+          />
+        </div>
+      </LoadingStateWrapper>
 
       {isEditing && (
         <EditExpenseModal

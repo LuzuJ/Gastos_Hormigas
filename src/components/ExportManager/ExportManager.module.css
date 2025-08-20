@@ -1,0 +1,218 @@
+/* Contenedor principal */
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-headings);
+  margin: 0 0 0.5rem 0;
+}
+
+.headerIcon {
+  color: var(--primary-accent);
+}
+
+.subtitle {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+/* Grid de opciones */
+.optionsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 2rem;
+}
+
+.exportOption {
+  background: var(--background-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.exportOption:hover {
+  border-color: var(--primary-accent);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.optionHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.optionIcon {
+  color: var(--primary-accent);
+  flex-shrink: 0;
+}
+
+.optionTitle {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-headings);
+  margin: 0;
+  flex-grow: 1;
+}
+
+.recentIcon {
+  color: var(--success-color);
+  flex-shrink: 0;
+}
+
+.optionDescription {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  line-height: 1.4;
+  margin: 0 0 1rem 0;
+}
+
+.optionFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.filename {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  font-family: monospace;
+  background: var(--background-hover);
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.exportButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: var(--primary-accent);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 100px;
+  justify-content: center;
+}
+
+.exportButton:hover:not(:disabled) {
+  background: var(--primary-accent-hover);
+  transform: translateY(-1px);
+}
+
+.exportButton:disabled {
+  background: var(--border-color);
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Spinner de carga */
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid transparent;
+  border-top: 2px solid currentColor;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Exportaciones recientes */
+.recentExports {
+  background: var(--background-hover);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-top: 1.5rem;
+}
+
+.recentExports h4 {
+  margin: 0 0 0.75rem 0;
+  font-size: 0.95rem;
+  color: var(--text-headings);
+  font-weight: 600;
+}
+
+.recentList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.recentItem {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.recentItem .recentIcon {
+  color: var(--success-color);
+  width: 16px;
+  height: 16px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .optionsGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .optionFooter {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+  
+  .exportButton {
+    width: 100%;
+  }
+}
+
+/* Modo oscuro */
+html[data-theme='dark'] .exportOption {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+html[data-theme='dark'] .exportOption:hover {
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+html[data-theme='dark'] .filename {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+html[data-theme='dark'] .recentExports {
+  background: rgba(255, 255, 255, 0.05);
+}

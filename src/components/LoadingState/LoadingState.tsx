@@ -22,12 +22,14 @@ interface ErrorMessageProps {
   error: string;
   onRetry?: () => void;
   onDismiss?: () => void;
+  retryButtonText?: string;
 }
 
 export const ErrorMessage: React.FC<ErrorMessageProps> = ({ 
   error, 
   onRetry, 
-  onDismiss 
+  onDismiss,
+  retryButtonText = 'Reintentar'
 }) => {
   return (
     <div className={styles.errorContainer}>
@@ -40,7 +42,7 @@ export const ErrorMessage: React.FC<ErrorMessageProps> = ({
               className={styles.retryButton} 
               onClick={onRetry}
             >
-              Reintentar
+              {retryButtonText}
             </button>
           )}
           {onDismiss && (
@@ -63,6 +65,7 @@ interface LoadingStateWrapperProps {
   onRetry?: () => void;
   onDismissError?: () => void;
   loadingMessage?: string;
+  retryButtonText?: string;
   children: React.ReactNode;
 }
 
@@ -75,6 +78,7 @@ export const LoadingStateWrapper: React.FC<LoadingStateWrapperProps> = ({
   onRetry,
   onDismissError,
   loadingMessage,
+  retryButtonText,
   children
 }) => {
   if (loading) {
@@ -86,7 +90,8 @@ export const LoadingStateWrapper: React.FC<LoadingStateWrapperProps> = ({
       <ErrorMessage 
         error={error} 
         onRetry={onRetry} 
-        onDismiss={onDismissError} 
+        onDismiss={onDismissError}
+        retryButtonText={retryButtonText}
       />
     );
   }

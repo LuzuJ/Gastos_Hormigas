@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { auth } from '../config/firebase';
 import { authService } from '../services/authService';
 import { LoadingStateWrapper } from '../components/LoadingState/LoadingState';
+import { ExportManager } from '../components/ExportManager';
 import styles from './ProfilePage.module.css';
 import { LogOut, UserPlus, Eye, EyeOff } from 'lucide-react';
 import { useProfileContext } from '../contexts/AppContext';
@@ -102,6 +103,13 @@ const RegisteredUserProfile: React.FC = () => {
                             {message && <span className={styles.savedMessage}>{message}</span>}
                         </div>
                     </form>
+                )}
+
+                {/* Sección de Exportación para usuarios registrados */}
+                {profile && (
+                    <div className={styles.exportSection}>
+                        <ExportManager />
+                    </div>
                 )}
             </>
         </LoadingStateWrapper>
