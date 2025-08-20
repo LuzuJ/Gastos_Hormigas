@@ -4,7 +4,7 @@ import { useExpensesContext, useCategoriesContext } from '../contexts/AppContext
 import { ExpenseList } from '../components/ExpenseList/ExpenseList';
 import { EditExpenseModal } from '../components/modals/EditExpenseModal/EditExpenseModal';
 import { ExpenseFilter, type DateRange, type FilterPeriod } from '../components/ExpenseFilter/ExpenseFilter';
-import { Download } from 'lucide-react'; 
+import { Download, BarChart3, TrendingUp } from 'lucide-react'; 
 import styles from './RegistroPage.module.css';
 
 const formatDate = (date: Date) => date.toISOString().split('T')[0];
@@ -39,8 +39,9 @@ export const RegistroPage: React.FC<RegistroPageProps> = () => {
 
     switch (filterPeriod) {
       case 'today':
-        startDate = now;
-        endDate = now;
+        // Para "hoy" necesitamos el inicio y fin del día actual
+        startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
+        endDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999);
         break;
       case 'thisMonth':
         startDate = new Date(now.getFullYear(), now.getMonth(), 1);
@@ -53,19 +54,38 @@ export const RegistroPage: React.FC<RegistroPageProps> = () => {
       case 'last7days':
         startDate = new Date();
         startDate.setDate(now.getDate() - 6);
-        endDate = now;
+        startDate.setHours(0, 0, 0, 0); // Inicio del día hace 7 días
+        endDate = new Date();
+        endDate.setHours(23, 59, 59, 999); // Fin del día actual
         break;
       case 'all':
         break;
       case 'custom':
         return;
+      case 'specificMonth':
+        if (dateRange.specificMonth) {
+          const [year, month] = dateRange.specificMonth.split('-').map(Number);
+          startDate = new Date(year, month - 1, 1);
+          endDate = new Date(year, month, 0);
+          endDate.setHours(23, 59, 59, 999);
+        }
+        break;
+      case 'specificYear':
+        if (dateRange.specificYear) {
+          const year = parseInt(dateRange.specificYear);
+          startDate = new Date(year, 0, 1);
+          endDate = new Date(year, 11, 31);
+          endDate.setHours(23, 59, 59, 999);
+        }
+        break;
     }
 
     setDateRange({
+      ...dateRange,
       startDate: startDate ? formatDate(startDate) : null,
       endDate: endDate ? formatDate(endDate) : null,
     });
-  }, [filterPeriod]);
+  }, [filterPeriod, dateRange.specificMonth, dateRange.specificYear]);
 
   const filteredExpenses = useMemo(() => {
     return expenses.filter(expense => {
@@ -74,11 +94,21 @@ export const RegistroPage: React.FC<RegistroPageProps> = () => {
       }
       const expenseDate = expense.createdAt.toDate();
       const searchMatch = searchTerm === '' || expense.description.toLowerCase().includes(searchTerm.toLowerCase());
-      const startDate = dateRange.startDate ? new Date(dateRange.startDate) : null;
-      const endDate = dateRange.endDate ? new Date(dateRange.endDate) : null;
-      if (startDate) startDate.setUTCHours(0, 0, 0, 0);
-      if (endDate) endDate.setUTCHours(23, 59, 59, 999);
-      const dateMatch = (!startDate || expenseDate >= startDate) && (!endDate || expenseDate <= endDate);
+      
+      // Filtro de fecha: comparación directa sin manipulación UTC
+      let dateMatch = true;
+      if (dateRange.startDate || dateRange.endDate) {
+        const startDate = dateRange.startDate ? new Date(dateRange.startDate) : null;
+        const endDate = dateRange.endDate ? new Date(dateRange.endDate) : null;
+        
+        if (startDate) {
+          dateMatch = dateMatch && expenseDate >= startDate;
+        }
+        if (endDate) {
+          dateMatch = dateMatch && expenseDate <= endDate;
+        }
+      }
+      
       const categoryMatch = selectedCategoryId === 'all' || expense.categoryId === selectedCategoryId;
       return searchMatch && dateMatch && categoryMatch;
     });
@@ -115,15 +145,40 @@ export const RegistroPage: React.FC<RegistroPageProps> = () => {
   };
 
   return (
-    <div>
-      <div className={styles.pageHeader}>
-        <h2 className={`section-title ${styles.title}`}>Registro de Todos los Gastos</h2>
-        <button onClick={handleExportCSV} className="export-button">
-            <Download size={16}/> Exportar CSV
-        </button>
-      </div>
-      
-      <div style={{ marginTop: '2rem' }}>
+    <div className={styles.registroPage}>
+      {/* Header compacto */}
+      <header className={styles.pageHeader}>
+        <div className={styles.headerContent}>
+          <div className={styles.titleSection}>
+            <h1 className={styles.pageTitle}>
+              <BarChart3 size={28} className={styles.titleIcon} />
+              Registro de Gastos
+            </h1>
+          </div>
+          
+          <div className={styles.headerStats}>
+            <span className={styles.stat}>
+              <BarChart3 size={16} />
+              <strong>{filteredExpenses.length}</strong> {filteredExpenses.length === 1 ? 'gasto' : 'gastos'}
+            </span>
+            <span className={styles.stat}>
+              <TrendingUp size={16} />
+              <strong>${filteredExpenses.reduce((sum, expense) => sum + expense.amount, 0).toFixed(2)}</strong> total
+            </span>
+            <button 
+              onClick={handleExportCSV} 
+              className={styles.exportButton}
+              disabled={filteredExpenses.length === 0}
+            >
+              <Download size={16}/>
+              Exportar
+            </button>
+          </div>
+        </div>
+      </header>
+
+      {/* Filtros compactos */}
+      <div className={styles.filtersContainer}>
         <ExpenseFilter 
           searchTerm={searchTerm}
           onSearchChange={setSearchTerm}
@@ -134,15 +189,24 @@ export const RegistroPage: React.FC<RegistroPageProps> = () => {
           categories={categories}
           selectedCategoryId={selectedCategoryId}
           onCategoryChange={setSelectedCategoryId}
+          expenses={expenses}
         />
       </div>
 
-      <div style={{ marginTop: '2rem' }}>
+      {/* Lista de resultados */}
+      <div className={styles.resultsContainer}>
+        {filteredExpenses.length > 0 && (
+          <div className={styles.resultsInfo}>
+            <span className={styles.resultsCount}>
+              {filteredExpenses.length} {filteredExpenses.length === 1 ? 'resultado' : 'resultados'}
+            </span>
+          </div>
+        )}
+        
         <ExpenseList 
           expenses={filteredExpenses} 
           categories={categories}
           onDelete={deleteExpense} 
-          // 3. Pasamos el nuevo estado de carga al componente de la lista.
           loading={loadingExpenses}
           onEdit={(expense) => setIsEditing(expense)} 
         />

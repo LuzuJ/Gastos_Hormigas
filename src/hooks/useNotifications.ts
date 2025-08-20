@@ -3,7 +3,7 @@ import { useState, useCallback, useRef } from 'react';
 export interface Notification {
   id: number;
   message: string;
-  type: 'warning' | 'danger'; // Warning for 90%, Danger for 100%+
+  type: 'warning' | 'danger' | 'success' | 'info'; // Warning for 90%, Danger for 100%+, Success for confirmations, Info for general
 }
 
 export const useNotifications = () => {

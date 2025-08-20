@@ -45,7 +45,8 @@
 .categoryNameText {
   font-size: 0.8rem;
   font-weight: 500;
-  color: var(--text-secondary);
+  color: var(--text-primary);
+  opacity: 0.7;
 }
 .details { flex: 1; margin-right: 1rem; }
 .description {
@@ -71,7 +72,8 @@
 }
 
 .actionButton {
-  color: var(--text-secondary);
+  color: var(--text-primary);
+  opacity: 0.6;
   padding: 0.25rem;
   border-radius: 9999px;
   background: none;
@@ -81,10 +83,12 @@
 }
 .actionButton:hover { 
   color: var(--primary-accent); 
+  opacity: 1;
   background-color: var(--primary-accent-light); 
 }
 .deleteButton:hover { 
   color: var(--danger-color); 
+  opacity: 1;
   background-color: var(--danger-color-light); 
 }
 
@@ -104,13 +108,16 @@
   background-color: var(--background-hover); border-radius: 0.5rem;
 }
 .stateContainer h3 { font-size: 1.125rem; font-weight: 600; color: var(--text-headings); }
-.stateContainer p { color: var(--text-secondary); }
+.stateContainer p { 
+  color: var(--text-primary); 
+  opacity: 0.7; 
+}
 .spinner { animation: spin 1s linear infinite; color: var(--primary-accent); }
 @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
 .subCategoryTag {
-  background-color: var(--background-secondary);
-  color: var(--text-secondary);
+  background-color: var(--primary-accent-light);
+  color: var(--text-primary);
   padding: 2px 8px;
   border-radius: 9999px;
   font-size: 0.75rem;

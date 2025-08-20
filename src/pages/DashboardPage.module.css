@@ -1,79 +1,430 @@
+/* Contenedor principal del dashboard */
+.dashboard {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Header del Dashboard */
+.dashboardHeader {
+  background: linear-gradient(135deg, var(--primary-accent), var(--secondary-accent));
+  border-radius: 20px;
+  padding: 32px;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  margin-bottom: 8px;
+}
+
+.greetingSection {
+  flex: 1;
+}
+
+.greeting {
+  font-size: 32px;
+  font-weight: 800;
+  margin: 0 0 8px 0;
+  background: linear-gradient(45deg, #fff, rgba(255, 255, 255, 0.8));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.date {
+  font-size: 16px;
+  margin: 0;
+  opacity: 0.9;
+  font-weight: 400;
+  text-transform: capitalize;
+}
+
+.quickStats {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+}
+
+.quickStat {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(255, 255, 255, 0.15);
+  padding: 16px 20px;
+  border-radius: 16px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+}
+
+.quickStat:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+.statIcon {
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+.statInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.statValue {
+  font-size: 18px;
+  font-weight: 700;
+  color: white;
+}
+
+.statValue.positive {
+  color: #4ade80;
+}
+
+.statValue.negative {
+  color: #f87171;
+}
+
+.statLabel {
+  font-size: 12px;
+  opacity: 0.8;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Grid principal */
 .dashboardGrid {
-    display: grid;
-    /* Por defecto es una columna en pantallas pequeñas */
-    grid-template-columns: 1fr; 
-    gap: 2rem; /* Espacio entre los elementos */
-    margin-top: 2rem;
-}
-
-/* En pantallas más grandes (laptops, etc.), cambiamos a dos columnas */
-@media (min-width: 1024px) {
-    .dashboardGrid {
-        /* La columna principal ocupa el doble que la lateral */
-        grid-template-columns: 2fr 1fr; 
-        align-items: start;
-    }
-}
-
-.mainContent {
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
-}
-
-.sidebar {
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
-}
-
-.chartsGrid {
-    display: grid;
-    grid-template-columns: 1fr; /* Por defecto, una columna en pantallas pequeñas */
-    gap: 2rem;
-}
-
-/* Solo en pantallas más anchas, ponemos los gráficos en 2 columnas */
-@media (min-width: 1280px) {
-    .chartsGrid {
-        grid-template-columns: 1fr 1fr;
-    }
-}
-
-.topContainer {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 2rem;
-    margin-bottom: 2rem;
-}
-
-@media (min-width: 1024px) {
-    .topContainer {
-        grid-template-columns: 5fr 4fr;
-        align-items: start;
-    }
-}
-
-/* Contenedor para los gráficos de abajo */
-.bottomContainer {
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
-}
-
-.rightColumn {
-    display: flex;
-    flex-direction: column;
-    gap: 2rem; /* Espacio entre el Resumen y las Metas */
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+  align-items: start;
 }
 
 .mainColumn {
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
 }
 
 .sidebarColumn {
-    display: flex;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Secciones del dashboard */
+.expenseFormSection,
+.chartsSection,
+.summarySection,
+.budgetSection,
+.savingsSection,
+.guestSection {
+  background: var(--background-card);
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid var(--border-color);
+  transition: all 0.3s ease;
+}
+
+.expenseFormSection:hover,
+.chartsSection:hover,
+.summarySection:hover,
+.budgetSection:hover,
+.savingsSection:hover {
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  transform: translateY(-2px);
+}
+
+/* Títulos de sección */
+.sectionTitle {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-headings);
+  margin: 0 0 20px 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid var(--border-color);
+}
+
+.sectionIcon {
+  font-size: 28px;
+  flex-shrink: 0;
+}
+
+/* Grid de gráficos */
+.chartsGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+
+/* Responsive Design */
+@media (min-width: 768px) {
+  .dashboard {
+    padding: 24px;
+  }
+  
+  .dashboardHeader {
+    padding: 40px;
+  }
+  
+  .greeting {
+    font-size: 36px;
+  }
+  
+  .quickStats {
+    gap: 32px;
+  }
+  
+  .quickStat {
+    padding: 20px 24px;
+  }
+  
+  .statValue {
+    font-size: 20px;
+  }
+  
+  .chartsGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (min-width: 1024px) {
+  .dashboard {
+    padding: 32px;
+    gap: 32px;
+  }
+  
+  .dashboardGrid {
+    grid-template-columns: 2fr 1fr;
+    gap: 32px;
+  }
+  
+  .dashboardHeader {
+    padding: 48px;
+  }
+  
+  .greeting {
+    font-size: 40px;
+  }
+  
+  .date {
+    font-size: 18px;
+  }
+  
+  .expenseFormSection,
+  .chartsSection,
+  .summarySection,
+  .budgetSection,
+  .savingsSection,
+  .guestSection {
+    padding: 32px;
+  }
+  
+  .sectionTitle {
+    font-size: 28px;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+  }
+  
+  .sectionIcon {
+    font-size: 32px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .chartsGrid {
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+  }
+}
+
+/* Responsive para móviles */
+@media (max-width: 767px) {
+  .dashboard {
+    padding: 16px;
+    gap: 20px;
+  }
+  
+  .dashboardHeader {
     flex-direction: column;
+    gap: 24px;
+    padding: 24px;
+    text-align: center;
+  }
+  
+  .greeting {
+    font-size: 28px;
+  }
+  
+  .date {
+    font-size: 14px;
+  }
+  
+  .quickStats {
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+  }
+  
+  .quickStat {
+    padding: 16px;
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .statValue {
+    font-size: 16px;
+  }
+  
+  .statLabel {
+    font-size: 11px;
+  }
+  
+  .expenseFormSection,
+  .chartsSection,
+  .summarySection,
+  .budgetSection,
+  .savingsSection,
+  .guestSection {
+    padding: 20px;
+  }
+  
+  .sectionTitle {
+    font-size: 20px;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+  }
+  
+  .sectionIcon {
+    font-size: 24px;
+  }
+  
+  .chartsGrid {
+    gap: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard {
+    padding: 12px;
+    gap: 16px;
+  }
+  
+  .dashboardHeader {
+    padding: 20px;
+    border-radius: 16px;
+  }
+  
+  .greeting {
+    font-size: 24px;
+  }
+  
+  .quickStats {
+    gap: 12px;
+  }
+  
+  .quickStat {
+    padding: 12px;
+    border-radius: 12px;
+  }
+  
+  .statIcon {
+    font-size: 20px;
+  }
+  
+  .statValue {
+    font-size: 14px;
+  }
+  
+  .statLabel {
+    font-size: 10px;
+  }
+  
+  .expenseFormSection,
+  .chartsSection,
+  .summarySection,
+  .budgetSection,
+  .savingsSection,
+  .guestSection {
+    padding: 16px;
+    border-radius: 16px;
+  }
+  
+  .sectionTitle {
+    font-size: 18px;
+    gap: 8px;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+  }
+  
+  .sectionIcon {
+    font-size: 20px;
+  }
+}
+
+/* Estados especiales */
+.guestSection {
+  border: 2px dashed var(--border-color);
+  background: var(--background-hover);
+}
+
+/* Animaciones */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.expenseFormSection,
+.chartsSection,
+.summarySection,
+.budgetSection,
+.savingsSection {
+  animation: slideIn 0.6s ease-out;
+}
+
+.expenseFormSection {
+  animation-delay: 0.1s;
+}
+
+.chartsSection {
+  animation-delay: 0.2s;
+}
+
+.summarySection {
+  animation-delay: 0.3s;
+}
+
+.budgetSection {
+  animation-delay: 0.4s;
+}
+
+.savingsSection {
+  animation-delay: 0.5s;
+}
+
+/* Compatibilidad con temas oscuros */
+html[data-theme='dark'] .quickStat {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+html[data-theme='dark'] .quickStat:hover {
+  background: rgba(255, 255, 255, 0.15);
 }

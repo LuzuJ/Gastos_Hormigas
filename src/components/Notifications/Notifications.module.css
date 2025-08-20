@@ -64,6 +64,16 @@
 .danger { 
   color: var(--danger-color-strong); 
 }
+.success {
+  color: #28a745;
+  background-color: #d4edda;
+  border-left: 4px solid #28a745;
+}
+.info {
+  color: #0056b3;
+  background-color: #cce7ff;
+  border-left: 4px solid #007bff;
+}
 .emptyMessage { 
   padding: 1rem; 
   text-align: center; 

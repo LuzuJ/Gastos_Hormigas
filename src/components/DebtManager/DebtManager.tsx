@@ -3,6 +3,11 @@ import type { Liability } from '../../types';
 import { Trash2, CreditCard, DollarSign, Calendar, Plus, Edit3, Target, TrendingDown, List, BarChart3 } from 'lucide-react';
 import { DebtPaymentPlanner } from './DebtPaymentPlanner';
 import styles from './DebtManager.module.css';
+import { useConfirmDialog } from '../../hooks/useConfirmDialog';
+import { useInputDialog } from '../../hooks/useInputDialog';
+import { useNotificationsContext } from '../../contexts/NotificationsContext';
+import ConfirmDialog from '../modals/ConfirmDialog';
+import InputDialog from '../modals/InputDialog';
 
 type PaymentType = 'regular' | 'extra' | 'interest_only';
 type ViewMode = 'list' | 'planner';
@@ -24,6 +29,7 @@ interface DebtFormData {
   type: string;
   interestRate: number;
   monthlyPayment: number;
+  duration?: number; // Duración en meses
   description?: string;
 }
 
@@ -37,15 +43,22 @@ const DebtManager: React.FC<DebtManagerProps> = ({
   monthlyExtraBudget = 0,
   onUpdateExtraBudget = () => {}
 }) => {
+  // Hooks para diálogos personalizados
+  const confirmDialog = useConfirmDialog();
+  const inputDialog = useInputDialog();
+  const { addNotification } = useNotificationsContext();
+  
   const [viewMode, setViewMode] = useState<ViewMode>('list');
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingDebt, setEditingDebt] = useState<string | null>(null);
+  const [showArchivedDebts, setShowArchivedDebts] = useState(false);
   const [formData, setFormData] = useState<DebtFormData>({
     name: '',
     amount: 0,
     type: 'credit_card',
     interestRate: 0,
     monthlyPayment: 0,
+    duration: 0,
     description: ''
   });
 
@@ -75,7 +88,13 @@ const DebtManager: React.FC<DebtManagerProps> = ({
   };
 
   const calculateMonthsToPayOff = (debt: Liability) => {
-    if (!debt.monthlyPayment || !debt.interestRate || debt.monthlyPayment <= 0) {
+    // Si tiene duración definida, usarla directamente
+    if (debt.duration && debt.duration > 0) {
+      return debt.duration;
+    }
+
+    // Si no tiene duración, calcular basado en pago e interés
+    if (!debt.monthlyPayment || debt.monthlyPayment <= 0) {
       return Infinity;
     }
 
@@ -110,11 +129,116 @@ const DebtManager: React.FC<DebtManagerProps> = ({
   };
 
   const getTotalDebt = () => {
-    return liabilities.reduce((total, debt) => total + debt.amount, 0);
+    if (showArchivedDebts) {
+      return liabilities.filter(debt => debt.isArchived === true).reduce((total, debt) => total + debt.amount, 0);
+    }
+    return liabilities.filter(debt => !debt.isArchived).reduce((total, debt) => total + debt.amount, 0);
   };
 
   const getTotalMonthlyPayments = () => {
-    return liabilities.reduce((total, debt) => total + (debt.monthlyPayment || 0), 0);
+    if (showArchivedDebts) {
+      return 0; // Las deudas archivadas no tienen pagos pendientes
+    }
+    return liabilities.filter(debt => !debt.isArchived).reduce((total, debt) => total + (debt.monthlyPayment || 0), 0);
+  };
+
+  // Función para filtrar deudas según el estado actual
+  const getFilteredLiabilities = () => {
+    if (showArchivedDebts) {
+      // Mostrar solo deudas archivadas
+      return liabilities.filter(liability => liability.isArchived === true);
+    } else {
+      // Mostrar solo deudas activas (no archivadas)
+      return liabilities.filter(liability => !liability.isArchived);
+    }
+  };
+
+  const getActiveDebtsCount = () => {
+    return liabilities.filter(liability => !liability.isArchived).length;
+  };
+
+  const getArchivedDebtsCount = () => {
+    return liabilities.filter(liability => liability.isArchived === true).length;
+  };
+
+  // Función para obtener el contenido del estado vacío
+  const getEmptyStateContent = () => {
+    if (showArchivedDebts) {
+      return {
+        title: "No hay deudas archivadas",
+        message: "Las deudas completamente pagadas aparecerán aquí como historial.",
+        showButton: false
+      };
+    }
+    
+    if (getActiveDebtsCount() === 0 && getArchivedDebtsCount() > 0) {
+      return {
+        title: "🎉 ¡Todas las deudas están pagadas!",
+        message: "¡Felicidades! Has logrado pagar todas tus deudas. Puedes ver tu historial en \"Archivadas\".",
+        showButton: false
+      };
+    }
+    
+    if (liabilities.length === 0) {
+      return {
+        title: "No tienes deudas registradas",
+        message: "¡Excelente! Si no tienes deudas o quieres empezar a gestionar las que tienes, puedes agregar tu primera deuda.",
+        showButton: true
+      };
+    }
+    
+    return {
+      title: "🎉 ¡Todas las deudas están pagadas!",
+      message: "¡Felicidades! Has logrado pagar todas tus deudas. Mantén este buen hábito financiero.",
+      showButton: false
+    };
+  };
+
+  // Función para manejar pagos manuales con diálogos personalizados
+  const handleManualPayment = async (liability: Liability) => {
+    try {
+      const amount = await inputDialog.showInput({
+        title: 'Registrar Pago',
+        message: `¿Cuánto quieres pagar de "${liability.name}"?\n\nSaldo actual: ${formatCurrency(liability.amount)}`,
+        placeholder: 'Ingresa el monto a pagar',
+        inputType: 'number',
+        validation: (value: string) => {
+          const num = parseFloat(value);
+          if (isNaN(num) || num <= 0) {
+            return 'Debe ser un número mayor a 0';
+          }
+          if (num > liability.amount) {
+            return 'No puedes pagar más que el saldo actual';
+          }
+          return null;
+        }
+      });
+
+      if (amount === null) return; // Usuario canceló
+
+      const paymentAmount = parseFloat(amount);
+      const newBalance = Math.max(0, liability.amount - paymentAmount);
+      
+      const confirmed = await confirmDialog.showConfirm({
+        title: 'Confirmar Pago',
+        message: `¿Confirmar pago de ${formatCurrency(paymentAmount)}?\n\nSaldo actual: ${formatCurrency(liability.amount)}\nNuevo saldo: ${formatCurrency(newBalance)}`,
+        confirmText: 'Confirmar Pago',
+        cancelText: 'Cancelar',
+        type: 'success'
+      });
+
+      if (confirmed) {
+        // Usar la función onMakePayment que maneja todo el flujo completo
+        // incluyendo actualización de deuda, registro de gasto y notificaciones
+        onMakePayment(liability.id, paymentAmount, 'regular', `Pago manual - ${liability.name}`);
+      }
+    } catch (error) {
+      console.error('Error al procesar pago manual:', error);
+      addNotification({
+        message: '❌ Error al procesar el pago. Inténtalo de nuevo.',
+        type: 'danger'
+      });
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -137,6 +261,7 @@ const DebtManager: React.FC<DebtManagerProps> = ({
       type: 'credit_card',
       interestRate: 0,
       monthlyPayment: 0,
+      duration: 0,
       description: ''
     });
     setShowAddForm(false);
@@ -149,6 +274,7 @@ const DebtManager: React.FC<DebtManagerProps> = ({
       type: debt.type,
       interestRate: debt.interestRate || 0,
       monthlyPayment: debt.monthlyPayment || 0,
+      duration: debt.duration || 0,
       description: debt.description || ''
     });
     setEditingDebt(debt.id);
@@ -164,6 +290,7 @@ const DebtManager: React.FC<DebtManagerProps> = ({
       type: 'credit_card',
       interestRate: 0,
       monthlyPayment: 0,
+      duration: 0,
       description: ''
     });
   };
@@ -201,6 +328,28 @@ const DebtManager: React.FC<DebtManagerProps> = ({
               <BarChart3 size={16} />
               Planificador
             </button>
+          </div>
+        )}
+
+        {/* Toggle para deudas archivadas */}
+        {(getActiveDebtsCount() > 0 || getArchivedDebtsCount() > 0) && (
+          <div className={styles.archivedToggle}>
+            <button 
+              onClick={() => setShowArchivedDebts(false)}
+              className={`${styles.toggleButton} ${!showArchivedDebts ? styles.active : ''}`}
+            >
+              <TrendingDown size={16} />
+              Activas ({getActiveDebtsCount()})
+            </button>
+            {getArchivedDebtsCount() > 0 && (
+              <button 
+                onClick={() => setShowArchivedDebts(true)}
+                className={`${styles.toggleButton} ${showArchivedDebts ? styles.active : ''}`}
+              >
+                <Target size={16} />
+                Archivadas ({getArchivedDebtsCount()})
+              </button>
+            )}
           </div>
         )}
 
@@ -314,6 +463,24 @@ const DebtManager: React.FC<DebtManagerProps> = ({
                     </div>
 
                     <div className={styles.formGroup}>
+                      <label htmlFor="duration">Plazo (meses)</label>
+                      <input
+                        id="duration"
+                        type="number"
+                        min="1"
+                        max="600"
+                        value={formData.duration || ''}
+                        onChange={(e) => setFormData({...formData, duration: parseInt(e.target.value) || 0})}
+                        placeholder="36"
+                      />
+                      <small style={{ color: '#999', fontSize: '12px', marginTop: '4px', display: 'block' }}>
+                        Duración en meses (ej: 36 = 3 años)
+                      </small>
+                    </div>
+                  </div>
+
+                  <div className={styles.formRow}>
+                    <div className={styles.formGroup}>
                       <label htmlFor="monthlyPayment">Pago mensual mínimo</label>
                       <input
                         id="monthlyPayment"
@@ -352,7 +519,7 @@ const DebtManager: React.FC<DebtManagerProps> = ({
           )}
 
           <div className={styles.debtsList}>
-            {liabilities.map(liability => {
+            {getFilteredLiabilities().map(liability => {
               const monthsToPayOff = calculateMonthsToPayOff(liability);
               const totalInterest = liability.monthlyPayment && monthsToPayOff !== Infinity 
                 ? (liability.monthlyPayment * monthsToPayOff) - liability.amount 
@@ -412,6 +579,14 @@ const DebtManager: React.FC<DebtManagerProps> = ({
                           <span className={styles.infoValue}>{formatCurrency(liability.monthlyPayment)}</span>
                         </div>
                       )}
+                      {liability.duration && liability.duration > 0 && (
+                        <div className={styles.infoItem}>
+                          <span className={styles.infoLabel}>Plazo:</span>
+                          <span className={styles.infoValue}>
+                            {liability.duration} meses ({Math.round(liability.duration / 12 * 10) / 10} años)
+                          </span>
+                        </div>
+                      )}
                       {monthsToPayOff !== Infinity && liability.monthlyPayment && (
                         <div className={styles.infoItem}>
                           <span className={styles.infoLabel}>Tiempo estimado:</span>
@@ -433,19 +608,66 @@ const DebtManager: React.FC<DebtManagerProps> = ({
                       </div>
                     )}
 
-                    {liability.monthlyPayment && (
+                    {liability.monthlyPayment ? (
                       <div className={styles.paymentActions}>
                         <button
-                          onClick={() => onMakePayment(liability.id, liability.monthlyPayment!, 'regular', 'Pago mínimo mensual')}
+                          onClick={() => {
+                            console.log('💳 Registrando pago mínimo para:', liability.name);
+                            onMakePayment(liability.id, liability.monthlyPayment!, 'regular', 'Pago mínimo mensual')
+                          }}
                           className={styles.paymentButton}
                         >
                           Registrar Pago Mínimo
                         </button>
                         <button
-                          onClick={() => onMakePayment(liability.id, liability.monthlyPayment! * 1.5, 'extra', 'Pago extra')}
+                          onClick={() => {
+                            console.log('💳 Registrando pago extra para:', liability.name);
+                            onMakePayment(liability.id, liability.monthlyPayment! * 1.5, 'extra', 'Pago extra')
+                          }}
                           className={styles.extraPaymentButton}
                         >
                           Pago Extra (+50%)
+                        </button>
+                        
+                        {/* Botón alternativo: Pago manual simple */}
+                        <button
+                          onClick={() => handleManualPayment(liability)}
+                          style={{
+                            marginTop: '8px',
+                            padding: '8px 16px',
+                            backgroundColor: '#28a745',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '4px',
+                            cursor: 'pointer',
+                            fontSize: '14px',
+                            width: '100%'
+                          }}
+                        >
+                          💰 Pago Manual
+                        </button>
+                      </div>
+                    ) : (
+                      <div className={styles.noPaymentActions}>
+                        <p style={{ color: '#666', fontSize: '14px', fontStyle: 'italic', margin: '10px 0' }}>
+                          💡 Para registrar pagos automáticos, edita esta deuda y agrega un "Pago mensual mínimo"
+                        </p>
+                        
+                        {/* Botón de pago manual para deudas sin pago mínimo */}
+                        <button
+                          onClick={() => handleManualPayment(liability)}
+                          style={{
+                            padding: '8px 16px',
+                            backgroundColor: '#28a745',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '4px',
+                            cursor: 'pointer',
+                            fontSize: '14px',
+                            marginTop: '8px'
+                          }}
+                        >
+                          💰 Pago Manual
                         </button>
                       </div>
                     )}
@@ -454,25 +676,38 @@ const DebtManager: React.FC<DebtManagerProps> = ({
               );
             })}
 
-            {liabilities.length === 0 && (
+            {getFilteredLiabilities().length === 0 && (
               <div className={styles.emptyState}>
                 <div className={styles.emptyIcon}>
                   <TrendingDown size={48} />
                 </div>
-                <h4>No tienes deudas registradas</h4>
-                <p>¡Excelente! Si no tienes deudas o quieres empezar a gestionar las que tienes, puedes agregar tu primera deuda.</p>
-                <button 
-                  onClick={() => setShowAddForm(true)}
-                  className={styles.addFirstButton}
-                >
-                  <Plus size={16} />
-                  Agregar primera deuda
-                </button>
+                {(() => {
+                  const emptyContent = getEmptyStateContent();
+                  return (
+                    <>
+                      <h4>{emptyContent.title}</h4>
+                      <p>{emptyContent.message}</p>
+                      {emptyContent.showButton && (
+                        <button 
+                          onClick={() => setShowAddForm(true)}
+                          className={styles.addFirstButton}
+                        >
+                          <Plus size={16} />
+                          Agregar primera deuda
+                        </button>
+                      )}
+                    </>
+                  );
+                })()}
               </div>
             )}
           </div>
         </>
       )}
+      
+      {/* Diálogos personalizados */}
+      <ConfirmDialog state={confirmDialog.dialogState} />
+      <InputDialog state={inputDialog.dialogState} />
     </div>
   );
 };

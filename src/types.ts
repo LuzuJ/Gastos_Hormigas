@@ -86,9 +86,12 @@ export interface Liability {
   type: 'credit_card' | 'loan' | 'mortgage' | 'student_loan' | 'other';
   interestRate?: number; // Tasa de interés anual
   monthlyPayment?: number; // Pago mensual mínimo
+  duration?: number; // Duración del préstamo en meses
   dueDate?: string; // Fecha de vencimiento (YYYY-MM-DD)
   description?: string; // Descripción adicional
   lastUpdated?: Timestamp; // Fecha de última actualización
+  isArchived?: boolean; // Indica si la deuda está archivada (pagada completamente)
+  archivedAt?: Timestamp; // Fecha cuando se archivó la deuda
 }
 export type LiabilityFormData = Omit<Liability, 'id' | 'lastUpdated'>;
 

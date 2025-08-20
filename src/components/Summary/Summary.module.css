@@ -1,48 +1,448 @@
+/* Contenedor principal */
 .container {
-    display: grid;
-    gap: 1rem;
-    grid-template-columns: 1fr 1fr;
-}
-
-.box {
-    background-color: var(--background-card);
-    padding: 1rem;
-    border-radius: 0.75rem;
-    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-    border-left: 4px solid var(--border-color);
-}
-.box .label {
-    display: block;
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: var(--text-secondary);
-    margin-bottom: 0.25rem;
-}
-.box .value {
-    display: block;
-    font-size: 1.5rem;
-    font-weight: 700;
-}
-
-.breakdown {
-    font-size: 0.75rem;
-    color: var(--text-secondary);
-    margin-top: 0.5rem;
-    border-top: 1px solid var(--border-color);
-    padding-top: 0.5rem;
     display: flex;
     flex-direction: column;
-    align-items: flex-start; 
-    gap: 0.25rem; 
+    gap: 24px;
+    padding: 0;
 }
 
-.income { color: var(--success-color-strong); }
-.expense { color: var(--danger-color-strong); }
-.balancePositive { color: var(--success-color-medium); }
-.balanceNegative { color: var(--danger-color); }
+/* Grid de métricas principales */
+.mainMetrics {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+}
 
-/* Borde de color semántico para cada tarjeta */
-.box:nth-child(1) { border-color: var(--success-color); }
-.box:nth-child(2) { border-color: var(--warning-color); }
-.box:nth-child(3) { border-color: var(--info-color); }
-.todayBox { border-color: var(--secondary-accent); }
+.metricCard {
+    background: var(--background-hover);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.metricCard:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    border-color: var(--primary-accent);
+}
+
+.metricCard::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: var(--primary-accent);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.metricCard:hover::before {
+    opacity: 1;
+}
+
+.metricIcon {
+    font-size: 32px;
+    flex-shrink: 0;
+    padding: 12px;
+    background: var(--primary-accent-light);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.metricInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.metricLabel {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.metricValue {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--text-headings);
+    line-height: 1;
+}
+
+/* Colores específicos para diferentes tipos de métricas */
+.income {
+    color: var(--success-color) !important;
+}
+
+.expense {
+    color: var(--danger-color) !important;
+}
+
+.balancePos {
+    color: var(--success-color) !important;
+}
+
+.balanceNeg {
+    color: var(--danger-color) !important;
+}
+
+/* Estilos especiales para tarjetas de balance */
+.balancePositive {
+    background: var(--success-light);
+    border-color: var(--success-color);
+}
+
+.balanceNegative {
+    background: var(--error-light);
+    border-color: var(--error-color);
+}
+
+.balancePositive::before {
+    background: var(--success-color);
+    opacity: 1;
+}
+
+.balanceNegative::before {
+    background: var(--error-color);
+    opacity: 1;
+}
+
+.balancePositive .metricIcon {
+    background: var(--success-light);
+    color: var(--success-color);
+}
+
+.balanceNegative .metricIcon {
+    background: var(--error-light);
+    color: var(--error-color);
+}
+
+/* Barra de progreso del presupuesto */
+.budgetProgress {
+    background: var(--background-card);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 20px;
+    position: relative;
+    overflow: hidden; /* Asegurar que no se salgan elementos */
+}
+
+.progressHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.progressLabel {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.progressPercentage {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-headings);
+}
+
+.progressBar {
+    width: 100%;
+    height: 8px;
+    background: var(--background-hover);
+    border-radius: 4px;
+    overflow: visible; /* Cambiar para permitir mostrar el overflow */
+    margin-bottom: 8px;
+    position: relative;
+}
+
+.progressFill {
+    height: 100%;
+    border-radius: 4px;
+    transition: all 0.5s ease;
+    position: relative;
+}
+
+.progressOverflow {
+    height: 100%;
+    position: absolute;
+    top: 0;
+    background: repeating-linear-gradient(
+        45deg,
+        var(--error-color),
+        var(--error-color) 6px,
+        #dc2626 6px,
+        #dc2626 12px
+    );
+    border-radius: 4px;
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 0.8; }
+    50% { opacity: 1; }
+}
+
+.progressFill.normal {
+    background: linear-gradient(135deg, var(--success-color), #22c55e);
+}
+
+.progressFill.warning {
+    background: linear-gradient(135deg, var(--warning-color), #f59e0b);
+}
+
+.progressFill.overBudget {
+    background: linear-gradient(135deg, var(--error-color), #ef4444);
+}
+
+.progressFill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+.progressLabels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: var(--text-secondary);
+    position: relative;
+    width: 100%;
+    padding-right: 60px; /* Espacio para la etiqueta de overflow */
+}
+
+.overflowLabel {
+    position: absolute;
+    right: 0;
+    top: 0;
+    color: var(--error-color);
+    font-weight: 600;
+    background: var(--background-card);
+    padding: 2px 8px;
+    border-radius: 4px;
+    border: 1px solid var(--error-color);
+    font-size: 11px;
+    white-space: nowrap;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Alerta de sobregiro */
+.budgetAlert {
+    background: linear-gradient(135deg, #fef2f2, #fee2e2);
+    border: 1px solid var(--error-color);
+    border-radius: 8px;
+    padding: 12px;
+    margin: 8px 0;
+    color: #991b1b;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    animation: alertPulse 2s infinite;
+}
+
+@keyframes alertPulse {
+    0%, 100% { 
+        background: linear-gradient(135deg, #fef2f2, #fee2e2);
+        border-color: var(--error-color);
+    }
+    50% { 
+        background: linear-gradient(135deg, #fecaca, #f87171);
+        border-color: #dc2626;
+    }
+}
+
+/* Desglose de gastos */
+.breakdown {
+    background: var(--background-card);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 20px;
+}
+
+.breakdownTitle {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-headings);
+    margin: 0 0 16px 0;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.breakdownGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.breakdownItem {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    background: var(--background-hover);
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    transition: all 0.3s ease;
+}
+
+.breakdownItem:hover {
+    background: var(--primary-accent-light);
+    border-color: var(--primary-accent);
+}
+
+.breakdownIcon {
+    font-size: 20px;
+    padding: 8px;
+    background: var(--primary-accent-light);
+    border-radius: 8px;
+    flex-shrink: 0;
+}
+
+.breakdownInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.breakdownLabel {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.breakdownValue {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .container {
+        gap: 20px;
+    }
+    
+    .mainMetrics {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    
+    .metricCard {
+        padding: 16px;
+        gap: 12px;
+    }
+    
+    .metricIcon {
+        font-size: 28px;
+        padding: 10px;
+    }
+    
+    .metricValue {
+        font-size: 20px;
+    }
+    
+    .budgetProgress,
+    .breakdown {
+        padding: 16px;
+    }
+    
+    .breakdownGrid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    
+    .breakdownItem {
+        padding: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .mainMetrics {
+        gap: 8px;
+    }
+    
+    .metricCard {
+        padding: 12px;
+        gap: 8px;
+    }
+    
+    .metricIcon {
+        font-size: 24px;
+        padding: 8px;
+    }
+    
+    .metricValue {
+        font-size: 18px;
+    }
+    
+    .metricLabel {
+        font-size: 11px;
+    }
+    
+    .progressHeader {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+    }
+    
+    .progressPercentage {
+        font-size: 14px;
+    }
+    
+    .budgetProgress,
+    .breakdown {
+        padding: 12px;
+    }
+    
+    .breakdownTitle {
+        font-size: 14px;
+        margin-bottom: 12px;
+    }
+    
+    .breakdownItem {
+        padding: 10px;
+        gap: 8px;
+    }
+    
+    .breakdownIcon {
+        font-size: 18px;
+        padding: 6px;
+    }
+    
+    .breakdownValue {
+        font-size: 14px;
+    }
+}
+
+/* Tema oscuro */
+html[data-theme='dark'] .metricCard:hover {
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+html[data-theme='dark'] .progressFill::after {
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+}

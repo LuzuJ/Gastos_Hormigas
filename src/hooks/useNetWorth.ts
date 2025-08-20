@@ -50,7 +50,10 @@ export const useNetWorth = (userId: string | null) => {
     }, [userId, startLoading, stopLoading, clearError]);
 
     const totalAssets = useMemo(() => assets.reduce((sum, asset) => sum + asset.value, 0), [assets]);
-    const totalLiabilities = useMemo(() => liabilities.reduce((sum, liability) => sum + liability.amount, 0), [liabilities]);
+    const totalLiabilities = useMemo(() => 
+        liabilities.filter(liability => !liability.isArchived).reduce((sum, liability) => sum + liability.amount, 0), 
+        [liabilities]
+    );
     const netWorth = useMemo(() => totalAssets - totalLiabilities, [totalAssets, totalLiabilities]);
 
     const addAsset = useCallback(async (data: AssetFormData) => {
@@ -121,9 +124,11 @@ export const useNetWorth = (userId: string | null) => {
 
     // Funciones adicionales para análisis básico de deudas
     const getTotalMonthlyDebtPayments = useMemo(() => {
-        return liabilities.reduce((total, liability) => {
-            return total + (liability.monthlyPayment || 0);
-        }, 0);
+        return liabilities
+            .filter(liability => !liability.isArchived)
+            .reduce((total, liability) => {
+                return total + (liability.monthlyPayment || 0);
+            }, 0);
     }, [liabilities]);
 
     return {
