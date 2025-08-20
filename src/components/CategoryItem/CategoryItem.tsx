@@ -4,6 +4,8 @@ import styles from './CategoryItem.module.css';
 import { DynamicIcon } from '../DynamicIcon';
 import type { Category, Expense, SubCategory } from '../../types'; // <-- Asegúrate de importar SubCategory
 import { BudgetProgressBar } from '../BudgetProgressBar/BudgetProgressBar';
+import { Input, Button } from '../common';
+import { formatCurrency } from '../../utils/formatters';
 
 interface CategoryItemProps {
   category: Category;
@@ -90,7 +92,7 @@ return (
           </div>
           <span className={styles.categoryName}>{category.name}</span>
         </div>
-        <span className={styles.categoryTotal}>${totalAmount.toFixed(2)}</span>
+        <span className={styles.categoryTotal}>{formatCurrency(totalAmount)}</span>
       </header>
 
       {isOpen && (
@@ -121,13 +123,13 @@ return (
               <h4 className={styles.sectionTitle}><PiggyBank size={16} /> Presupuesto Mensual</h4>
               {isEditingBudget ? (
                 <div className={styles.budgetForm}>
-                  <input type="number" value={budgetInput} onChange={e => setBudgetInput(e.target.value)} placeholder="0.00"/>
-                  <button onClick={handleBudgetSave} className={`${styles.button} ${styles.buttonPrimary}`}>Guardar</button>
-                  <button onClick={() => setIsEditingBudget(false)} className={`${styles.button} ${styles.buttonSecondary}`}>Cancelar</button>
+                  <Input type="number" value={budgetInput} onChange={e => setBudgetInput(e.target.value)} placeholder="0.00"/>
+                  <Button onClick={handleBudgetSave} variant="primary">Guardar</Button>
+                  <Button onClick={() => setIsEditingBudget(false)} variant="outline">Cancelar</Button>
                 </div>
               ) : (
                 <div className={styles.budgetDisplay}>
-                  <span className={styles.budgetValue}>{category.budget ? `$${category.budget.toFixed(2)}` : 'Sin presupuesto'}</span>
+                  <span className={styles.budgetValue}>{category.budget ? formatCurrency(category.budget) : 'Sin presupuesto'}</span>
                   <button onClick={() => setIsEditingBudget(true)} className={styles.editBudgetButton} aria-label="editar presupuesto"><Edit size={14}/></button>
                 </div>
               )}
@@ -157,7 +159,7 @@ return (
               {filteredExpenses.map(expense => (
                 <li key={expense.id}>
                   <span>{expense.description} ({expense.subCategory})</span>
-                  <span>${expense.amount.toFixed(2)}</span>
+                  <span>{formatCurrency(expense.amount)}</span>
                 </li>
               ))}
             </ul>

@@ -1,3 +1,39 @@
+/* Filter Statistics */
+.filterStats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin: 20px 0;
+}
+
+.statCard {
+  background: var(--color-surface, white);
+  border: 1px solid var(--color-border-light, #e5e7eb);
+  border-radius: 8px;
+  padding: 16px;
+  text-align: center;
+  transition: all 0.2s ease;
+}
+
+.statCard:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
+}
+
+.statValue {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--color-primary, #3b82f6);
+  margin-bottom: 4px;
+  line-height: 1.2;
+}
+
+.statLabel {
+  font-size: 13px;
+  color: var(--color-text-secondary, #6b7280);
+  font-weight: 500;
+}
+
 .grid {
   display: grid;
   grid-template-columns: 1fr;
@@ -12,5 +48,51 @@
 
   .grid > *:first-child {
     grid-column: 1 / -1;
+  }
+}
+
+/* Responsive adjustments for filter stats */
+@media (max-width: 768px) {
+  .filterStats {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+  
+  .statCard {
+    padding: 12px;
+  }
+  
+  .statValue {
+    font-size: 18px;
+  }
+  
+  .statLabel {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .filterStats {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Modo Oscuro */
+@media (prefers-color-scheme: dark) {
+  .statCard {
+    background: var(--color-surface-dark, #1e293b);
+    border-color: var(--color-border-dark, #374151);
+  }
+  
+  .statCard:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  .statValue {
+    color: var(--color-primary, #3b82f6);
+  }
+  
+  .statLabel {
+    color: var(--color-text-secondary-dark, #cbd5e1);
   }
 }

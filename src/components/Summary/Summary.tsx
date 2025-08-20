@@ -1,5 +1,7 @@
 import React from 'react';
 import styles from './Summary.module.css';
+import { formatCurrency } from '../../utils/formatters';
+import { ProgressBar } from '../common/ProgressBar/ProgressBar';
 
 interface SummaryProps {
     totalToday: number;
@@ -8,26 +10,20 @@ interface SummaryProps {
     fixedExpensesTotal: number;
 }
 
-const formatCurrency = (value: number) => {
-  const isNegative = value < 0;
-  const absoluteValue = Math.abs(value).toFixed(2);
-
-  return isNegative ? `- $${absoluteValue}` : `$${absoluteValue}`;
-};
-
 export const Summary: React.FC<SummaryProps> = ({ totalToday, totalMonth, monthlyIncome, fixedExpensesTotal }) => {
     // Calcular balance considerando solo gastos variables del mes + gastos fijos
     const variableExpenses = totalMonth; // Solo gastos variables del mes actual
     const totalExpenses = variableExpenses + fixedExpensesTotal; // Total real de gastos
     const balance = monthlyIncome - totalExpenses;
     const spendingPercentage = monthlyIncome > 0 ? (totalExpenses / monthlyIncome) * 100 : 0;
-
-    // Determinar la clase CSS para la barra de progreso
-    const getProgressClass = () => {
-        if (spendingPercentage >= 100) return styles.overBudget;
-        if (spendingPercentage >= 80) return styles.warning;
-        return styles.normal;
-    };
+    let progressBarVariant: 'danger' | 'warning' | 'success';
+    if (spendingPercentage >= 100) {
+        progressBarVariant = 'danger';
+    } else if (spendingPercentage >= 80) {
+        progressBarVariant = 'warning';
+    } else {
+        progressBarVariant = 'success';
+    }
 
     return (
         <div className={styles.container}>
@@ -80,45 +76,19 @@ export const Summary: React.FC<SummaryProps> = ({ totalToday, totalMonth, monthl
 
             {/* Barra de progreso del presupuesto */}
             <div className={styles.budgetProgress}>
-                <div className={styles.progressHeader}>
-                    <span className={styles.progressLabel}>Uso del Presupuesto Mensual</span>
-                    <span className={styles.progressPercentage}>
-                        {spendingPercentage.toFixed(1)}%
-                    </span>
-                </div>
-                
                 {/* Mensaje de estado del presupuesto */}
-                {spendingPercentage > 100 && (
-                    <div className={styles.budgetAlert}>
-                        ⚠️ <strong>Sobregiro:</strong> Has excedido tu presupuesto en {formatCurrency(totalExpenses - monthlyIncome)}
-                    </div>
-                )}
-                
-                <div className={styles.progressBar}>
-                    <div 
-                        className={`${styles.progressFill} ${getProgressClass()}`}
-                        style={{ width: `${Math.min(spendingPercentage, 150)}%` }}
-                    />
-                    {/* Mostrar la parte excedente si supera el 100% */}
-                    {spendingPercentage > 100 && (
-                        <div 
-                            className={styles.progressOverflow}
-                            style={{ 
-                                width: `${Math.min(spendingPercentage - 100, 50)}%`,
-                                left: '100%'
-                            }}
-                        />
-                    )}
-                </div>
-                <div className={styles.progressLabels}>
-                    <span>$0</span>
-                    <span>{formatCurrency(monthlyIncome)}</span>
-                    {spendingPercentage > 100 && (
-                        <span className={styles.overflowLabel}>
-                            {formatCurrency(totalExpenses)}
-                        </span>
-                    )}
-                </div>
+                <ProgressBar
+                    value={totalExpenses}
+                    max={monthlyIncome}
+                    variant={progressBarVariant}
+                    size="large"
+                    showLabel={true}
+                    label="Uso del Presupuesto Mensual"
+                    showValue={true}
+                    valueFormat="currency"
+                    animated={true}
+                    rounded={true}
+                />
             </div>
 
             {/* Desglose detallado */}

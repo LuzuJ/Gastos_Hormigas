@@ -1,0 +1,51 @@
+/* AchievementsPage.module.css */
+
+.pageContainer {
+  min-height: 100vh;
+  background: var(--color-background, #f8fafc);
+}
+
+.pageHeader {
+  background: linear-gradient(135deg, var(--color-primary, #3b82f6) 0%, var(--color-primary-dark, #1e40af) 100%);
+  color: white;
+  padding: 40px 20px;
+  text-align: center;
+  box-shadow: 0 4px 20px rgba(59, 130, 246, 0.15);
+}
+
+.pageTitle {
+  margin: 0 0 12px 0;
+  font-size: 32px;
+  font-weight: 700;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.pageDescription {
+  margin: 0 auto;
+  font-size: 16px;
+  opacity: 0.95;
+  max-width: 600px;
+  line-height: 1.5;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .pageHeader {
+    padding: 32px 16px;
+  }
+  
+  .pageTitle {
+    font-size: 28px;
+  }
+  
+  .pageDescription {
+    font-size: 14px;
+  }
+}
+
+/* Modo Oscuro */
+@media (prefers-color-scheme: dark) {
+  .pageContainer {
+    background: var(--color-background-dark, #0f172a);
+  }
+}

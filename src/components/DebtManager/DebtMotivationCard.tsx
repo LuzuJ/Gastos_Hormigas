@@ -1,6 +1,7 @@
 import React from 'react';
 import type { DebtPaymentPlan } from '../../types';
 import styles from './DebtMotivationCard.module.css';
+import { formatCurrency } from '../../utils/formatters';
 
 interface DebtMotivationCardProps {
   paymentPlan: DebtPaymentPlan;
@@ -15,15 +16,6 @@ export const DebtMotivationCard: React.FC<DebtMotivationCardProps> = ({
   motivationalMessage,
   totalDebtAmount
 }) => {
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('es-ES', {
-      style: 'currency',
-      currency: 'EUR',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(amount);
-  };
-
   const formatMonths = (months: number) => {
     if (months === Infinity || isNaN(months)) return 'No aplicable';
     if (months <= 12) return `${months} meses`;

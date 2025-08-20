@@ -4,6 +4,7 @@ import { Target, Trash2, Plus, Minus, Lock } from 'lucide-react';
 import type { SavingsGoal, SavingsGoalFormData } from '../../types';
 import { AddFundsModal } from '../modals/AddFundsModal/AddFundsModal';
 import { RemoveFundsModal } from '../modals/RemoveFundsModal/RemoveFundsModal';
+import { Input, Button } from '../common';
 
 interface SavingsGoalsProps {
   savingsGoals: SavingsGoal[];
@@ -105,9 +106,9 @@ export const SavingsGoals: React.FC<SavingsGoalsProps> = ({ savingsGoals, onAdd,
         </div>
       ) : (
         <form onSubmit={handleSubmit} className={styles.form}>
-          <input type="text" value={name} onChange={e => setName(e.target.value)} placeholder="Nombre (ej. Vacaciones)" className={styles.input}/>
-          <input type="number" value={targetAmount} onChange={e => setTargetAmount(e.target.value)} placeholder="Monto Objetivo" className={styles.input}/>
-          <button type="submit" className={styles.button}>Crear Meta</button>
+          <Input type="text" value={name} onChange={e => setName(e.target.value)} placeholder="Nombre (ej. Vacaciones)" />
+          <Input type="number" value={targetAmount} onChange={e => setTargetAmount(e.target.value)} placeholder="Monto Objetivo" />
+          <Button type="submit" variant="primary">Crear Meta</Button>
         </form>
       )}
       {error && <p className={styles.formError}>{error}</p>}

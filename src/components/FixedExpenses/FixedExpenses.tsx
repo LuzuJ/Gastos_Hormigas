@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import styles from './FixedExpenses.module.css';
 import { Trash2, TrendingDown } from 'lucide-react';
 import type { Category, FixedExpense } from '../../types';
+import { Input, Button } from '../common';
 
 interface FixedExpensesProps {
   categories: Category[];
@@ -40,8 +41,8 @@ export const FixedExpenses: React.FC<FixedExpensesProps> = ({ categories, fixedE
         <h3>Gastos Fijos Mensuales</h3>
       </div>
       <form onSubmit={handleSubmit} className={styles.form}>
-        <input type="text" value={description} onChange={e => setDescription(e.target.value)} placeholder="Descripción (ej. Renta)" className={styles.input}/>
-        <input type="number" value={amount} onChange={e => setAmount(e.target.value)} placeholder="Monto" className={styles.input}/>
+        <Input type="text" value={description} onChange={e => setDescription(e.target.value)} placeholder="Descripción (ej. Renta)" />
+        <Input type="number" value={amount} onChange={e => setAmount(e.target.value)} placeholder="Monto" />
         {/* El select ahora usa el categoryId */}
         <select value={categoryId} onChange={e => setCategoryId(e.target.value)} className={styles.select}>
           {categories.map(cat => <option key={cat.id} value={cat.id}>{cat.name}</option>)}
@@ -52,7 +53,7 @@ export const FixedExpenses: React.FC<FixedExpensesProps> = ({ categories, fixedE
           {days.map(day => <option key={day} value={day}>Día {day}</option>)}
         </select>
         
-        <button type="submit" className={styles.button}>Añadir</button>
+        <Button type="submit" variant="primary">Añadir</Button>
       </form>
 
       <ul className={styles.list}>

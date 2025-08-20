@@ -1,0 +1,211 @@
+/* AchievementCard.module.css */
+
+.achievementCard {
+  position: relative;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: default;
+  overflow: hidden;
+}
+
+.achievementCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.achievementCard.small {
+  min-height: 180px;
+}
+
+.achievementCard.medium {
+  min-height: 220px;
+}
+
+.achievementCard.large {
+  min-height: 280px;
+}
+
+/* Estados */
+.achievementCard.completed {
+  border-color: var(--color-success, #10b981);
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.05) 0%, rgba(16, 185, 129, 0.02) 100%);
+}
+
+.achievementCard.locked {
+  opacity: 0.7;
+  filter: grayscale(0.3);
+}
+
+/* Header */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.iconContainer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.achievementIcon {
+  font-size: 32px;
+  line-height: 1;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+.categoryIcon {
+  font-size: 18px;
+  opacity: 0.7;
+}
+
+.tierBadge {
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  color: white;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Content */
+.content {
+  flex: 1;
+}
+
+.title {
+  margin: 0 0 8px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-text-primary, #1f2937);
+  line-height: 1.3;
+}
+
+.description {
+  margin: 0 0 16px 0;
+  font-size: 13px;
+  color: var(--color-text-secondary, #6b7280);
+  line-height: 1.4;
+}
+
+/* Progress Section */
+.progressSection {
+  margin-bottom: 16px;
+}
+
+.progressInfo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.progressLabel {
+  font-size: 12px;
+  color: var(--color-text-secondary, #6b7280);
+  font-weight: 500;
+}
+
+.progressValue {
+  font-size: 12px;
+  color: var(--color-text-primary, #1f2937);
+  font-weight: 600;
+}
+
+.progressBar {
+  margin-top: 4px;
+}
+
+/* Footer */
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px solid var(--color-border-light, #f3f4f6);
+}
+
+.points {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.pointsIcon {
+  font-size: 14px;
+}
+
+.pointsValue {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-primary, #3b82f6);
+}
+
+.unlockedDate {
+  font-size: 10px;
+  color: var(--color-text-muted, #9ca3af);
+  font-style: italic;
+}
+
+/* Completed Overlay */
+.completedOverlay {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: var(--color-success, #10b981);
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+}
+
+.completedIcon {
+  font-size: 12px;
+  color: white;
+}
+
+/* Modo Oscuro */
+@media (prefers-color-scheme: dark) {
+  .title {
+    color: var(--color-text-primary-dark, #f9fafb);
+  }
+  
+  .description {
+    color: var(--color-text-secondary-dark, #d1d5db);
+  }
+  
+  .progressLabel {
+    color: var(--color-text-secondary-dark, #d1d5db);
+  }
+  
+  .progressValue {
+    color: var(--color-text-primary-dark, #f9fafb);
+  }
+  
+  .footer {
+    border-top-color: var(--color-border-light-dark, #374151);
+  }
+  
+  .unlockedDate {
+    color: var(--color-text-muted-dark, #6b7280);
+  }
+  
+  .achievementCard.completed {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(16, 185, 129, 0.05) 100%);
+  }
+}
+
+/* Variables CSS para compatibilidad */
+:root {
+  --achievement-bronze: #CD7F32;
+  --achievement-silver: #C0C0C0;
+  --achievement-gold: #FFD700;
+  --achievement-platinum: #E5E4E2;
+}

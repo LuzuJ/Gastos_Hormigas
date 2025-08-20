@@ -1,16 +1,13 @@
 import React from 'react';
 import styles from './NetWorthSummary.module.css';
 import { Landmark, TrendingUp, TrendingDown } from 'lucide-react';
+import { formatCurrency } from '../../utils/formatters';
 
 interface NetWorthSummaryProps {
   totalAssets: number;
   totalLiabilities: number;
   netWorth: number;
 }
-
-const formatCurrency = (value: number) => {
-    return value.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
-};
 
 export const NetWorthSummary: React.FC<NetWorthSummaryProps> = ({ totalAssets, totalLiabilities, netWorth }) => {
   return (

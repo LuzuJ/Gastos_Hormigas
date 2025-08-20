@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import styles from './NetWorthManagerNew.module.css';
 import type { Asset, Liability, AssetFormData, LiabilityFormData } from '../../types';
 import { Trash2, Edit, Plus, TrendingUp, TrendingDown } from 'lucide-react';
+import { formatCurrency } from '../../utils/formatters';
 
 interface NetWorthManagerProps {
   assets: Asset[];
@@ -123,10 +124,6 @@ const AssetForm: React.FC<AssetFormProps> = ({ onAdd, onClose, editingAsset, onU
       </div>
     </div>
   );
-};
-
-const formatCurrency = (value: number) => {
-  return value.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
 };
 
 const getAssetTypeLabel = (type: string) => {

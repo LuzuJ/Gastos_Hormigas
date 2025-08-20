@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import styles from './InputDialog.module.css';
 import type { InputDialogState } from '../../hooks/useInputDialog';
+import { Input, Button } from '../common';
 
 interface InputDialogProps {
   state: InputDialogState | null;
@@ -57,13 +58,13 @@ const InputDialog: React.FC<InputDialogProps> = ({ state }) => {
         <div className={styles.content}>
           <p className={styles.message}>{state.message}</p>
           
-          <input
+          <Input
             type={state.inputType}
             value={value}
             onChange={(e) => setValue(e.target.value)}
             onKeyDown={handleKeyPress}
             placeholder={state.placeholder}
-            className={`${styles.input} ${error ? styles.inputError : ''}`}
+            variant={error ? 'error' : 'default'}
             autoFocus
           />
           
@@ -71,18 +72,20 @@ const InputDialog: React.FC<InputDialogProps> = ({ state }) => {
         </div>
         
         <div className={styles.actions}>
-          <button 
+          <Button 
             onClick={handleCancel}
+            variant="outline"
             className={styles.cancelButton}
           >
             {state.cancelText}
-          </button>
-          <button 
+          </Button>
+          <Button 
             onClick={handleConfirm}
+            variant="primary"
             className={styles.confirmButton}
           >
             {state.confirmText}
-          </button>
+          </Button>
         </div>
       </div>
     </div>

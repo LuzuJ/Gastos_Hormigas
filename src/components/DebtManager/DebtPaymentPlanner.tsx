@@ -3,6 +3,8 @@ import { useDebtPaymentStrategies } from '../../hooks/useDebtPaymentStrategies';
 import { DebtMotivationCard } from './DebtMotivationCard';
 import type { Liability } from '../../types';
 import styles from './DebtPaymentPlanner.module.css';
+import { formatCurrency } from '../../utils/formatters';
+import { Button } from '../common/Button/Button';
 
 interface DebtPaymentPlannerProps {
   debts: Liability[];
@@ -97,13 +99,6 @@ export const DebtPaymentPlanner: React.FC<DebtPaymentPlannerProps> = ({
     onMakePayment(debtId, amount);
   }, [onMakePayment]);
 
-  const formatCurrency = (amount: number): string => {
-    return new Intl.NumberFormat('es-ES', {
-      style: 'currency',
-      currency: 'EUR'
-    }).format(amount);
-  };
-
   const formatMonths = (months: number): string => {
     if (months === Infinity) return 'Nunca';
     const years = Math.floor(months / 12);
@@ -158,9 +153,11 @@ export const DebtPaymentPlanner: React.FC<DebtPaymentPlannerProps> = ({
               Estrategia de Pago
             </h3>
             <div className={styles.strategyOptions}>
-              <button
-                className={`${styles.strategyButton} ${currentStrategy.type === 'snowball' ? styles.active : ''}`}
+              <Button
+                variant={currentStrategy.type === 'snowball' ? 'primary' : 'outline'}
+                size="large"
                 onClick={() => setStrategyType('snowball')}
+                className={styles.strategyButton}
               >
                 <div className={styles.strategyIcon}>❄️</div>
                 <div className={styles.strategyInfo}>
@@ -169,10 +166,12 @@ export const DebtPaymentPlanner: React.FC<DebtPaymentPlannerProps> = ({
                     Primero las deudas con menor saldo para ganar impulso psicológico
                   </div>
                 </div>
-              </button>
-              <button
-                className={`${styles.strategyButton} ${currentStrategy.type === 'avalanche' ? styles.active : ''}`}
+              </Button>
+              <Button
+                variant={currentStrategy.type === 'avalanche' ? 'primary' : 'outline'}
+                size="large"
                 onClick={() => setStrategyType('avalanche')}
+                className={styles.strategyButton}
               >
                 <div className={styles.strategyIcon}>🏔️</div>
                 <div className={styles.strategyInfo}>
@@ -181,7 +180,7 @@ export const DebtPaymentPlanner: React.FC<DebtPaymentPlannerProps> = ({
                     Primero las deudas con mayor interés para ahorrar más dinero
                   </div>
                 </div>
-              </button>
+              </Button>
             </div>
           </div>
 
@@ -285,33 +284,36 @@ export const DebtPaymentPlanner: React.FC<DebtPaymentPlannerProps> = ({
 
           {/* Navegación de Secciones */}
           <div className={styles.sectionTabs}>
-            <button
-              className={`${styles.tab} ${!showComparison && !showPaymentSchedule ? styles.active : ''}`}
+            <Button
+              variant={!showComparison && !showPaymentSchedule ? 'primary' : 'outline'}
+              className={styles.tab}
               onClick={() => {
                 setShowComparison(false);
                 setShowPaymentSchedule(false);
               }}
             >
               📋 Plan de Pago
-            </button>
-            <button
-              className={`${styles.tab} ${showComparison ? styles.active : ''}`}
+            </Button>
+            <Button
+              variant={showComparison ? 'primary' : 'outline'}
+              className={styles.tab}
               onClick={() => {
                 setShowComparison(!showComparison);
                 setShowPaymentSchedule(false);
               }}
             >
               ⚖️ Comparar Estrategias
-            </button>
-            <button
-              className={`${styles.tab} ${showPaymentSchedule ? styles.active : ''}`}
+            </Button>
+            <Button
+              variant={showPaymentSchedule ? 'primary' : 'outline'}
+              className={styles.tab}
               onClick={() => {
                 setShowPaymentSchedule(!showPaymentSchedule);
                 setShowComparison(false);
               }}
             >
               📅 Cronograma Detallado
-            </button>
+            </Button>
           </div>
 
           {/* Sección Principal - Plan de Pago */}
@@ -362,18 +364,20 @@ export const DebtPaymentPlanner: React.FC<DebtPaymentPlannerProps> = ({
                     </div>
                     
                     <div className={styles.paymentActions}>
-                      <button
+                      <Button
                         onClick={() => handleMakePayment(debtAnalysis.liability.id, debtAnalysis.minimumPayment)}
+                        variant="outline"
                         className={styles.paymentButton}
                       >
                         💳 Pagar Mínimo
-                      </button>
-                      <button
+                      </Button>
+                      <Button
                         onClick={() => handleMakePayment(debtAnalysis.liability.id, debtAnalysis.suggestedPayment)}
-                        className={`${styles.paymentButton} ${styles.primary}`}
+                        variant="primary"
+                        className={styles.paymentButton}
                       >
                         🚀 Pago Sugerido
-                      </button>
+                      </Button>
                     </div>
                   </div>
                 ))}

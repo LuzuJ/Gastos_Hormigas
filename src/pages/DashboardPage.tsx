@@ -6,6 +6,7 @@ import { BudgetSummary } from '../components/BudgetSummary/BudgetSummary';
 import { GuestBlockedFeature } from '../components/GuestBlockedFeature/GuestBlockedFeature';
 import { LoadingStateWrapper } from '../components/LoadingState/LoadingState';
 import styles from './DashboardPage.module.css';
+import { formatCurrency } from '../utils/formatters';
 
 // 1. Importamos los nuevos hooks de contexto
 import { 
@@ -105,7 +106,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ isGuest }) => {
                 <div className={styles.quickStat}>
                   <div className={styles.statIcon}>💰</div>
                   <div className={styles.statInfo}>
-                    <span className={styles.statValue}>${totalExpensesToday.toFixed(2)}</span>
+                    <span className={styles.statValue}>{formatCurrency(totalExpensesToday)}</span>
                     <span className={styles.statLabel}>Gastado Hoy</span>
                   </div>
                 </div>
@@ -122,7 +123,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ isGuest }) => {
                   <div className={styles.statIcon}>💳</div>
                   <div className={styles.statInfo}>
                     <span className={`${styles.statValue} ${balance >= 0 ? styles.positive : styles.negative}`}>
-                      ${Math.abs(balance).toFixed(2)}
+                      {formatCurrency(Math.abs(balance))}
                     </span>
                     <span className={styles.statLabel}>{balance >= 0 ? 'Disponible' : 'Sobregiro'}</span>
                   </div>

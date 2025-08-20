@@ -141,3 +141,44 @@ export interface DebtPaymentPlan {
     type: 'minimum' | 'extra';
   }[];
 }
+
+// === ACHIEVEMENTS & GAMIFICATION TYPES ===
+
+export type AchievementCategory = 'budget' | 'savings' | 'debt' | 'income' | 'general';
+export type AchievementTier = 'bronze' | 'silver' | 'gold' | 'platinum';
+
+export interface Achievement {
+  id: string;
+  title: string;
+  description: string;
+  category: AchievementCategory;
+  tier: AchievementTier;
+  icon: string; // Emoji o icono
+  points: number; // Puntos que otorga el logro
+  requirement: {
+    type: 'budget_streak' | 'savings_goal' | 'debt_payment' | 'expense_reduction' | 'income_increase' | 'net_worth_growth';
+    value: number; // Valor requerido para desbloquear
+    period?: 'monthly' | 'yearly' | 'total'; // Período de evaluación
+  };
+  isUnlocked: boolean;
+  unlockedAt?: Timestamp;
+  progress: number; // Progreso actual hacia el logro (0-100)
+}
+
+export interface UserStats {
+  totalPoints: number;
+  currentLevel: number;
+  pointsToNextLevel: number;
+  achievementsUnlocked: number;
+  totalAchievements: number;
+  currentStreak: {
+    budgetStreak: number; // Meses consecutivos sin superar presupuesto
+    savingsStreak: number; // Meses consecutivos ahorrando
+  };
+  monthlyStats: {
+    month: string; // YYYY-MM format
+    budgetCompliance: number; // Porcentaje de cumplimiento de presupuesto
+    savingsRate: number; // Porcentaje de ahorro del ingreso
+    expenseReduction: number; // Reducción de gastos vs mes anterior
+  }[];
+}

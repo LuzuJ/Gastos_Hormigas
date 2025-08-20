@@ -4,6 +4,7 @@ import styles from './ExpenseForm.module.css';
 import toast from 'react-hot-toast';
 import type { Category, Expense, ExpenseFormData, SubCategory } from '../../types';
 import { BudgetProgressBar } from '../BudgetProgressBar/BudgetProgressBar';
+import { Input } from '../common';
 import { expenseFormSchema } from '../../schemas';
 
 interface ExpenseFormProps {
@@ -158,11 +159,23 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({ onAdd, onAddSubCategor
                 <form onSubmit={handleSubmit} className={styles.form}>
                     <div className={styles.formGroupDescription}>
                         <label htmlFor="description" className={styles.label}>Descripción</label>
-                        <input id="description" type="text" value={description} onChange={e => setDescription(e.target.value)} placeholder="Ej: Café con leche" className={styles.input}/>
+                        <Input 
+                            id="description" 
+                            type="text" 
+                            value={description} 
+                            onChange={e => setDescription(e.target.value)} 
+                            placeholder="Ej: Café con leche" 
+                        />
                     </div>
                     <div className={styles.formGroupAmount}>
                         <label htmlFor="amount" className={styles.label}>Monto ($)</label>
-                        <input id="amount" type="number" value={amount} onChange={e => setAmount(e.target.value)} placeholder="0.00" className={styles.input}/>
+                        <Input 
+                            id="amount" 
+                            type="number" 
+                            value={amount} 
+                            onChange={e => setAmount(e.target.value)} 
+                            placeholder="0.00" 
+                        />
                     </div>
                     <div className={styles.formGroupCategory}>
                         <label htmlFor="category" className={styles.label}>Categoría</label>
@@ -180,13 +193,12 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({ onAdd, onAddSubCategor
                     {showNewSubCategoryInput && (
                         <div className={styles.formGroupNewSubCategory}>
                             <label htmlFor="newSubCategory" className={styles.label}>Nombre de la Nueva Subcategoría</label>
-                            <input
+                            <Input
                                 id="newSubCategory"
                                 type="text"
                                 value={newSubCategoryName}
                                 onChange={(e) => setNewSubCategoryName(e.target.value)}
                                 placeholder="Ej: Comida para llevar"
-                                className={styles.input}
                             />
                         </div>
                     )}

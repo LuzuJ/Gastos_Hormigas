@@ -6,6 +6,8 @@ import styles from './DebtManager.module.css';
 import { useConfirmDialog } from '../../hooks/useConfirmDialog';
 import { useInputDialog } from '../../hooks/useInputDialog';
 import { useNotificationsContext } from '../../contexts/NotificationsContext';
+import { formatCurrency } from '../../utils/formatters';
+import { Button } from '../common';
 import ConfirmDialog from '../modals/ConfirmDialog';
 import InputDialog from '../modals/InputDialog';
 
@@ -61,10 +63,6 @@ const DebtManager: React.FC<DebtManagerProps> = ({
     duration: 0,
     description: ''
   });
-
-  const formatCurrency = (value: number) => {
-    return value.toLocaleString('es-ES', { style: 'currency', currency: 'EUR' });
-  };
 
   const getDebtTypeIcon = (type: string) => {
     switch (type) {
@@ -314,20 +312,24 @@ const DebtManager: React.FC<DebtManagerProps> = ({
         
         {liabilities.length > 0 && (
           <div className={styles.viewToggle}>
-            <button 
+            <Button 
               onClick={() => setViewMode('list')}
-              className={`${styles.toggleButton} ${viewMode === 'list' ? styles.active : ''}`}
+              variant={viewMode === 'list' ? 'primary' : 'outline'}
+              size="small"
+              icon={List}
+              iconPosition="left"
             >
-              <List size={16} />
               Lista
-            </button>
-            <button 
+            </Button>
+            <Button 
               onClick={() => setViewMode('planner')}
-              className={`${styles.toggleButton} ${viewMode === 'planner' ? styles.active : ''}`}
+              variant={viewMode === 'planner' ? 'primary' : 'outline'}
+              size="small"
+              icon={BarChart3}
+              iconPosition="left"
             >
-              <BarChart3 size={16} />
               Planificador
-            </button>
+            </Button>
           </div>
         )}
 
@@ -354,13 +356,15 @@ const DebtManager: React.FC<DebtManagerProps> = ({
         )}
 
         <div className={styles.headerActions}>
-          <button 
+          <Button 
             onClick={() => setShowAddForm(true)}
-            className={styles.addButton}
+            variant="primary"
+            size="medium"
+            icon={Plus}
+            iconPosition="left"
           >
-            <Plus size={16} />
             Agregar Deuda
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -506,12 +510,21 @@ const DebtManager: React.FC<DebtManagerProps> = ({
                   </div>
 
                   <div className={styles.formActions}>
-                    <button type="button" onClick={handleCancel} className={styles.cancelButton}>
+                    <Button 
+                      type="button" 
+                      onClick={handleCancel} 
+                      variant="secondary"
+                      size="medium"
+                    >
                       Cancelar
-                    </button>
-                    <button type="submit" className={styles.submitButton}>
+                    </Button>
+                    <Button 
+                      type="submit" 
+                      variant="primary"
+                      size="medium"
+                    >
                       {editingDebt ? 'Actualizar' : 'Agregar'} Deuda
-                    </button>
+                    </Button>
                   </div>
                 </form>
               </div>

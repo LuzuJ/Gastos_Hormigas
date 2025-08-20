@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { DollarSign } from 'lucide-react';
 import styles from './IncomeForm.module.css';
+import { Input } from '../common';
 
 interface IncomeFormProps {
     currentIncome: number;
@@ -31,11 +32,10 @@ export const IncomeForm: React.FC<IncomeFormProps> = ({ currentIncome, onSetInco
             </div>
             {isEditing ? (
                 <div className={styles.form}>
-                    <input
+                    <Input
                         type="number"
                         value={income}
                         onChange={(e) => setIncome(e.target.value)}
-                        className={styles.input}
                         placeholder="0.00"
                     />
                     <button onClick={handleSave} className={styles.button}>Guardar</button>

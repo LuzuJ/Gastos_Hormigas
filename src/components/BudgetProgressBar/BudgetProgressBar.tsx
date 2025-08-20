@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from './BudgetProgressBar.module.css';
+import { ProgressBar } from '../common/ProgressBar/ProgressBar';
 
 interface BudgetProgressBarProps {
   spent: number;
@@ -9,24 +9,25 @@ interface BudgetProgressBarProps {
 export const BudgetProgressBar: React.FC<BudgetProgressBarProps> = ({ spent, budget }) => {
   if (budget <= 0) return null; 
 
-  const percentage = Math.min((spent / budget) * 100, 100);
+  const percentage = (spent / budget) * 100;
   
-  let barColorClass = styles.green;
-  if (percentage > 90) barColorClass = styles.yellow;
-  if (percentage >= 100) barColorClass = styles.red;
+  // Determinar variante basada en el porcentaje
+  let variant: 'success' | 'warning' | 'danger' = 'success';
+  if (percentage > 90) variant = 'warning';
+  if (percentage >= 100) variant = 'danger';
 
   return (
-    <div className={styles.container}>
-      <div className={styles.labels}>
-        <span>${spent.toFixed(2)}</span>
-        <span>${budget.toFixed(2)}</span>
-      </div>
-      <div className={styles.track}>
-        <div 
-          className={`${styles.bar} ${barColorClass}`}
-          style={{ width: `${percentage}%` }}
-        ></div>
-      </div>
-    </div>
+    <ProgressBar
+      value={spent}
+      max={budget}
+      variant={variant}
+      size="medium"
+      showLabel={false}
+      showValue={false}
+      valueFormat="currency"
+      animated={true}
+      rounded={true}
+      className="budget-progress-bar"
+    />
   );
 };

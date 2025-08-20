@@ -1,6 +1,7 @@
 import React from 'react';
 import styles from './ConfirmDialog.module.css';
 import type { ConfirmDialogState } from '../../hooks/useConfirmDialog';
+import { Button } from '../common';
 
 interface ConfirmDialogProps {
   state: ConfirmDialogState | null;
@@ -36,19 +37,20 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({ state }) => {
         </div>
         
         <div className={styles.actions}>
-          <button 
+          <Button 
             onClick={state.onCancel}
+            variant="outline"
             className={styles.cancelButton}
           >
             {state.cancelText}
-          </button>
-          <button 
+          </Button>
+          <Button 
             onClick={state.onConfirm}
+            variant={state.type === 'danger' ? 'danger' : 'primary'}
             className={styles.confirmButton}
-            style={{ backgroundColor: typeColors[state.type || 'info'] }}
           >
             {state.confirmText}
-          </button>
+          </Button>
         </div>
       </div>
     </div>

@@ -1,0 +1,300 @@
+/* ReportsFilter.module.css */
+
+.filterCard {
+  margin-bottom: 24px;
+  border: 1px solid var(--color-border-light, #e5e7eb);
+  transition: all 0.2s ease;
+}
+
+.filterHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+}
+
+.headerLeft {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.filterIcon {
+  color: var(--color-primary, #3b82f6);
+  flex-shrink: 0;
+}
+
+.filterTitle {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-text-primary, #1f2937);
+}
+
+.filterSummary {
+  margin: 2px 0 0 0;
+  font-size: 13px;
+  color: var(--color-text-secondary, #6b7280);
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.resetButton {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  padding: 6px 12px;
+}
+
+.toggleButton {
+  font-size: 13px;
+  padding: 6px 12px;
+}
+
+/* Filter Content */
+.filterContent {
+  border-top: 1px solid var(--color-border-light, #e5e7eb);
+  padding: 20px;
+  background: var(--color-surface-secondary, #f8fafc);
+}
+
+.filterSection {
+  margin-bottom: 24px;
+}
+
+.filterSection:last-child {
+  margin-bottom: 0;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-primary, #1f2937);
+}
+
+.sectionHeader svg {
+  color: var(--color-text-secondary, #6b7280);
+}
+
+/* Period Buttons */
+.periodButtons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.periodButton {
+  padding: 8px 16px;
+  border: 1px solid var(--color-border, #d1d5db);
+  border-radius: 6px;
+  background: var(--color-surface, white);
+  color: var(--color-text-secondary, #6b7280);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.periodButton:hover {
+  border-color: var(--color-primary, #3b82f6);
+  color: var(--color-primary, #3b82f6);
+}
+
+.periodButton.active {
+  background: var(--color-primary, #3b82f6);
+  border-color: var(--color-primary, #3b82f6);
+  color: white;
+}
+
+/* Custom Date Range */
+.customDateRange {
+  margin-top: 16px;
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.dateInputGroup {
+  flex: 1;
+  min-width: 200px;
+}
+
+.dateInputGroup label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-secondary, #6b7280);
+}
+
+.dateInput {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid var(--color-border, #d1d5db);
+  border-radius: 6px;
+  font-size: 14px;
+  background: var(--color-surface, white);
+  color: var(--color-text-primary, #1f2937);
+  transition: border-color 0.2s ease;
+}
+
+.dateInput:focus {
+  outline: none;
+  border-color: var(--color-primary, #3b82f6);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Category Select */
+.categorySelect {
+  max-width: 300px;
+}
+
+.select {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid var(--color-border, #d1d5db);
+  border-radius: 6px;
+  font-size: 14px;
+  background: var(--color-surface, white);
+  color: var(--color-text-primary, #1f2937);
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+}
+
+.select:focus {
+  outline: none;
+  border-color: var(--color-primary, #3b82f6);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .filterHeader {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+  
+  .headerLeft {
+    justify-content: center;
+    text-align: center;
+  }
+  
+  .headerActions {
+    justify-content: center;
+  }
+  
+  .periodButtons {
+    justify-content: center;
+  }
+  
+  .periodButton {
+    flex: 1;
+    min-width: calc(50% - 4px);
+    text-align: center;
+  }
+  
+  .customDateRange {
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .dateInputGroup {
+    min-width: auto;
+  }
+  
+  .categorySelect {
+    max-width: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .filterContent {
+    padding: 16px;
+  }
+  
+  .periodButton {
+    min-width: 100%;
+  }
+  
+  .filterHeader {
+    padding: 12px 16px;
+  }
+}
+
+/* Modo Oscuro */
+@media (prefers-color-scheme: dark) {
+  .filterCard {
+    border-color: var(--color-border-dark, #374151);
+    background: var(--color-surface-dark, #1e293b);
+  }
+  
+  .filterTitle {
+    color: var(--color-text-primary-dark, #f1f5f9);
+  }
+  
+  .filterSummary {
+    color: var(--color-text-secondary-dark, #cbd5e1);
+  }
+  
+  .filterContent {
+    border-top-color: var(--color-border-dark, #374151);
+    background: var(--color-surface-secondary-dark, #0f172a);
+  }
+  
+  .sectionHeader {
+    color: var(--color-text-primary-dark, #f1f5f9);
+  }
+  
+  .sectionHeader svg {
+    color: var(--color-text-secondary-dark, #cbd5e1);
+  }
+  
+  .periodButton {
+    border-color: var(--color-border-dark, #374151);
+    background: var(--color-surface-dark, #1e293b);
+    color: var(--color-text-secondary-dark, #cbd5e1);
+  }
+  
+  .periodButton:hover {
+    border-color: var(--color-primary, #3b82f6);
+    color: var(--color-primary, #3b82f6);
+  }
+  
+  .dateInput,
+  .select {
+    border-color: var(--color-border-dark, #374151);
+    background: var(--color-surface-dark, #1e293b);
+    color: var(--color-text-primary-dark, #f1f5f9);
+  }
+  
+  .dateInput:focus,
+  .select:focus {
+    border-color: var(--color-primary, #3b82f6);
+  }
+  
+  .dateInputGroup label {
+    color: var(--color-text-secondary-dark, #cbd5e1);
+  }
+}
+
+/* Estados de hover mejorados */
+.filterCard:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+@media (prefers-color-scheme: dark) {
+  .filterCard:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+}

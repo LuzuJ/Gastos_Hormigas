@@ -37,11 +37,8 @@
 
 .viewToggle {
   display: flex;
-  background: var(--background-card);
-  border-radius: 8px;
-  padding: 4px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  border: 1px solid var(--border-color);
+  gap: 8px;
+  align-items: center;
 }
 
 .archivedToggle {

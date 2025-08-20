@@ -3,6 +3,7 @@ import { Trash2, Loader2, Edit } from 'lucide-react';
 import type { Expense, Category } from '../../types';
 import styles from './ExpenseList.module.css';
 import { DynamicIcon } from '../DynamicIcon';
+import { formatCurrency } from '../../utils/formatters';
 
 interface ExpenseListProps {
   expenses: Expense[];
@@ -47,7 +48,7 @@ export const ExpenseList: React.FC<ExpenseListProps> = ({ expenses, categories, 
                         <div className={styles.mainInfo}>
                             <div className={styles.topRow}>
                                 <p className={styles.description}>{expense.description}</p>
-                                <span className={styles.amount}>${expense.amount.toFixed(2)}</span>
+                                <span className={styles.amount}>{formatCurrency(expense.amount)}</span>
                             </div>
                             <div className={styles.meta}>
                                 {/* Ya no necesitamos el tag de color aquí, el icono lo reemplaza */}

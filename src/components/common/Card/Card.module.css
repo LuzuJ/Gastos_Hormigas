@@ -1,0 +1,253 @@
+/* Base card styles */
+.card {
+  background: var(--background-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* Variant styles */
+.default {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.elevated {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.outlined {
+  border: 2px solid var(--border-color);
+  box-shadow: none;
+}
+
+.filled {
+  background: var(--background-hover);
+  border: none;
+  box-shadow: none;
+}
+
+/* Padding variants */
+.padding-none {
+  padding: 0;
+}
+
+.padding-small {
+  padding: 12px;
+}
+
+.padding-medium {
+  padding: 20px;
+}
+
+.padding-large {
+  padding: 32px;
+}
+
+/* Interactive states */
+.hoverable:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  border-color: var(--primary-accent-light, #bfdbfe);
+}
+
+.clickable {
+  cursor: pointer;
+  border: none;
+  background: inherit;
+  text-align: inherit;
+  width: 100%;
+  font: inherit;
+}
+
+.clickable:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.12);
+}
+
+.clickable:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.clickable:focus-visible {
+  outline: 2px solid var(--primary-accent);
+  outline-offset: 2px;
+}
+
+/* Header */
+.header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.header:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.icon {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  background: var(--primary-accent-light, #eff6ff);
+  color: var(--primary-accent);
+  font-size: 20px;
+}
+
+.headerContent {
+  flex: 1;
+  min-width: 0;
+}
+
+.title {
+  margin: 0 0 4px 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--text-headings);
+  line-height: 1.4;
+}
+
+.subtitle {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.headerExtra {
+  flex-shrink: 0;
+}
+
+/* Content */
+.content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Footer */
+.footer {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border-color);
+}
+
+/* Dark mode adaptations */
+[data-theme="dark"] .card {
+  background: var(--background-card);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .filled {
+  background: var(--background-overlay);
+}
+
+[data-theme="dark"] .icon {
+  background: var(--background-overlay);
+  color: var(--primary-accent);
+}
+
+[data-theme="dark"] .hoverable:hover {
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .padding-large {
+    padding: 20px;
+  }
+  
+  .padding-medium {
+    padding: 16px;
+  }
+  
+  .header {
+    gap: 8px;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+  }
+  
+  .icon {
+    width: 32px;
+    height: 32px;
+    font-size: 16px;
+  }
+  
+  .title {
+    font-size: 1rem;
+  }
+  
+  .subtitle {
+    font-size: 0.8rem;
+  }
+}
+
+/* Animation enhancements */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+/* Accessibility improvements */
+@media (prefers-reduced-motion: reduce) {
+  .card,
+  .hoverable:hover,
+  .clickable:hover,
+  .clickable:active {
+    animation: none;
+    transition: none;
+    transform: none;
+  }
+}
+
+/* Loading state */
+.loading {
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+.loading::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.4) 50%,
+    transparent 100%
+  );
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}

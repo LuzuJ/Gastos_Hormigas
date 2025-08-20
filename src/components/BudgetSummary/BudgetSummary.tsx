@@ -2,6 +2,8 @@ import React from 'react';
 import styles from './BudgetSummary.module.css';
 import type { Category } from '../../types';
 import { PiggyBank } from 'lucide-react';
+import { formatCurrency } from '../../utils/formatters';
+import { ProgressBar } from '../common/ProgressBar/ProgressBar';
 
 interface BudgetSummaryProps {
   categories: Category[];
@@ -27,24 +29,29 @@ export const BudgetSummary: React.FC<BudgetSummaryProps> = ({ categories, monthl
           const spent = monthlyExpensesByCategory.find(e => e.name === category.name)?.value || 0;
           const progress = category.budget! > 0 ? (spent / category.budget!) * 100 : 0;
           
-          let progressBarColorClass = styles.green;
-          if (progress > 80) progressBarColorClass = styles.yellow;
-          if (progress >= 100) progressBarColorClass = styles.red;
+          // Determinar variante basada en el progreso
+          let variant: 'success' | 'warning' | 'danger' = 'success';
+          if (progress > 80) variant = 'warning';
+          if (progress >= 100) variant = 'danger';
 
           return (
             <li key={category.id} className={styles.budgetItem}>
               <div className={styles.budgetInfo}>
                 <span className={styles.budgetName}>{category.name}</span>
                 <span className={styles.budgetAmount}>
-                  ${spent.toFixed(2)} / ${category.budget!.toFixed(2)}
+                  {formatCurrency(spent)} / {formatCurrency(category.budget!)}
                 </span>
               </div>
-              <div className={styles.progressBar}>
-                <div 
-                  className={`${styles.progressFill} ${progressBarColorClass}`} 
-                  style={{ width: `${Math.min(progress, 100)}%` }} 
-                />
-              </div>
+              <ProgressBar
+                value={spent}
+                max={category.budget!}
+                variant={variant}
+                size="small"
+                showLabel={false}
+                showValue={false}
+                animated={true}
+                rounded={true}
+              />
             </li>
           );
         })}
