@@ -1,0 +1,442 @@
+/* ==============================================
+   DUPLICATE DETECTION DEMO
+   ============================================== */
+
+.container {
+  padding: 2rem;
+  max-width: 800px;
+  margin: 0 auto;
+  background-color: var(--background-card);
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--border-color);
+}
+
+.title {
+  margin-bottom: 1.5rem;
+  color: var(--text-headings);
+  font-size: 1.5rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.section {
+  margin-bottom: 2rem;
+}
+
+.sectionTitle {
+  margin-bottom: 1rem;
+  color: var(--text-headings);
+  font-size: 1.2rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* ==============================================
+   EXISTING EXPENSES SECTION
+   ============================================== */
+
+.expensesContainer {
+  background: var(--background-secondary);
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  border: 1px solid var(--border-color);
+}
+
+.expenseItem {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.expenseItem:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.expenseName {
+  font-weight: 500;
+  color: var(--text-headings);
+}
+
+.expenseDetails {
+  font-weight: bold;
+  color: var(--text-primary);
+  text-align: right;
+}
+
+/* ==============================================
+   FORM SECTION
+   ============================================== */
+
+.formGrid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr 1fr;
+  margin-bottom: 1rem;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+}
+
+.label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: var(--text-headings);
+}
+
+.input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  background-color: var(--background-card);
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  transition: border-color 0.2s ease;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--primary-accent);
+  box-shadow: 0 0 0 3px var(--primary-accent-focus-ring);
+}
+
+.input::placeholder {
+  color: var(--text-secondary);
+  opacity: 0.7;
+}
+
+/* ==============================================
+   PRESET EXAMPLES
+   ============================================== */
+
+.presetsContainer {
+  margin-bottom: 1rem;
+}
+
+.presetsLabel {
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: var(--text-headings);
+}
+
+.presetsGrid {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.presetButton {
+  padding: 0.5rem 1rem;
+  background-color: var(--primary-accent);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.presetButton:hover {
+  background-color: var(--primary-accent-hover);
+  transform: translateY(-1px);
+}
+
+.presetButton:active {
+  transform: translateY(0);
+}
+
+/* ==============================================
+   DETECTION RESULT
+   ============================================== */
+
+.detectionResult {
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  border: 1px solid;
+  transition: all 0.3s ease;
+}
+
+.detectionResult.highConfidence {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: var(--danger-color);
+  color: var(--text-primary);
+}
+
+.detectionResult.mediumConfidence {
+  background: rgba(245, 158, 11, 0.1);
+  border-color: var(--warning-color);
+  color: var(--text-primary);
+}
+
+.detectionResult.lowConfidence {
+  background: rgba(59, 130, 246, 0.1);
+  border-color: var(--info-color);
+  color: var(--text-primary);
+}
+
+.detectionResult.noDuplicate {
+  background: rgba(34, 197, 94, 0.1);
+  border-color: var(--success-color);
+  color: var(--text-primary);
+}
+
+.detectionTitle {
+  margin: 0 0 0.5rem 0;
+  font-weight: 600;
+  color: var(--text-headings);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.detectionDetail {
+  margin: 0 0 0.5rem 0;
+  color: var(--text-primary);
+}
+
+.detectionDetail:last-child {
+  margin-bottom: 0;
+}
+
+.detectionLabel {
+  font-weight: 600;
+}
+
+.showModalButton {
+  margin-top: 1rem;
+  padding: 0.75rem 1.5rem;
+  background-color: var(--danger-color);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+}
+
+.showModalButton:hover {
+  background-color: #dc2626;
+  transform: translateY(-1px);
+}
+
+.noDuplicateMessage {
+  margin: 0;
+  color: var(--success-color);
+  font-weight: 500;
+}
+
+/* ==============================================
+   INFO SECTION
+   ============================================== */
+
+.infoSection {
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid var(--info-color);
+  padding: 1rem;
+  border-radius: 8px;
+}
+
+.infoTitle {
+  margin: 0 0 0.5rem 0;
+  color: var(--text-headings);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.infoList {
+  margin: 0;
+  padding-left: 1.5rem;
+  color: var(--text-primary);
+}
+
+.infoList li {
+  margin-bottom: 0.25rem;
+}
+
+.infoList li:last-child {
+  margin-bottom: 0;
+}
+
+/* ==============================================
+   RESPONSIVE DESIGN
+   ============================================== */
+
+@media (max-width: 768px) {
+  .container {
+    padding: 1.5rem;
+    margin: 1rem;
+  }
+
+  .formGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .presetsGrid {
+    flex-direction: column;
+  }
+
+  .presetButton {
+    width: 100%;
+    text-align: center;
+  }
+
+  .expenseItem {
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: flex-start;
+  }
+
+  .expenseDetails {
+    text-align: left;
+  }
+
+  .title {
+    font-size: 1.3rem;
+  }
+
+  .sectionTitle {
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 1rem;
+    margin: 0.5rem;
+  }
+
+  .title {
+    font-size: 1.2rem;
+  }
+
+  .sectionTitle {
+    font-size: 1rem;
+  }
+
+  .input {
+    padding: 0.6rem;
+  }
+
+  .presetButton {
+    padding: 0.6rem 0.8rem;
+    font-size: 0.8rem;
+  }
+}
+
+/* ==============================================
+   DARK MODE SUPPORT
+   ============================================== */
+
+[data-theme="dark"] .container {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--border-color);
+}
+
+[data-theme="dark"] .detectionResult {
+  backdrop-filter: blur(8px);
+}
+
+/* Mejores contrastes para modo claro */
+:root .detectionResult.highConfidence {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: #dc2626;
+}
+
+:root .detectionResult.mediumConfidence {
+  background: rgba(245, 158, 11, 0.15);
+  border-color: #d97706;
+}
+
+:root .detectionResult.lowConfidence {
+  background: rgba(59, 130, 246, 0.15);
+  border-color: #2563eb;
+}
+
+:root .detectionResult.noDuplicate {
+  background: rgba(34, 197, 94, 0.15);
+  border-color: #16a34a;
+}
+
+:root .infoSection {
+  background: rgba(59, 130, 246, 0.15);
+  border-color: #2563eb;
+}
+
+/* Mejores contrastes para modo oscuro */
+[data-theme="dark"] .detectionResult.highConfidence {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: #ef4444;
+}
+
+[data-theme="dark"] .detectionResult.mediumConfidence {
+  background: rgba(245, 158, 11, 0.2);
+  border-color: #f59e0b;
+}
+
+[data-theme="dark"] .detectionResult.lowConfidence {
+  background: rgba(59, 130, 246, 0.2);
+  border-color: #3b82f6;
+}
+
+[data-theme="dark"] .detectionResult.noDuplicate {
+  background: rgba(34, 197, 94, 0.2);
+  border-color: #22c55e;
+}
+
+[data-theme="dark"] .infoSection {
+  background: rgba(59, 130, 246, 0.2);
+  border-color: #3b82f6;
+}
+
+[data-theme="dark"] .expensesContainer {
+  background: var(--background-secondary);
+  border: 1px solid var(--border-color);
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .input {
+    border-width: 2px;
+  }
+
+  .presetButton {
+    border: 2px solid var(--primary-accent);
+  }
+
+  .detectionResult {
+    border-width: 2px;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .presetButton,
+  .showModalButton,
+  .detectionResult,
+  .input {
+    transition: none;
+  }
+
+  .presetButton:hover,
+  .showModalButton:hover {
+    transform: none;
+  }
+}

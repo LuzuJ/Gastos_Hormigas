@@ -2,8 +2,11 @@
 
 .filterCard {
   margin-bottom: 24px;
-  border: 1px solid var(--color-border-light, #e5e7eb);
+  border: 1px solid var(--border-color);
   transition: all 0.2s ease;
+  background: var(--background-card);
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .filterHeader {
@@ -20,7 +23,7 @@
 }
 
 .filterIcon {
-  color: var(--color-primary, #3b82f6);
+  color: var(--primary-accent);
   flex-shrink: 0;
 }
 
@@ -28,13 +31,13 @@
   margin: 0;
   font-size: 16px;
   font-weight: 600;
-  color: var(--color-text-primary, #1f2937);
+  color: var(--text-headings);
 }
 
 .filterSummary {
   margin: 2px 0 0 0;
   font-size: 13px;
-  color: var(--color-text-secondary, #6b7280);
+  color: var(--text-secondary);
 }
 
 .headerActions {
@@ -49,18 +52,44 @@
   gap: 6px;
   font-size: 13px;
   padding: 6px 12px;
+  background: var(--background-secondary);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+.resetButton:hover {
+  background: var(--background-hover);
+  color: var(--text-primary);
+  border-color: var(--primary-accent);
 }
 
 .toggleButton {
-  font-size: 13px;
-  padding: 6px 12px;
+  font-size: 13px !important;
+  padding: 6px 12px !important;
+  background: var(--primary-accent) !important;
+  color: white !important;
+  border: 1px solid var(--primary-accent) !important;
+  border-radius: 6px !important;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 500 !important;
+}
+
+.toggleButton:hover {
+  background: var(--primary-accent-hover) !important;
+  border-color: var(--primary-accent-hover) !important;
+  transform: translateY(-1px) !important;
 }
 
 /* Filter Content */
 .filterContent {
-  border-top: 1px solid var(--color-border-light, #e5e7eb);
+  border-top: 1px solid var(--border-color);
   padding: 20px;
-  background: var(--color-surface-secondary, #f8fafc);
+  background: var(--background-secondary);
 }
 
 .filterSection {
@@ -78,11 +107,11 @@
   margin-bottom: 12px;
   font-size: 14px;
   font-weight: 600;
-  color: var(--color-text-primary, #1f2937);
+  color: var(--text-headings);
 }
 
 .sectionHeader svg {
-  color: var(--color-text-secondary, #6b7280);
+  color: var(--text-secondary);
 }
 
 /* Period Buttons */
@@ -94,10 +123,10 @@
 
 .periodButton {
   padding: 8px 16px;
-  border: 1px solid var(--color-border, #d1d5db);
+  border: 1px solid var(--border-color);
   border-radius: 6px;
-  background: var(--color-surface, white);
-  color: var(--color-text-secondary, #6b7280);
+  background: var(--background-card);
+  color: var(--text-secondary);
   font-size: 13px;
   font-weight: 500;
   cursor: pointer;
@@ -106,13 +135,14 @@
 }
 
 .periodButton:hover {
-  border-color: var(--color-primary, #3b82f6);
-  color: var(--color-primary, #3b82f6);
+  border-color: var(--primary-accent);
+  color: var(--primary-accent);
+  background: var(--background-hover);
 }
 
 .periodButton.active {
-  background: var(--color-primary, #3b82f6);
-  border-color: var(--color-primary, #3b82f6);
+  background: var(--primary-accent);
+  border-color: var(--primary-accent);
   color: white;
 }
 
@@ -134,24 +164,24 @@
   margin-bottom: 6px;
   font-size: 13px;
   font-weight: 500;
-  color: var(--color-text-secondary, #6b7280);
+  color: var(--text-secondary);
 }
 
 .dateInput {
   width: 100%;
   padding: 8px 12px;
-  border: 1px solid var(--color-border, #d1d5db);
+  border: 1px solid var(--border-color);
   border-radius: 6px;
   font-size: 14px;
-  background: var(--color-surface, white);
-  color: var(--color-text-primary, #1f2937);
+  background: var(--background-card);
+  color: var(--text-primary);
   transition: border-color 0.2s ease;
 }
 
 .dateInput:focus {
   outline: none;
-  border-color: var(--color-primary, #3b82f6);
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  border-color: var(--primary-accent);
+  box-shadow: 0 0 0 3px var(--primary-accent-focus-ring);
 }
 
 /* Category Select */
@@ -162,19 +192,19 @@
 .select {
   width: 100%;
   padding: 8px 12px;
-  border: 1px solid var(--color-border, #d1d5db);
+  border: 1px solid var(--border-color);
   border-radius: 6px;
   font-size: 14px;
-  background: var(--color-surface, white);
-  color: var(--color-text-primary, #1f2937);
+  background: var(--background-card);
+  color: var(--text-primary);
   cursor: pointer;
   transition: border-color 0.2s ease;
 }
 
 .select:focus {
   outline: none;
-  border-color: var(--color-primary, #3b82f6);
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  border-color: var(--primary-accent);
+  box-shadow: 0 0 0 3px var(--primary-accent-focus-ring);
 }
 
 /* Responsive Design */
@@ -232,69 +262,192 @@
   }
 }
 
-/* Modo Oscuro */
-@media (prefers-color-scheme: dark) {
-  .filterCard {
-    border-color: var(--color-border-dark, #374151);
-    background: var(--color-surface-dark, #1e293b);
-  }
-  
-  .filterTitle {
-    color: var(--color-text-primary-dark, #f1f5f9);
-  }
-  
-  .filterSummary {
-    color: var(--color-text-secondary-dark, #cbd5e1);
-  }
-  
-  .filterContent {
-    border-top-color: var(--color-border-dark, #374151);
-    background: var(--color-surface-secondary-dark, #0f172a);
-  }
-  
-  .sectionHeader {
-    color: var(--color-text-primary-dark, #f1f5f9);
-  }
-  
-  .sectionHeader svg {
-    color: var(--color-text-secondary-dark, #cbd5e1);
-  }
-  
-  .periodButton {
-    border-color: var(--color-border-dark, #374151);
-    background: var(--color-surface-dark, #1e293b);
-    color: var(--color-text-secondary-dark, #cbd5e1);
-  }
-  
-  .periodButton:hover {
-    border-color: var(--color-primary, #3b82f6);
-    color: var(--color-primary, #3b82f6);
-  }
-  
-  .dateInput,
-  .select {
-    border-color: var(--color-border-dark, #374151);
-    background: var(--color-surface-dark, #1e293b);
-    color: var(--color-text-primary-dark, #f1f5f9);
-  }
-  
-  .dateInput:focus,
-  .select:focus {
-    border-color: var(--color-primary, #3b82f6);
-  }
-  
-  .dateInputGroup label {
-    color: var(--color-text-secondary-dark, #cbd5e1);
-  }
+/* Modo Oscuro y Claro - Mejores contrastes */
+[data-theme="dark"] .filterCard {
+  border-color: var(--border-color);
+  background: var(--background-card);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="dark"] .filterTitle {
+  color: var(--text-headings);
+}
+
+[data-theme="dark"] .filterSummary {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .filterContent {
+  border-top-color: var(--border-color);
+  background: var(--background-secondary);
+}
+
+[data-theme="dark"] .sectionHeader {
+  color: var(--text-headings);
+}
+
+[data-theme="dark"] .sectionHeader svg {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .periodButton {
+  border-color: var(--border-color);
+  background: var(--background-card);
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .periodButton:hover {
+  border-color: var(--primary-accent);
+  color: var(--primary-accent);
+  background: var(--background-hover);
+}
+
+[data-theme="dark"] .dateInput,
+[data-theme="dark"] .select {
+  border-color: var(--border-color);
+  background: var(--background-card);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .dateInput:focus,
+[data-theme="dark"] .select:focus {
+  border-color: var(--primary-accent);
+}
+
+[data-theme="dark"] .dateInputGroup label {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .resetButton {
+  background: var(--background-secondary);
+  color: var(--text-secondary);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .resetButton:hover {
+  background: var(--background-hover);
+  color: var(--text-primary);
+  border-color: var(--primary-accent);
+}
+
+[data-theme="dark"] .toggleButton {
+  background: var(--primary-accent) !important;
+  color: white !important;
+  border-color: var(--primary-accent) !important;
+}
+
+[data-theme="dark"] .toggleButton:hover {
+  background: var(--primary-accent-hover) !important;
+  border-color: var(--primary-accent-hover) !important;
+}
+
+/* Mejores contrastes para modo claro */
+:root .filterCard {
+  background: var(--background-card);
+  border: 1px solid var(--border-color);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+:root .filterCard:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-color: var(--primary-accent);
+}
+
+:root .filterContent {
+  background: var(--background-secondary);
+  border-top-color: var(--border-color);
+}
+
+:root .periodButton {
+  background: var(--background-card);
+  border-color: var(--border-color);
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+:root .periodButton:hover {
+  background: var(--background-hover);
+  border-color: var(--primary-accent);
+  color: var(--primary-accent);
+}
+
+:root .dateInput,
+:root .select {
+  background: var(--background-card);
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+:root .dateInputGroup label {
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+:root .resetButton {
+  background: var(--background-secondary);
+  color: var(--text-secondary);
+  border-color: var(--border-color);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+:root .resetButton:hover {
+  background: var(--background-hover);
+  color: var(--text-primary);
+  border-color: var(--primary-accent);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+:root .toggleButton {
+  background: var(--primary-accent) !important;
+  color: white !important;
+  border-color: var(--primary-accent) !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+}
+
+:root .toggleButton:hover {
+  background: var(--primary-accent-hover) !important;
+  border-color: var(--primary-accent-hover) !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15) !important;
 }
 
 /* Estados de hover mejorados */
 .filterCard:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-color: var(--primary-accent);
 }
 
-@media (prefers-color-scheme: dark) {
-  .filterCard:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  }
+[data-theme="dark"] .filterCard:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Sobrescribir estilos del componente Button para toggleButton */
+button.toggleButton,
+.toggleButton.toggleButton {
+  background: var(--primary-accent) !important;
+  color: white !important;
+  border: 1px solid var(--primary-accent) !important;
+  font-size: 13px !important;
+  padding: 6px 12px !important;
+  border-radius: 6px !important;
+  font-weight: 500 !important;
+}
+
+button.toggleButton:hover,
+.toggleButton.toggleButton:hover {
+  background: var(--primary-accent-hover) !important;
+  border-color: var(--primary-accent-hover) !important;
+  transform: translateY(-1px) !important;
+}
+
+[data-theme="dark"] button.toggleButton,
+[data-theme="dark"] .toggleButton.toggleButton {
+  background: var(--primary-accent) !important;
+  color: white !important;
+  border-color: var(--primary-accent) !important;
+}
+
+[data-theme="dark"] button.toggleButton:hover,
+[data-theme="dark"] .toggleButton.toggleButton:hover {
+  background: var(--primary-accent-hover) !important;
+  border-color: var(--primary-accent-hover) !important;
 }

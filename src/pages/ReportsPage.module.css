@@ -7,30 +7,32 @@
 }
 
 .statCard {
-  background: var(--color-surface, white);
-  border: 1px solid var(--color-border-light, #e5e7eb);
+  background: var(--background-card);
+  border: 1px solid var(--border-color);
   border-radius: 8px;
   padding: 16px;
   text-align: center;
   transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .statCard:hover {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   transform: translateY(-1px);
+  border-color: var(--primary-accent);
 }
 
 .statValue {
   font-size: 20px;
   font-weight: 700;
-  color: var(--color-primary, #3b82f6);
+  color: var(--primary-accent);
   margin-bottom: 4px;
   line-height: 1.2;
 }
 
 .statLabel {
   font-size: 13px;
-  color: var(--color-text-secondary, #6b7280);
+  color: var(--text-secondary);
   font-weight: 500;
 }
 
@@ -77,22 +79,43 @@
   }
 }
 
-/* Modo Oscuro */
-@media (prefers-color-scheme: dark) {
-  .statCard {
-    background: var(--color-surface-dark, #1e293b);
-    border-color: var(--color-border-dark, #374151);
-  }
-  
-  .statCard:hover {
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  }
-  
-  .statValue {
-    color: var(--color-primary, #3b82f6);
-  }
-  
-  .statLabel {
-    color: var(--color-text-secondary-dark, #cbd5e1);
-  }
+/* Modo Oscuro y Claro - Mejores contrastes */
+[data-theme="dark"] .statCard {
+  background: var(--background-card);
+  border-color: var(--border-color);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="dark"] .statCard:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  border-color: var(--primary-accent);
+}
+
+[data-theme="dark"] .statValue {
+  color: var(--primary-accent);
+}
+
+[data-theme="dark"] .statLabel {
+  color: var(--text-secondary);
+}
+
+/* Mejores contrastes para modo claro */
+:root .statCard {
+  background: var(--background-card);
+  border: 1px solid var(--border-color);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+:root .statCard:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-color: var(--primary-accent);
+}
+
+:root .statValue {
+  color: var(--primary-accent);
+}
+
+:root .statLabel {
+  color: var(--text-secondary);
+  font-weight: 600;
 }

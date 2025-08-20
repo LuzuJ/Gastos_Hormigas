@@ -1,0 +1,229 @@
+/* Contenedor principal del gráfico */
+.chartContainer {
+  background: var(--background-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  animation: fadeInUp 0.6s ease-out;
+}
+
+/* Header del gráfico */
+.chartHeader {
+  margin-bottom: 1.5rem;
+}
+
+.chartTitle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-headings);
+  margin: 0 0 1rem 0;
+}
+
+.strategyIcon {
+  font-size: 1.5rem;
+}
+
+.chartLegend {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.legendColor {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.chartStats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  font-size: 0.85rem;
+}
+
+.statItem {
+  color: var(--text-secondary);
+}
+
+.statItem strong {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+/* Wrapper del gráfico */
+.chartWrapper {
+  margin: 1rem 0;
+  min-height: 400px;
+}
+
+/* Tooltip personalizado */
+.tooltip {
+  background: var(--background-card);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 0.75rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  max-width: 250px;
+}
+
+.tooltipTitle {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-headings);
+  margin: 0 0 0.5rem 0;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.tooltipContent {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.tooltipRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.8rem;
+}
+
+.tooltipLabel {
+  color: var(--text-secondary);
+}
+
+.tooltipValue {
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+/* Insights de progreso */
+.chartInsights {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border-color);
+}
+
+.insightCard {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: var(--background-hover);
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.insightCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.insightIcon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+  margin-top: 0.25rem;
+}
+
+.insightContent h4 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-headings);
+  margin: 0 0 0.25rem 0;
+}
+
+.insightContent p {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+  margin: 0;
+}
+
+.insightContent strong {
+  color: var(--primary-accent);
+  font-weight: 600;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .chartContainer {
+    padding: 1rem;
+  }
+  
+  .chartTitle {
+    font-size: 1.1rem;
+  }
+  
+  .chartLegend {
+    gap: 0.5rem;
+  }
+  
+  .chartStats {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .chartInsights {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+  
+  .insightCard {
+    padding: 0.75rem;
+  }
+  
+  .chartWrapper {
+    min-height: 300px;
+  }
+}
+
+/* Modo oscuro */
+html[data-theme='dark'] .chartContainer {
+  background: rgba(255, 255, 255, 0.05);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+html[data-theme='dark'] .tooltip {
+  background: rgba(31, 41, 55, 0.95);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+html[data-theme='dark'] .insightCard {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+html[data-theme='dark'] .insightCard:hover {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* Animaciones */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

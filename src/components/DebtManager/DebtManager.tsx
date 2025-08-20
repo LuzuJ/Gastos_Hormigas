@@ -533,6 +533,52 @@ const DebtManager: React.FC<DebtManagerProps> = ({
 
           <div className={styles.debtsList}>
             {getFilteredLiabilities().map(liability => {
+              // Para deudas archivadas, mostrar solo una tarjeta simplificada
+              if (showArchivedDebts) {
+                return (
+                  <div 
+                    key={liability.id} 
+                    className={`${styles.debtCard} ${styles.archivedCard}`}
+                  >
+                    <div className={styles.archivedHeader}>
+                      <div className={styles.archivedInfo}>
+                        <div className={styles.archivedName}>
+                          <span className={styles.archivedIcon}>✅</span>
+                          {getDebtTypeIcon(liability.type)}
+                          {liability.name}
+                        </div>
+                        <div className={styles.archivedType}>
+                          {getDebtTypeLabel(liability.type)}
+                        </div>
+                      </div>
+                      <div className={styles.archivedDate}>
+                        {liability.archivedAt && (
+                          <span className={styles.completedDate}>
+                            Pagada: {new Date(liability.archivedAt.toDate()).toLocaleDateString()}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    
+                    <div className={styles.archivedSummary}>
+                      <div className={styles.archivedAmount}>
+                        <span className={styles.archivedLabel}>Monto original:</span>
+                        <span className={styles.archivedValue}>
+                          {formatCurrency(liability.originalAmount || liability.amount)}
+                        </span>
+                      </div>
+                      {liability.description && (
+                        <div className={styles.archivedDescription}>
+                          <span className={styles.archivedDescLabel}>Notas:</span>
+                          <span className={styles.archivedDescText}>{liability.description}</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                );
+              }
+
+              // Para deudas activas, mostrar la tarjeta completa
               const monthsToPayOff = calculateMonthsToPayOff(liability);
               const totalInterest = liability.monthlyPayment && monthsToPayOff !== Infinity 
                 ? (liability.monthlyPayment * monthsToPayOff) - liability.amount 

@@ -1,8 +1,12 @@
 /* GastosHormigaAnalysis.module.css */
 
 .container {
-  border: 2px solid var(--color-warning, #f59e0b);
-  background: linear-gradient(135deg, rgba(245, 158, 11, 0.05) 0%, rgba(245, 158, 11, 0.02) 100%);
+  border: 2px solid var(--warning-color);
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.08) 0%, rgba(245, 158, 11, 0.03) 100%);
+  background-color: var(--background-card);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
 }
 
 .header {
@@ -11,7 +15,7 @@
   align-items: flex-start;
   margin-bottom: 20px;
   padding-bottom: 16px;
-  border-bottom: 1px solid var(--color-border-light, #f3f4f6);
+  border-bottom: 1px solid var(--border-color);
 }
 
 .headerContent {
@@ -22,7 +26,7 @@
   margin: 0 0 4px 0;
   font-size: 18px;
   font-weight: 700;
-  color: var(--color-text-primary, #1f2937);
+  color: var(--text-headings);
   display: flex;
   align-items: center;
   gap: 8px;
@@ -31,7 +35,7 @@
 .subtitle {
   margin: 0;
   font-size: 14px;
-  color: var(--color-text-secondary, #6b7280);
+  color: var(--text-secondary);
 }
 
 .impactBadge {
@@ -61,34 +65,37 @@
 .statCard {
   text-align: center;
   padding: 16px 12px;
-  background: var(--color-surface, white);
-  border: 1px solid var(--color-border-light, #e5e7eb);
+  background: var(--background-card);
+  border: 1px solid var(--border-color);
   border-radius: 8px;
   transition: transform 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .statCard:hover {
   transform: translateY(-2px);
+  border-color: var(--warning-color);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .statValue {
   font-size: 20px;
   font-weight: 700;
-  color: var(--color-warning, #f59e0b);
+  color: var(--warning-color);
   margin-bottom: 4px;
   line-height: 1.2;
 }
 
 .statLabel {
   font-size: 12px;
-  color: var(--color-text-secondary, #6b7280);
+  color: var(--text-secondary);
   font-weight: 500;
 }
 
 /* Impact Message */
 .impactMessage {
-  background: var(--color-warning-light, #fef3c7);
-  border: 1px solid var(--color-warning-border, #fcd34d);
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid var(--warning-color);
   border-radius: 8px;
   padding: 16px;
   margin-bottom: 20px;
@@ -98,16 +105,16 @@
   margin: 0;
   font-size: 14px;
   line-height: 1.5;
-  color: var(--color-warning-dark, #92400e);
+  color: var(--text-primary);
 }
 
 .impactMessage strong {
   font-weight: 600;
-  color: var(--color-warning-darker, #78350f);
+  color: var(--warning-color-strong);
 }
 
 .warning {
-  color: var(--color-danger, #ef4444);
+  color: var(--danger-color);
   font-weight: 600;
 }
 
@@ -120,7 +127,7 @@
   margin: 0 0 12px 0;
   font-size: 16px;
   font-weight: 600;
-  color: var(--color-text-primary, #1f2937);
+  color: var(--text-headings);
 }
 
 .categoriesList {
@@ -130,11 +137,17 @@
 }
 
 .categoryItem {
-  background: var(--color-surface, white);
-  border: 1px solid var(--color-border-light, #e5e7eb);
+  background: var(--background-card);
+  border: 1px solid var(--border-color);
   border-radius: 8px;
   padding: 12px;
   margin-bottom: 12px;
+  transition: all 0.2s ease;
+}
+
+.categoryItem:hover {
+  border-color: var(--warning-color);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .categoryHeader {
@@ -145,7 +158,7 @@
 }
 
 .categoryRank {
-  background: var(--color-primary, #3b82f6);
+  background: var(--primary-accent);
   color: white;
   width: 24px;
   height: 24px;
@@ -162,13 +175,13 @@
   flex: 1;
   font-size: 14px;
   font-weight: 500;
-  color: var(--color-text-primary, #1f2937);
+  color: var(--text-headings);
 }
 
 .categoryAmount {
   font-size: 14px;
   font-weight: 600;
-  color: var(--color-warning, #f59e0b);
+  color: var(--warning-color);
 }
 
 .categoryDetails {
@@ -179,7 +192,7 @@
 
 .categoryCount {
   font-size: 12px;
-  color: var(--color-text-secondary, #6b7280);
+  color: var(--text-secondary);
   min-width: 60px;
 }
 
@@ -190,15 +203,15 @@
 .categoryPercentage {
   font-size: 12px;
   font-weight: 500;
-  color: var(--color-text-secondary, #6b7280);
+  color: var(--text-secondary);
   min-width: 40px;
   text-align: right;
 }
 
 /* Tips */
 .tips {
-  background: var(--color-info-light, #dbeafe);
-  border: 1px solid var(--color-info-border, #93c5fd);
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid var(--info-color);
   border-radius: 8px;
   padding: 16px;
 }
@@ -211,7 +224,7 @@
 .tipsList li {
   font-size: 14px;
   line-height: 1.5;
-  color: var(--color-info-dark, #1e40af);
+  color: var(--text-primary);
   margin-bottom: 6px;
 }
 
@@ -223,7 +236,7 @@
 .emptyState {
   text-align: center;
   padding: 40px 20px;
-  color: var(--color-text-secondary, #6b7280);
+  color: var(--text-secondary);
 }
 
 .emptyIcon {
@@ -235,7 +248,7 @@
   margin: 0 0 8px 0;
   font-size: 18px;
   font-weight: 600;
-  color: var(--color-success, #10b981);
+  color: var(--success-color);
 }
 
 .emptyState p {
@@ -299,75 +312,127 @@
   }
 }
 
-/* Modo Oscuro */
-@media (prefers-color-scheme: dark) {
-  .container {
-    background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(245, 158, 11, 0.05) 100%);
-    border-color: var(--color-warning, #f59e0b);
-  }
-  
-  .header {
-    border-bottom-color: var(--color-border-dark, #374151);
-  }
-  
-  .title {
-    color: var(--color-text-primary-dark, #f1f5f9);
-  }
-  
-  .subtitle {
-    color: var(--color-text-secondary-dark, #cbd5e1);
-  }
-  
-  .statCard,
-  .categoryItem {
-    background: var(--color-surface-dark, #1e293b);
-    border-color: var(--color-border-dark, #374151);
-  }
-  
-  .statLabel {
-    color: var(--color-text-secondary-dark, #cbd5e1);
-  }
-  
-  .sectionTitle {
-    color: var(--color-text-primary-dark, #f1f5f9);
-  }
-  
-  .categoryName {
-    color: var(--color-text-primary-dark, #f1f5f9);
-  }
-  
-  .categoryCount,
-  .categoryPercentage {
-    color: var(--color-text-secondary-dark, #cbd5e1);
-  }
-  
-  .impactMessage {
-    background: rgba(245, 158, 11, 0.2);
-    border-color: rgba(245, 158, 11, 0.3);
-  }
-  
-  .impactMessage p {
-    color: var(--color-warning-light, #fcd34d);
-  }
-  
-  .impactMessage strong {
-    color: var(--color-warning, #f59e0b);
-  }
-  
-  .tips {
-    background: rgba(59, 130, 246, 0.2);
-    border-color: rgba(59, 130, 246, 0.3);
-  }
-  
-  .tipsList li {
-    color: var(--color-info-light, #93c5fd);
-  }
-  
-  .emptyState {
-    color: var(--color-text-secondary-dark, #cbd5e1);
-  }
-  
-  .emptyState h4 {
-    color: var(--color-success, #10b981);
-  }
+/* Modo Oscuro y Claro - Mejores contrastes */
+[data-theme="dark"] .container {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.15) 0%, rgba(245, 158, 11, 0.08) 100%);
+  border-color: var(--warning-color);
+  background-color: var(--background-card);
+}
+
+[data-theme="dark"] .header {
+  border-bottom-color: var(--border-color);
+}
+
+[data-theme="dark"] .title {
+  color: var(--text-headings);
+}
+
+[data-theme="dark"] .subtitle {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .statCard,
+[data-theme="dark"] .categoryItem {
+  background: var(--background-card);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .statCard:hover,
+[data-theme="dark"] .categoryItem:hover {
+  border-color: var(--warning-color);
+}
+
+[data-theme="dark"] .statLabel {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .sectionTitle {
+  color: var(--text-headings);
+}
+
+[data-theme="dark"] .categoryName {
+  color: var(--text-headings);
+}
+
+[data-theme="dark"] .categoryCount,
+[data-theme="dark"] .categoryPercentage {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .impactMessage {
+  background: rgba(245, 158, 11, 0.2);
+  border-color: var(--warning-color);
+}
+
+[data-theme="dark"] .impactMessage p {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .impactMessage strong {
+  color: var(--warning-color);
+}
+
+[data-theme="dark"] .tips {
+  background: rgba(59, 130, 246, 0.2);
+  border-color: var(--info-color);
+}
+
+[data-theme="dark"] .tipsList li {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .emptyState {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .emptyState h4 {
+  color: var(--success-color);
+}
+
+/* Mejores contrastes para modo claro */
+:root .container {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.12) 0%, rgba(245, 158, 11, 0.05) 100%);
+  border-color: var(--warning-color);
+  background-color: var(--background-card);
+}
+
+:root .statCard,
+:root .categoryItem {
+  background: var(--background-card);
+  border-color: var(--border-color);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+:root .statCard:hover,
+:root .categoryItem:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  border-color: var(--warning-color);
+}
+
+:root .impactMessage {
+  background: rgba(245, 158, 11, 0.15);
+  border-color: var(--warning-color);
+}
+
+:root .impactMessage p {
+  color: var(--text-primary);
+}
+
+:root .impactMessage strong {
+  color: var(--warning-color-strong);
+}
+
+:root .tips {
+  background: rgba(59, 130, 246, 0.15);
+  border-color: var(--info-color);
+}
+
+:root .tipsList li {
+  color: var(--text-primary);
+}
+
+:root .statLabel,
+:root .categoryCount,
+:root .categoryPercentage {
+  font-weight: 600;
 }

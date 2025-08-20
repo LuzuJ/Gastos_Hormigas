@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useMemo } from 'react';
 import { useDebtPaymentStrategies } from '../../hooks/useDebtPaymentStrategies';
 import { DebtMotivationCard } from './DebtMotivationCard';
+import { DebtProgressChart } from './DebtProgressChart';
 import type { Liability } from '../../types';
 import styles from './DebtPaymentPlanner.module.css';
 import { formatCurrency } from '../../utils/formatters';
@@ -59,7 +60,8 @@ export const DebtPaymentPlanner: React.FC<DebtPaymentPlannerProps> = ({
         }>,
         totalPaid: 0,
         totalPrincipal: 0,
-        totalInterest: 0
+        totalInterest: 0,
+        remainingDebt: 0
       };
       
       remainingDebts = remainingDebts.filter(debt => debt.liability.amount > 0);
@@ -86,14 +88,63 @@ export const DebtPaymentPlanner: React.FC<DebtPaymentPlannerProps> = ({
         monthData.totalInterest += interestPayment;
       }
       
+      // Calcular deuda total restante
+      monthData.remainingDebt = remainingDebts.reduce((sum, debt) => sum + debt.liability.amount, 0);
+      
       schedule.push(monthData);
       currentMonth++;
       
       if (remainingDebts.every(debt => debt.liability.amount <= 0)) break;
     }
     
-    return schedule.slice(0, 12); // Mostrar solo los próximos 12 meses
+    return schedule.slice(0, 12); // Mostrar solo los próximos 12 meses en la tabla
   }, [paymentPlan, monthlyBudget]);
+
+  // Generar datos completos para el gráfico (toda la progresión)
+  const generateChartData = useCallback(() => {
+    if (!paymentPlan || monthlyBudget <= 0) return [];
+    
+    const schedule = [];
+    let remainingDebts = [...paymentPlan.debts.map(d => ({ ...d, liability: { ...d.liability } }))]; // Deep copy
+    let currentMonth = 1;
+    let totalPaidAccumulated = 0;
+    
+    while (remainingDebts.length > 0 && currentMonth <= 240) { // Hasta 20 años para el gráfico
+      let monthlyPaid = 0;
+      let totalRemainingDebt = 0;
+      
+      remainingDebts = remainingDebts.filter(debt => debt.liability.amount > 0);
+      
+      for (const debt of remainingDebts) {
+        const monthlyRate = (debt.liability.interestRate || 0) / 100 / 12;
+        const interestPayment = debt.liability.amount * monthlyRate;
+        const payment = Math.min(debt.suggestedPayment, debt.liability.amount + interestPayment);
+        const principalPayment = payment - interestPayment;
+        
+        debt.liability.amount = Math.max(0, debt.liability.amount - principalPayment);
+        monthlyPaid += payment;
+      }
+      
+      totalRemainingDebt = remainingDebts.reduce((sum, debt) => sum + debt.liability.amount, 0);
+      totalPaidAccumulated += monthlyPaid;
+      
+      schedule.push({
+        month: currentMonth,
+        totalPaid: totalPaidAccumulated,
+        remainingDebt: totalRemainingDebt
+      });
+      
+      currentMonth++;
+      
+      if (remainingDebts.every(debt => debt.liability.amount <= 0)) break;
+    }
+    
+    return schedule;
+  }, [paymentPlan, monthlyBudget]);
+
+  const paymentSchedule = useMemo(() => generatePaymentSchedule(), [generatePaymentSchedule]);
+  const chartData = useMemo(() => generateChartData(), [generateChartData]);
+  const initialDebtAmount = useMemo(() => getTotalDebtAmount(), [getTotalDebtAmount]);
 
   const handleMakePayment = useCallback((debtId: string, amount: number) => {
     onMakePayment(debtId, amount);
@@ -127,7 +178,6 @@ export const DebtPaymentPlanner: React.FC<DebtPaymentPlannerProps> = ({
     );
   }
 
-  const paymentSchedule = generatePaymentSchedule();
   const totalMinimums = getTotalMonthlyMinimums();
   const availableForExtra = Math.max(0, monthlyBudget - totalMinimums);
 
@@ -382,6 +432,13 @@ export const DebtPaymentPlanner: React.FC<DebtPaymentPlannerProps> = ({
                   </div>
                 ))}
               </div>
+
+              {/* Gráfico de Progreso */}
+              <DebtProgressChart 
+                paymentSchedule={chartData}
+                strategy={currentStrategy.type}
+                initialDebtAmount={initialDebtAmount}
+              />
             </div>
           )}
 

@@ -6,6 +6,8 @@ import type { Category, Expense, ExpenseFormData, SubCategory } from '../../type
 import { BudgetProgressBar } from '../BudgetProgressBar/BudgetProgressBar';
 import { Input } from '../common';
 import { expenseFormSchema } from '../../schemas';
+import { useDuplicateDetection } from '../../hooks/useDuplicateDetection';
+import { DuplicateWarning } from './DuplicateWarning';
 
 interface ExpenseFormProps {
     onAdd: (data: Omit<ExpenseFormData, 'createdAt'>) => Promise<{ success: boolean; error?: string }>; // <-- CORRECCIÓN 1
@@ -27,6 +29,22 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({ onAdd, onAddSubCategor
     const [showNewSubCategoryInput, setShowNewSubCategoryInput] = useState(false);
     const [newSubCategoryName, setNewSubCategoryName] = useState('');
     const [isOpen, setIsOpen] = useState(true); // Para el formulario plegable
+    
+    // Estados para detección de duplicados
+    const [showDuplicateWarning, setShowDuplicateWarning] = useState(false);
+    const [pendingExpenseData, setPendingExpenseData] = useState<any>(null);
+
+    // Hook para detección de duplicados
+    const duplicateDetection = useDuplicateDetection({
+        expenses,
+        newExpense: {
+            description: description.trim(),
+            amount: parseFloat(amount) || 0,
+            categoryId: selectedCategoryId
+        },
+        timeWindowDays: 7, // Buscar duplicados en los últimos 7 días
+        amountTolerance: 0.01 // Tolerancia de 1 centavo
+    });
 
      useEffect(() => {
         if (categories.length > 0 && !selectedCategoryId) {
@@ -103,25 +121,64 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({ onAdd, onAddSubCategor
             return;
         }
 
-        const result = await onAdd(validationResult.data);
+        // Verificar duplicados antes de proceder
+        if (duplicateDetection.isDuplicate && duplicateDetection.confidence !== 'low') {
+            // Guardar los datos para procesar después de la confirmación
+            setPendingExpenseData(validationResult.data);
+            setShowDuplicateWarning(true);
+            return;
+        }
+
+        // Si no hay duplicados o es de baja confianza, proceder normalmente
+        await submitExpense(validationResult.data);
+    };
+
+    // Función separada para enviar el gasto
+    const submitExpense = async (expenseData: any) => {
+        const result = await onAdd(expenseData);
 
         if (result.success) {
             toast.success('¡Gasto añadido con éxito!')
-            setDescription('');
-            setAmount('');
-            setFormError('');
-            setNewSubCategoryName('');
-            setShowNewSubCategoryInput(false);
-            if (categories.length > 0) {
-                const firstCategory = categories[0];
-                setSelectedCategoryId(firstCategory.id);
-                setAvailableSubCategories(firstCategory.subcategories);
-                setSelectedSubCategory(firstCategory.subcategories[0]?.name || '');
-            }
+            resetForm();
         } else { 
             toast.error(result.error || 'Ocurrió un error inesperado.');
             setFormError(result.error || 'Ocurrió un error inesperado.'); 
         }
+    };
+
+    // Función para resetear el formulario
+    const resetForm = () => {
+        setDescription('');
+        setAmount('');
+        setFormError('');
+        setNewSubCategoryName('');
+        setShowNewSubCategoryInput(false);
+        if (categories.length > 0) {
+            const firstCategory = categories[0];
+            setSelectedCategoryId(firstCategory.id);
+            setAvailableSubCategories(firstCategory.subcategories);
+            setSelectedSubCategory(firstCategory.subcategories[0]?.name || '');
+        }
+    };
+
+    // Handlers para la modal de duplicados
+    const handleDuplicateConfirm = async () => {
+        setShowDuplicateWarning(false);
+        if (pendingExpenseData) {
+            await submitExpense(pendingExpenseData);
+            setPendingExpenseData(null);
+        }
+    };
+
+    const handleDuplicateCancel = () => {
+        setShowDuplicateWarning(false);
+        setPendingExpenseData(null);
+        // El formulario mantiene los datos para que el usuario pueda modificarlos
+    };
+
+    const handleDuplicateClose = () => {
+        setShowDuplicateWarning(false);
+        setPendingExpenseData(null);
     };
     
     const budgetInfo = useMemo(() => {
@@ -216,6 +273,17 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({ onAdd, onAddSubCategor
                     </div>
                 </form>
             )}
+
+            {/* Modal de advertencia de duplicados */}
+            <DuplicateWarning
+                isVisible={showDuplicateWarning}
+                confidence={duplicateDetection.confidence}
+                message={duplicateDetection.message}
+                duplicates={duplicateDetection.duplicates}
+                onConfirm={handleDuplicateConfirm}
+                onCancel={handleDuplicateCancel}
+                onClose={handleDuplicateClose}
+            />
         </div>
     );
 };

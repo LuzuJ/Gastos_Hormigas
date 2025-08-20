@@ -1,0 +1,404 @@
+/* ==============================================
+   DUPLICATE WARNING MODAL
+   ============================================== */
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.modal {
+  background: var(--background-card);
+  border-radius: 16px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  max-width: 600px;
+  width: 90vw;
+  max-height: 80vh;
+  overflow: hidden;
+  animation: slideUp 0.3s ease-out;
+  border: 1px solid var(--border-color);
+}
+
+/* ==============================================
+   HEADER
+   ============================================== */
+
+.header {
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  border-left: 4px solid var(--danger-color);
+  background: linear-gradient(135deg, var(--background-card) 0%, var(--background-surface) 100%);
+}
+
+.headerContent {
+  display: flex;
+  gap: 1rem;
+  flex: 1;
+}
+
+.headerIcon {
+  flex-shrink: 0;
+  padding: 0.5rem;
+  border-radius: 50%;
+  background: rgba(220, 53, 69, 0.1);
+}
+
+.headerText {
+  flex: 1;
+}
+
+.title {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-headings);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.subtitle {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.closeButton:hover {
+  background: var(--background-surface);
+  color: var(--text-headings);
+}
+
+/* ==============================================
+   CONTENT
+   ============================================== */
+
+.content {
+  padding: 1.5rem;
+  max-height: 50vh;
+  overflow-y: auto;
+}
+
+.duplicatesList {
+  margin-bottom: 1.5rem;
+}
+
+.sectionTitle {
+  margin: 0 0 1rem 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-headings);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.sectionIcon {
+  font-size: 1.1rem;
+}
+
+/* ==============================================
+   DUPLICATE ITEMS
+   ============================================== */
+
+.duplicateItem {
+  background: var(--background-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: 0.75rem;
+  transition: all 0.2s ease;
+}
+
+.duplicateItem:hover {
+  border-color: var(--border-hover);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.duplicateHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.duplicateInfo {
+  flex: 1;
+}
+
+.duplicateDescription {
+  display: block;
+  font-weight: 600;
+  color: var(--text-headings);
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+}
+
+.duplicateMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.metaItem {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  background: var(--background-card);
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+  border: 1px solid var(--border-light);
+}
+
+.similarityBadge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  flex-shrink: 0;
+}
+
+.similarityLabel {
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+.similarityValue {
+  padding: 0.25rem 0.5rem;
+  border-radius: 12px;
+  color: white;
+  font-size: 0.8rem;
+  font-weight: 600;
+  min-width: 45px;
+  text-align: center;
+}
+
+.duplicateDetails {
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--border-light);
+}
+
+.timeInfo {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+.moreItems {
+  text-align: center;
+  padding: 1rem;
+  color: var(--text-secondary);
+  font-style: italic;
+  background: var(--background-surface);
+  border-radius: 8px;
+  border: 1px dashed var(--border-color);
+}
+
+/* ==============================================
+   ADVICE SECTION
+   ============================================== */
+
+.advice {
+  display: flex;
+  gap: 1rem;
+  padding: 1rem;
+  background: var(--info-color-light);
+  border: 1px solid var(--info-color);
+  border-radius: 12px;
+  margin-bottom: 1rem;
+}
+
+.adviceIcon {
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.adviceText {
+  font-size: 0.9rem;
+  line-height: 1.4;
+  color: var(--text-body);
+}
+
+/* ==============================================
+   ACTIONS
+   ============================================== */
+
+.actions {
+  padding: 1.5rem;
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  background: var(--background-surface);
+}
+
+.button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  text-decoration: none;
+}
+
+.buttonSecondary {
+  background: var(--background-card);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+}
+
+.buttonSecondary:hover {
+  background: var(--background-surface);
+  color: var(--text-headings);
+  border-color: var(--border-hover);
+}
+
+.buttonPrimary {
+  background: var(--primary-accent);
+  color: white;
+  border: 1px solid var(--primary-accent);
+}
+
+.buttonPrimary:hover {
+  background: var(--primary-accent-hover);
+  border-color: var(--primary-accent-hover);
+}
+
+/* ==============================================
+   ANIMATIONS
+   ============================================== */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ==============================================
+   RESPONSIVE
+   ============================================== */
+
+@media (max-width: 768px) {
+  .modal {
+    width: 95vw;
+    max-height: 90vh;
+  }
+
+  .header {
+    padding: 1rem;
+  }
+
+  .content {
+    padding: 1rem;
+  }
+
+  .actions {
+    padding: 1rem;
+    flex-direction: column;
+  }
+
+  .button {
+    justify-content: center;
+    width: 100%;
+  }
+
+  .duplicateHeader {
+    flex-direction: column;
+    gap: 0.75rem;
+    align-items: stretch;
+  }
+
+  .similarityBadge {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .duplicateMeta {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .metaItem {
+    align-self: flex-start;
+  }
+}
+
+/* ==============================================
+   DARK MODE ADJUSTMENTS
+   ============================================== */
+
+@media (prefers-color-scheme: dark) {
+  .overlay {
+    background: rgba(0, 0, 0, 0.7);
+  }
+
+  .modal {
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+  }
+
+  .duplicateItem:hover {
+    box-shadow: 0 2px 4px rgba(255, 255, 255, 0.05);
+  }
+}
+
+/* Soporte para variables CSS personalizadas del tema */
+[data-theme="dark"] .overlay {
+  background: rgba(0, 0, 0, 0.7);
+}
+
+[data-theme="dark"] .modal {
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="dark"] .duplicateItem:hover {
+  box-shadow: 0 2px 4px rgba(255, 255, 255, 0.05);
+}

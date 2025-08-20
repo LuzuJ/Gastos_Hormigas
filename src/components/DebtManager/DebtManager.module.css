@@ -665,3 +665,136 @@
     transform: translateY(0) scale(1);
   }
 }
+
+/* ==============================================
+   ARCHIVED DEBTS STYLES
+   ============================================== */
+
+.archivedCard {
+  background: var(--background-surface);
+  border-left: 4px solid #28a745;
+  opacity: 0.85;
+  padding: 1rem 1.5rem;
+}
+
+.archivedCard:hover {
+  opacity: 1;
+  transform: none;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.08);
+}
+
+.archivedHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.75rem;
+}
+
+.archivedInfo {
+  flex: 1;
+}
+
+.archivedName {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-headings);
+  margin-bottom: 0.25rem;
+}
+
+.archivedIcon {
+  font-size: 1.1rem;
+}
+
+.archivedType {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.archivedDate {
+  text-align: right;
+}
+
+.completedDate {
+  font-size: 0.8rem;
+  color: #28a745;
+  font-weight: 500;
+  background: rgba(40, 167, 69, 0.1);
+  padding: 0.25rem 0.5rem;
+  border-radius: 12px;
+}
+
+.archivedSummary {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.archivedAmount {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.archivedLabel {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.archivedValue {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-headings);
+}
+
+.archivedDescription {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--border-light);
+}
+
+.archivedDescLabel {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.archivedDescText {
+  font-size: 0.85rem;
+  color: var(--text-body);
+  font-style: italic;
+  line-height: 1.4;
+}
+
+/* Responsive adjustments for archived cards */
+@media (max-width: 768px) {
+  .archivedCard {
+    padding: 0.75rem 1rem;
+  }
+  
+  .archivedHeader {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .archivedDate {
+    text-align: left;
+  }
+  
+  .completedDate {
+    font-size: 0.75rem;
+    padding: 0.2rem 0.4rem;
+  }
+  
+  .archivedAmount {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+}

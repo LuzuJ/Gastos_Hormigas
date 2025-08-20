@@ -1,11 +1,11 @@
 /* ComparativeChart.module.css */
 
 .container {
-  background-color: var(--background-card, white);
+  background-color: var(--background-card);
   padding: 1.5rem;
   border-radius: 16px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  border: 1px solid var(--color-border-light, #e5e7eb);
+  border: 1px solid var(--border-color);
 }
 
 /* Header Section */
@@ -15,7 +15,7 @@
   align-items: flex-start;
   margin-bottom: 1.5rem;
   padding-bottom: 1rem;
-  border-bottom: 1px solid var(--color-border-light, #f3f4f6);
+  border-bottom: 1px solid var(--border-color);
   gap: 1rem;
 }
 
@@ -27,7 +27,7 @@
   margin: 0 0 0.5rem 0;
   font-size: 18px;
   font-weight: 600;
-  color: var(--color-text-primary, #1f2937);
+  color: var(--text-headings);
 }
 
 .totalStats {
@@ -38,19 +38,19 @@
 
 .statItem {
   font-size: 14px;
-  color: var(--color-text-secondary, #6b7280);
+  color: var(--text-secondary);
 }
 
 .statItem strong {
-  color: var(--color-text-primary, #1f2937);
+  color: var(--text-primary);
 }
 
 .positive {
-  color: var(--color-success, #10b981) !important;
+  color: var(--success-color) !important;
 }
 
 .negative {
-  color: var(--color-danger, #ef4444) !important;
+  color: var(--danger-color) !important;
 }
 
 /* Controls Section */
@@ -70,13 +70,13 @@
 .controlLabel {
   font-size: 12px;
   font-weight: 500;
-  color: var(--color-text-secondary, #6b7280);
+  color: var(--text-secondary);
   margin-bottom: 2px;
 }
 
 .buttonGroup {
   display: flex;
-  border: 1px solid var(--color-border-light, #e5e7eb);
+  border: 1px solid var(--border-color);
   border-radius: 6px;
   overflow: hidden;
 }
@@ -85,12 +85,12 @@
   padding: 6px 12px;
   font-size: 12px;
   font-weight: 500;
-  background: var(--color-surface, white);
-  color: var(--color-text-secondary, #6b7280);
+  background: var(--background-card);
+  color: var(--text-secondary);
   border: none;
   cursor: pointer;
   transition: all 0.2s ease;
-  border-right: 1px solid var(--color-border-light, #e5e7eb);
+  border-right: 1px solid var(--border-color);
 }
 
 .controlButton:last-child {
@@ -98,30 +98,30 @@
 }
 
 .controlButton:hover {
-  background: var(--color-surface-hover, #f9fafb);
-  color: var(--color-text-primary, #1f2937);
+  background: var(--background-hover);
+  color: var(--text-primary);
 }
 
 .controlButton.active {
-  background: var(--color-primary, #3b82f6);
+  background: var(--primary-accent);
   color: white;
 }
 
 .select {
   padding: 6px 12px;
   font-size: 12px;
-  border: 1px solid var(--color-border-light, #e5e7eb);
+  border: 1px solid var(--border-color);
   border-radius: 6px;
-  background: var(--color-surface, white);
-  color: var(--color-text-primary, #1f2937);
+  background: var(--background-card);
+  color: var(--text-primary);
   cursor: pointer;
   min-width: 100px;
 }
 
 .select:focus {
   outline: none;
-  border-color: var(--color-primary, #3b82f6);
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  border-color: var(--primary-accent);
+  box-shadow: 0 0 0 3px var(--primary-accent-focus-ring);
 }
 
 .checkboxLabel {
@@ -129,7 +129,7 @@
   align-items: center;
   gap: 6px;
   font-size: 12px;
-  color: var(--color-text-secondary, #6b7280);
+  color: var(--text-secondary);
   cursor: pointer;
   margin-top: 1rem;
 }
@@ -143,17 +143,18 @@
 /* Chart Container */
 .chartContainer {
   margin: 1rem 0;
-  background: var(--color-surface, white);
+  background: var(--background-card);
   border-radius: 8px;
   padding: 0.5rem;
+  border: 1px solid var(--border-color);
 }
 
 /* Insights Section */
 .insights {
   margin-top: 1.5rem;
   padding: 1rem;
-  background: var(--color-info-light, #f0f9ff);
-  border: 1px solid var(--color-info-border, #bae6fd);
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid var(--info-color);
   border-radius: 8px;
 }
 
@@ -161,7 +162,7 @@
   margin: 0 0 0.75rem 0;
   font-size: 14px;
   font-weight: 600;
-  color: var(--color-info-dark, #0369a1);
+  color: var(--text-primary);
 }
 
 .variationList {
@@ -175,15 +176,21 @@
   justify-content: space-between;
   align-items: center;
   padding: 0.5rem;
-  background: var(--color-surface, white);
+  background: var(--background-card);
   border-radius: 6px;
-  border: 1px solid var(--color-border-light, #e5e7eb);
+  border: 1px solid var(--border-color);
+  transition: all 0.2s ease;
+}
+
+.variationItem:hover {
+  border-color: var(--primary-accent);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .categoryName {
   font-size: 13px;
   font-weight: 500;
-  color: var(--color-text-primary, #1f2937);
+  color: var(--text-headings);
   flex: 1;
 }
 
@@ -197,23 +204,23 @@
 .emptyVariations {
   text-align: center;
   padding: 1.5rem 1rem;
-  background: var(--color-surface, white);
+  background: var(--background-card);
   border-radius: 8px;
-  border: 1px solid var(--color-border-light, #e5e7eb);
+  border: 1px solid var(--border-color);
 }
 
 .emptyMessage {
   margin: 0 0 0.75rem 0;
   font-size: 14px;
   font-weight: 500;
-  color: var(--color-text-primary, #1f2937);
+  color: var(--text-headings);
   line-height: 1.5;
 }
 
 .emptyHint {
   margin: 0;
   font-size: 13px;
-  color: var(--color-text-secondary, #6b7280);
+  color: var(--text-secondary);
   line-height: 1.4;
 }
 
@@ -270,86 +277,152 @@
   }
 }
 
-/* Modo Oscuro */
-@media (prefers-color-scheme: dark) {
-  .container {
-    background-color: var(--background-card-dark, #1e293b);
-    border-color: var(--color-border-dark, #374151);
-  }
-  
-  .header {
-    border-bottom-color: var(--color-border-dark, #374151);
-  }
-  
-  .title {
-    color: var(--color-text-primary-dark, #f1f5f9);
-  }
-  
-  .statItem {
-    color: var(--color-text-secondary-dark, #cbd5e1);
-  }
-  
-  .statItem strong {
-    color: var(--color-text-primary-dark, #f1f5f9);
-  }
-  
-  .controlLabel {
-    color: var(--color-text-secondary-dark, #cbd5e1);
-  }
-  
-  .controlButton {
-    background: var(--color-surface-dark, #1e293b);
-    color: var(--color-text-secondary-dark, #cbd5e1);
-    border-color: var(--color-border-dark, #374151);
-  }
-  
-  .controlButton:hover {
-    background: var(--color-surface-hover-dark, #334155);
-    color: var(--color-text-primary-dark, #f1f5f9);
-  }
-  
-  .select {
-    background: var(--color-surface-dark, #1e293b);
-    color: var(--color-text-primary-dark, #f1f5f9);
-    border-color: var(--color-border-dark, #374151);
-  }
-  
-  .checkboxLabel {
-    color: var(--color-text-secondary-dark, #cbd5e1);
-  }
-  
-  .chartContainer {
-    background: var(--color-surface-dark, #1e293b);
-  }
-  
-  .insights {
-    background: rgba(59, 130, 246, 0.1);
-    border-color: rgba(59, 130, 246, 0.2);
-  }
-  
-  .insightsTitle {
-    color: var(--color-info-light, #93c5fd);
-  }
-  
-  .variationItem {
-    background: var(--color-surface-dark, #1e293b);
-    border-color: var(--color-border-dark, #374151);
-  }
-  
-  .categoryName {
-    color: var(--color-text-primary-dark, #f1f5f9);
-  }
-  
-  .emptyVariations {
-    background: var(--color-surface-dark, #1e293b);
-    border-color: var(--color-border-dark, #374151);
-  }
-  
-  .emptyMessage {
-    color: var(--color-text-primary-dark, #f1f5f9);
-  }
-  
-  .emptyHint {
-    color: var(--color-text-secondary-dark, #cbd5e1);
-  }
+/* Modo Oscuro y Claro - Mejores contrastes */
+[data-theme="dark"] .container {
+  background-color: var(--background-card);
+  border-color: var(--border-color);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="dark"] .header {
+  border-bottom-color: var(--border-color);
+}
+
+[data-theme="dark"] .title {
+  color: var(--text-headings);
+}
+
+[data-theme="dark"] .statItem {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .statItem strong {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .controlLabel {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .controlButton {
+  background: var(--background-card);
+  color: var(--text-secondary);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .controlButton:hover {
+  background: var(--background-hover);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .select {
+  background: var(--background-card);
+  color: var(--text-primary);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .checkboxLabel {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .chartContainer {
+  background: var(--background-card);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .insights {
+  background: rgba(59, 130, 246, 0.2);
+  border-color: var(--info-color);
+}
+
+[data-theme="dark"] .insightsTitle {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .variationItem {
+  background: var(--background-card);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .variationItem:hover {
+  border-color: var(--primary-accent);
+}
+
+[data-theme="dark"] .categoryName {
+  color: var(--text-headings);
+}
+
+[data-theme="dark"] .emptyVariations {
+  background: var(--background-card);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .emptyMessage {
+  color: var(--text-headings);
+}
+
+[data-theme="dark"] .emptyHint {
+  color: var(--text-secondary);
+}
+
+/* Mejores contrastes para modo claro */
+:root .container {
+  background-color: var(--background-card);
+  border-color: var(--border-color);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+:root .controlButton {
+  background: var(--background-card);
+  color: var(--text-secondary);
+  border-color: var(--border-color);
+  font-weight: 600;
+}
+
+:root .controlButton:hover {
+  background: var(--background-hover);
+  color: var(--text-primary);
+}
+
+:root .select {
+  background: var(--background-card);
+  color: var(--text-primary);
+  border-color: var(--border-color);
+}
+
+:root .chartContainer {
+  background: var(--background-card);
+  border-color: var(--border-color);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+:root .insights {
+  background: rgba(59, 130, 246, 0.15);
+  border-color: var(--info-color);
+}
+
+:root .insightsTitle {
+  color: var(--text-primary);
+}
+
+:root .variationItem {
+  background: var(--background-card);
+  border-color: var(--border-color);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+:root .variationItem:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-color: var(--primary-accent);
+}
+
+:root .emptyVariations {
+  background: var(--background-card);
+  border-color: var(--border-color);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+:root .controlLabel,
+:root .checkboxLabel {
+  font-weight: 600;
 }
