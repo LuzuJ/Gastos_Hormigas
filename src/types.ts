@@ -24,6 +24,7 @@ export interface Expense {
   categoryId: string;
   subCategory: string;
   createdAt: Timestamp | null;
+  paymentSourceId?: string;  // Nueva propiedad opcional
 }
 
 export interface Financials {
@@ -45,12 +46,164 @@ export interface FixedExpense {
   lastPostedMonth?: string; 
 }
 
+// Tipos de fuentes de pago
+export type PaymentSourceType = 
+  | 'cash'           // Efectivo
+  | 'checking'       // Cuenta corriente
+  | 'savings'        // Cuenta de ahorros
+  | 'credit_card'    // Tarjeta de crédito
+  | 'debit_card'     // Tarjeta débito
+  | 'loan'           // Préstamo
+  | 'income_salary'  // Salario/ingreso principal
+  | 'income_extra'   // Ingreso extra/freelance
+  | 'investment'     // Retiro de inversión
+  | 'other';         // Otro
+
+// Interfaz para fuentes de pago
+export interface PaymentSource {
+  id: string;
+  name: string;
+  type: PaymentSourceType;
+  balance?: number;          // Saldo actual (opcional)
+  description?: string;      // Descripción adicional
+  isActive: boolean;         // Si está activa para usar
+  icon?: string;             // Icono personalizado
+  color?: string;            // Color para identificación visual
+  autoUpdate?: boolean;      // Si se actualiza automáticamente el saldo
+  lastUpdated?: Timestamp;   // Última actualización del saldo
+}
+
+// === RECURRING INCOME TYPES ===
+
+export type RecurringIncomeFrequency = 'weekly' | 'biweekly' | 'monthly' | 'quarterly' | 'yearly';
+
+export interface RecurringIncome {
+  id: string;
+  name: string;
+  amount: number;
+  frequency: RecurringIncomeFrequency;
+  startDate: Timestamp;
+  nextDate: Timestamp;        // Próxima fecha de ingreso
+  lastProcessed?: Timestamp;  // Última vez que se procesó
+  paymentSourceId?: string;   // A qué fuente de pago va
+  isActive: boolean;
+  description?: string;
+  category?: 'salary' | 'freelance' | 'business' | 'investment' | 'other';
+}
+
+// === AUTOMATIC TRANSACTIONS TYPES ===
+
+export interface AutomaticTransaction {
+  id: string;
+  name: string;
+  amount: number;
+  type: 'income' | 'expense';
+  frequency: RecurringIncomeFrequency;
+  nextDate: Timestamp;
+  fromPaymentSourceId?: string;  // De qué fuente sale (para gastos)
+  toPaymentSourceId?: string;    // A qué fuente va (para ingresos)
+  categoryId?: string;           // Para gastos automáticos
+  description?: string;
+  isActive: boolean;
+  lastProcessed?: Timestamp;
+}
+
+// === FINANCIAL ALERTS TYPES ===
+
+export type AlertType = 
+  | 'low_balance'          // Saldo bajo
+  | 'upcoming_payment'     // Pago próximo
+  | 'debt_reminder'        // Recordatorio de deuda
+  | 'budget_exceeded'      // Presupuesto excedido
+  | 'savings_opportunity'  // Oportunidad de ahorro
+  | 'income_received'      // Ingreso recibido
+  | 'goal_achieved';       // Meta alcanzada
+
+export interface FinancialAlert {
+  id: string;
+  type: AlertType;
+  title: string;
+  message: string;
+  severity: 'low' | 'medium' | 'high' | 'critical';
+  isRead: boolean;
+  createdAt: Timestamp;
+  actionable: boolean;      // Si requiere acción del usuario
+  data?: Record<string, any>; // Datos adicionales para la alerta
+  expiresAt?: Timestamp;    // Cuándo expira la alerta
+}
+
+// === ENHANCED EXPENSE TYPE ===
+
+export interface EnhancedExpense extends Expense {
+  paymentSourceId?: string;
+  balanceAfterTransaction?: number; // Saldo de la fuente después del gasto
+  isAutomatic?: boolean;           // Si fue generado automáticamente
+  parentTransactionId?: string;    // Si viene de una transacción automática
+}
+
+// === FINANCIAL DASHBOARD TYPES ===
+
+export interface FinancialSnapshot {
+  date: Timestamp;
+  totalAssets: number;
+  totalLiabilities: number;
+  netWorth: number;
+  monthlyIncome: number;
+  monthlyExpenses: number;
+  monthlySavings: number;
+  cashFlow: number; // Ingresos - Gastos del mes
+}
+
+export interface PaymentSourceBalance {
+  paymentSourceId: string;
+  name: string;
+  type: PaymentSourceType;
+  currentBalance: number;
+  projectedBalance: number; // Proyección considerando transacciones futuras
+  lastUpdated: Timestamp;
+  pendingTransactions: {
+    income: number;
+    expenses: number;
+  };
+}
+
+export interface FinancialForecast {
+  date: Timestamp;
+  projectedIncome: number;
+  projectedExpenses: number;
+  projectedCashFlow: number;
+  upcomingPayments: {
+    id: string;
+    name: string;
+    amount: number;
+    dueDate: Timestamp;
+    type: 'debt' | 'fixed_expense' | 'automatic';
+  }[];
+  alerts: FinancialAlert[];
+}
+
+// === TRANSACTION HISTORY ===
+
+export interface Transaction {
+  id: string;
+  type: 'income' | 'expense' | 'transfer';
+  amount: number;
+  description: string;
+  date: Timestamp;
+  fromPaymentSourceId?: string;
+  toPaymentSourceId?: string;
+  categoryId?: string;
+  isAutomatic: boolean;
+  relatedId?: string; // ID del gasto, ingreso o transferencia relacionada
+}
+
 export type ExpenseFormData = {
   description: string;
   amount: number;
   categoryId: string;
   subCategory: string;
   createdAt: Timestamp;
+  paymentSourceId?: string;  // Nueva propiedad opcional
 };
 
 export interface SavingsGoal {

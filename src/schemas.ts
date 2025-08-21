@@ -12,5 +12,8 @@ export const expenseFormSchema = z.object({
 
   // Nos aseguramos de que se haya seleccionado una categoría y subcategoría
   categoryId: z.string().min(1, { message: "Debes seleccionar una categoría." }),
-  subCategory: z.string().min(1, { message: "Debes seleccionar una subcategoría." })
+  subCategory: z.string().min(1, { message: "Debes seleccionar una subcategoría." }),
+  
+  // Fuente de pago opcional
+  paymentSourceId: z.string().optional()
 });

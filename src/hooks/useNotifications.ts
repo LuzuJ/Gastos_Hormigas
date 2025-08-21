@@ -1,9 +1,10 @@
 import { useState, useCallback, useRef } from 'react';
 
 export interface Notification {
-  id: number;
+  id: number | string;
   message: string;
   type: 'warning' | 'danger' | 'success' | 'info'; // Warning for 90%, Danger for 100%+, Success for confirmations, Info for general
+  customId?: string; // ID personalizado para notificaciones especiales (ej: gastos fijos)
 }
 
 export const useNotifications = () => {
@@ -16,15 +17,23 @@ export const useNotifications = () => {
       const exists = prev.some(n => n.message === notification.message);
       if (!exists) {
         idCounter.current += 1;
-        return [...prev, { ...notification, id: idCounter.current }];
+        const newNotification: Notification = {
+          ...notification,
+          id: notification.customId || idCounter.current
+        };
+        return [...prev, newNotification];
       }
       return prev;
     });
   }, []);
 
-  const removeNotification = useCallback((id: number) => {
+  const removeNotification = useCallback((id: number | string) => {
     setNotifications(prev => prev.filter(n => n.id !== id));
   }, []);
 
-  return { notifications, addNotification, removeNotification };
+  const removeNotificationByCustomId = useCallback((customId: string) => {
+    setNotifications(prev => prev.filter(n => n.customId !== customId));
+  }, []);
+
+  return { notifications, addNotification, removeNotification, removeNotificationByCustomId };
 };

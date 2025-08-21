@@ -5,6 +5,8 @@ import { SavingsGoalSummary } from '../components/SavingsGoals/SavingsGoalSummar
 import { BudgetSummary } from '../components/BudgetSummary/BudgetSummary';
 import { GuestBlockedFeature } from '../components/GuestBlockedFeature/GuestBlockedFeature';
 import { LoadingStateWrapper } from '../components/LoadingState/LoadingState';
+import { FixedExpenseNotifications } from '../components/FixedExpenseNotifications';
+import { useFixedExpenseReminders } from '../hooks/useFixedExpenseReminders';
 import styles from './DashboardPage.module.css';
 import { formatCurrency } from '../utils/formatters';
 
@@ -19,9 +21,10 @@ import {
 
 interface DashboardPageProps {
   isGuest: boolean;
+  userId?: string | null;
 }
 
-export const DashboardPage: React.FC<DashboardPageProps> = ({ isGuest }) => {
+export const DashboardPage: React.FC<DashboardPageProps> = ({ isGuest, userId }) => {
     // 2. Consumimos los datos y estados de loading/error de los contextos
     const { 
       categories, 
@@ -45,11 +48,19 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ isGuest }) => {
       totalFixedExpenses, 
       loadingFinancials, 
       financialsError, 
-      clearFinancialsError 
+      clearFinancialsError,
+      getActivePaymentSources
     } = useFinancialsContext();
     
     const { savingsGoals } = useSavingsGoalsContext();
     const { monthlyExpensesByCategory, totalExpensesMonth } = useCombinedCalculationsContext();
+
+    // Hook para notificaciones de gastos fijos (solo para usuarios registrados)
+    const {
+      notifications: fixedExpenseNotifications,
+      isLoading: loadingNotifications,
+      clearNotificationsForFixedExpense
+    } = useFixedExpenseReminders(!isGuest ? (userId || null) : null);
 
     // Verificar si hay datos críticos cargando o con error
     const isLoadingCriticalData = loadingCategories || loadingExpenses;
@@ -158,6 +169,7 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ isGuest }) => {
                             categories={categories}
                             isSubmitting={false}
                             expenses={expenses}
+                            paymentSources={getActivePaymentSources()}
                         />
                       </div>
                     </LoadingStateWrapper>
@@ -196,6 +208,17 @@ export const DashboardPage: React.FC<DashboardPageProps> = ({ isGuest }) => {
                 </main>
 
                 <aside className={styles.sidebarColumn}>
+                    {/* Notificaciones de gastos fijos - Solo para usuarios registrados */}
+                    {!isGuest && !loadingNotifications && fixedExpenseNotifications.length > 0 && (
+                      <div className={styles.notificationsSection}>
+                        <FixedExpenseNotifications
+                          notifications={fixedExpenseNotifications.slice(0, 5)} // Mostrar máximo 5
+                          onDismiss={clearNotificationsForFixedExpense}
+                          className={styles.fixedExpenseNotifications}
+                        />
+                      </div>
+                    )}
+
                     <LoadingStateWrapper
                       loading={loadingFinancials}
                       error={financialsError}

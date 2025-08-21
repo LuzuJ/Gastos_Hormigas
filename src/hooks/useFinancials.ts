@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { financialsService } from '../services/financialsService';
 import { fixedExpenseService } from '../services/fixedExpenseService';
 import { useLoadingState, handleAsyncOperation } from './useLoadingState';
+import { usePaymentSources } from './usePaymentSources';
 import type { Financials, FixedExpense } from '../types';
 
 export const useFinancials = (userId: string | null) => {
@@ -17,6 +18,21 @@ export const useFinancials = (userId: string | null) => {
     
     const [loadingFixedExpenses, setLoadingFixedExpenses] = useState(true);
     const [fixedExpensesError, setFixedExpensesError] = useState<string | null>(null);
+
+    // Hook para fuentes de pago
+    const {
+        paymentSources,
+        loadingPaymentSources,
+        paymentSourcesError,
+        clearPaymentSourcesError,
+        addPaymentSource,
+        updatePaymentSource,
+        deletePaymentSource,
+        updateBalance,
+        toggleActive,
+        getActivePaymentSources,
+        getPaymentSourceById
+    } = usePaymentSources(userId);
 
     useEffect(() => {
         if (!userId) {
@@ -106,5 +122,17 @@ export const useFinancials = (userId: string | null) => {
         setMonthlyIncome,
         addFixedExpense,
         deleteFixedExpense,
+        // Fuentes de pago
+        paymentSources,
+        loadingPaymentSources,
+        paymentSourcesError,
+        clearPaymentSourcesError,
+        addPaymentSource,
+        updatePaymentSource,
+        deletePaymentSource,
+        updateBalance,
+        toggleActive,
+        getActivePaymentSources,
+        getPaymentSourceById
     };
 };

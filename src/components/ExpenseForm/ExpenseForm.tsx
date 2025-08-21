@@ -1,13 +1,16 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { PlusCircle } from 'lucide-react';
+import { PlusCircle, DollarSign, AlertTriangle } from 'lucide-react';
 import styles from './ExpenseForm.module.css';
 import toast from 'react-hot-toast';
-import type { Category, Expense, ExpenseFormData, SubCategory } from '../../types';
+import type { Category, Expense, ExpenseFormData, SubCategory, PaymentSource, EnhancedExpense } from '../../types';
 import { BudgetProgressBar } from '../BudgetProgressBar/BudgetProgressBar';
 import { Input } from '../common';
 import { expenseFormSchema } from '../../schemas';
 import { useDuplicateDetection } from '../../hooks/useDuplicateDetection';
+import { useFinancialAutomation } from '../../hooks/useFinancialAutomation';
 import { DuplicateWarning } from './DuplicateWarning';
+import { Timestamp } from 'firebase/firestore';
+import { formatCurrency } from '../../utils/formatters';
 
 interface ExpenseFormProps {
     onAdd: (data: Omit<ExpenseFormData, 'createdAt'>) => Promise<{ success: boolean; error?: string }>; // <-- CORRECCIÓN 1
@@ -15,15 +18,28 @@ interface ExpenseFormProps {
     categories: Category[];
     expenses: Expense[];
     isSubmitting: boolean;
+    paymentSources?: PaymentSource[]; // Nueva prop opcional
+    userId?: string | null; // Para el sistema de automatización
+    enableBalanceTracking?: boolean; // Habilitar tracking automático de saldos
 }
 
 const ADD_NEW_SUBCATEGORY_VALUE = '--add-new--';
 
-export const ExpenseForm: React.FC<ExpenseFormProps> = ({ onAdd, onAddSubCategory, categories, expenses, isSubmitting }) => {
+export const ExpenseForm: React.FC<ExpenseFormProps> = ({ 
+    onAdd, 
+    onAddSubCategory, 
+    categories, 
+    expenses, 
+    isSubmitting, 
+    paymentSources = [],
+    userId = null,
+    enableBalanceTracking = false
+}) => {
     const [description, setDescription] = useState('');
     const [amount, setAmount] = useState('');
     const [selectedCategoryId, setSelectedCategoryId] = useState('');
     const [selectedSubCategory, setSelectedSubCategory] = useState('');
+    const [selectedPaymentSourceId, setSelectedPaymentSourceId] = useState('');
     const [availableSubCategories, setAvailableSubCategories] = useState<SubCategory[]>([]);
     const [formError, setFormError] = useState('');
     const [showNewSubCategoryInput, setShowNewSubCategoryInput] = useState(false);
@@ -33,6 +49,12 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({ onAdd, onAddSubCategor
     // Estados para detección de duplicados
     const [showDuplicateWarning, setShowDuplicateWarning] = useState(false);
     const [pendingExpenseData, setPendingExpenseData] = useState<any>(null);
+
+    // Hook para automatización financiera
+    const {
+        processExpenseWithBalance,
+        paymentSourceBalances,
+        refreshPaymentSourceBalance    } = useFinancialAutomation(userId);
 
     // Hook para detección de duplicados
     const duplicateDetection = useDuplicateDetection({
@@ -45,6 +67,44 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({ onAdd, onAddSubCategor
         timeWindowDays: 7, // Buscar duplicados en los últimos 7 días
         amountTolerance: 0.01 // Tolerancia de 1 centavo
     });
+
+    // Función para obtener información de saldo de una fuente de pago
+    const getPaymentSourceBalance = (paymentSourceId: string) => {
+        const source = paymentSources.find(ps => ps.id === paymentSourceId);
+        const balanceInfo = paymentSourceBalances.find(pb => pb.paymentSourceId === paymentSourceId);
+        
+        return {
+            source,
+            balance: balanceInfo?.currentBalance ?? source?.balance ?? 0,
+            projectedBalance: balanceInfo?.projectedBalance ?? source?.balance ?? 0,
+            hasBalance: balanceInfo || source?.balance !== undefined
+        };
+    };
+
+    // Verificar si hay saldo suficiente
+    const checkSufficientBalance = () => {
+        if (!enableBalanceTracking || !selectedPaymentSourceId || !amount) {
+            return { sufficient: true, message: '' };
+        }
+
+        const expenseAmount = parseFloat(amount);
+        const { balance, hasBalance } = getPaymentSourceBalance(selectedPaymentSourceId);
+
+        if (!hasBalance) {
+            return { sufficient: true, message: 'Saldo no disponible' };
+        }
+
+        if (balance < expenseAmount) {
+            return { 
+                sufficient: false, 
+                message: `Saldo insuficiente. Disponible: ${formatCurrency(balance)}, Requerido: ${formatCurrency(expenseAmount)}` 
+            };
+        }
+
+        return { sufficient: true, message: '' };
+    };
+
+    const balanceCheck = checkSufficientBalance();
 
      useEffect(() => {
         if (categories.length > 0 && !selectedCategoryId) {
@@ -62,6 +122,20 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({ onAdd, onAddSubCategor
             }
         }
     }, [categories, selectedCategoryId]);
+
+    // useEffect para inicializar fuente de pago por defecto
+    useEffect(() => {
+        if (paymentSources.length > 0 && !selectedPaymentSourceId) {
+            // Buscar la primera fuente activa, preferiblemente efectivo o cuenta corriente
+            const preferredSource = paymentSources.find(ps => 
+                ps.isActive && (ps.type === 'cash' || ps.type === 'checking')
+            ) || paymentSources.find(ps => ps.isActive);
+            
+            if (preferredSource) {
+                setSelectedPaymentSourceId(preferredSource.id);
+            }
+        }
+    }, [paymentSources, selectedPaymentSourceId]);
 
     const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const newCategoryId = e.target.value;
@@ -112,7 +186,8 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({ onAdd, onAddSubCategor
             description,
             amount,
             categoryId: selectedCategoryId,
-            subCategory: subCategoryToSave
+            subCategory: subCategoryToSave,
+            paymentSourceId: selectedPaymentSourceId || undefined
         });
 
         if (!validationResult.success) {
@@ -135,14 +210,66 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({ onAdd, onAddSubCategor
 
     // Función separada para enviar el gasto
     const submitExpense = async (expenseData: any) => {
-        const result = await onAdd(expenseData);
+        try {
+            // Si está habilitado el tracking de balance y hay fuente de pago seleccionada
+            if (enableBalanceTracking && selectedPaymentSourceId && userId) {
+                // Crear el expense mejorado para el sistema de automatización
+                const enhancedExpense: EnhancedExpense = {
+                    id: '', // Se asignará automáticamente
+                    description: expenseData.description,
+                    amount: parseFloat(amount),
+                    categoryId: expenseData.categoryId,
+                    subCategory: expenseData.subCategory,
+                    createdAt: Timestamp.now(),
+                    paymentSourceId: selectedPaymentSourceId,
+                    isAutomatic: false
+                };
 
-        if (result.success) {
-            toast.success('¡Gasto añadido con éxito!')
-            resetForm();
-        } else { 
-            toast.error(result.error || 'Ocurrió un error inesperado.');
-            setFormError(result.error || 'Ocurrió un error inesperado.'); 
+                // Procesar el gasto con descuento automático de saldo
+                const balanceResult = await processExpenseWithBalance(
+                    enhancedExpense, 
+                    selectedPaymentSourceId
+                );
+
+                if (!balanceResult.success) {
+                    // Si falla el procesamiento de saldo, mostrar error pero permitir continuar
+                    toast.error(balanceResult.error || 'Error procesando el saldo');
+                    
+                    // Preguntar al usuario si quiere continuar sin procesar el saldo
+                    const continueAnyway = window.confirm(
+                        '¿Deseas registrar el gasto sin actualizar el saldo automáticamente?'
+                    );
+                    
+                    if (!continueAnyway) {
+                        return;
+                    }
+                }
+            }
+
+            // Procesar el gasto normalmente
+            const result = await onAdd(expenseData);
+
+            if (result.success) {
+                toast.success(
+                    enableBalanceTracking && selectedPaymentSourceId 
+                        ? '¡Gasto añadido y saldo actualizado!' 
+                        : '¡Gasto añadido con éxito!'
+                );
+                
+                // Actualizar la proyección de saldo si está habilitado
+                if (enableBalanceTracking && selectedPaymentSourceId) {
+                    refreshPaymentSourceBalance(selectedPaymentSourceId);
+                }
+                
+                resetForm();
+            } else { 
+                toast.error(result.error || 'Ocurrió un error inesperado.');
+                setFormError(result.error || 'Ocurrió un error inesperado.'); 
+            }
+        } catch (error) {
+            console.error('Error in submitExpense:', error);
+            toast.error('Error procesando el gasto');
+            setFormError('Error procesando el gasto');
         }
     };
 
@@ -158,6 +285,16 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({ onAdd, onAddSubCategor
             setSelectedCategoryId(firstCategory.id);
             setAvailableSubCategories(firstCategory.subcategories);
             setSelectedSubCategory(firstCategory.subcategories[0]?.name || '');
+        }
+        // Resetear fuente de pago a la primera activa
+        if (paymentSources.length > 0) {
+            const preferredSource = paymentSources.find(ps => 
+                ps.isActive && (ps.type === 'cash' || ps.type === 'checking')
+            ) || paymentSources.find(ps => ps.isActive);
+            
+            if (preferredSource) {
+                setSelectedPaymentSourceId(preferredSource.id);
+            }
         }
     };
 
@@ -259,6 +396,118 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({ onAdd, onAddSubCategor
                             />
                         </div>
                     )}
+                    
+                    {/* Botón temporal para limpiar duplicados */}
+                    {userId && paymentSources.length > 4 && (
+                        <div className={styles.formGroupCleanup}>
+                            <button
+                                type="button"
+                                onClick={async () => {
+                                    if (window.confirm('¿Limpiar fuentes de pago duplicadas? Esta acción no se puede deshacer.')) {
+                                        try {
+                                            toast.loading('Limpiando duplicados...', { id: 'cleanup' });
+                                            
+                                            // Usar el servicio de limpieza directamente
+                                            const { duplicateCleanupService } = await import('../../services/duplicateCleanupService');
+                                            const result = await duplicateCleanupService.removeDuplicatePaymentSources(userId);
+                                            
+                                            toast.dismiss('cleanup');
+                                            
+                                            if (result.success) {
+                                                toast.success(`¡Éxito! Se eliminaron ${result.removed} duplicados. Recarga la página.`);
+                                                
+                                                // Preguntar si quiere recargar automáticamente
+                                                if (window.confirm('¿Recargar la página ahora para ver los cambios?')) {
+                                                    window.location.reload();
+                                                }
+                                            } else {
+                                                toast.error(result.error || 'Error al limpiar duplicados');
+                                            }
+                                        } catch (error) {
+                                            toast.dismiss('cleanup');
+                                            toast.error('Error al limpiar duplicados');
+                                            console.error('Error cleanup:', error);
+                                        }
+                                    }
+                                }}
+                                className={styles.cleanupButton}
+                            >
+                                🧹 Limpiar Duplicados ({paymentSources.length} fuentes)
+                            </button>
+                        </div>
+                    )}
+                    
+                    {/* Selector de fuente de pago */}
+                    {paymentSources.length > 0 && (
+                        <div className={styles.formGroupPaymentSource}>
+                            <label htmlFor="paymentSource" className={styles.label}>
+                                <DollarSign size={16} />
+                                Fuente de Pago
+                                {enableBalanceTracking && (
+                                    <span className={styles.labelNote}>(Con tracking automático)</span>
+                                )}
+                            </label>
+                            <select 
+                                id="paymentSource" 
+                                value={selectedPaymentSourceId} 
+                                onChange={(e) => setSelectedPaymentSourceId(e.target.value)} 
+                                className={`${styles.select} ${!balanceCheck.sufficient ? styles.selectError : ''}`}
+                            >
+                                <option value="">Seleccionar fuente...</option>
+                                {paymentSources
+                                    .filter(ps => ps.isActive)
+                                    .map(ps => {
+                                        const { balance, hasBalance } = getPaymentSourceBalance(ps.id);
+                                        return (
+                                            <option key={ps.id} value={ps.id}>
+                                                {ps.icon} {ps.name}
+                                                {hasBalance && ` (${formatCurrency(balance)})`}
+                                            </option>
+                                        );
+                                    })
+                                }
+                            </select>
+                            
+                            {/* Información de saldo */}
+                            {enableBalanceTracking && selectedPaymentSourceId && (
+                                <div className={styles.balanceInfo}>
+                                    {(() => {
+                                        const { balance, projectedBalance, hasBalance } = getPaymentSourceBalance(selectedPaymentSourceId);
+                                        if (!hasBalance) {
+                                            return (
+                                                <div className={styles.balanceWarning}>
+                                                    <AlertTriangle size={14} />
+                                                    Saldo no disponible
+                                                </div>
+                                            );
+                                        }
+                                        
+                                        return (
+                                            <div className={styles.balanceDetails}>
+                                                <span className={styles.balanceItem}>
+                                                    Disponible: {formatCurrency(balance)}
+                                                </span>
+                                                {Math.abs(projectedBalance - balance) > 0.01 && (
+                                                    <span className={styles.balanceItem}>
+                                                        Proyectado: {formatCurrency(projectedBalance)}
+                                                    </span>
+                                                )}
+                                            </div>
+                                        );
+                                    })()}
+                                </div>
+                            )}
+                            
+                            {/* Alerta de saldo insuficiente */}
+                            {!balanceCheck.sufficient && (
+                                <div className={styles.balanceError}>
+                                    <AlertTriangle size={16} />
+                                    {balanceCheck.message}
+                                </div>
+                            )}
+                        </div>
+                    )}
+                    
                     {budgetInfo && (
                         <div className={`${styles.fullWidth} ${styles.budgetTracker}`}>
                             <label className={styles.label}>Progreso del Presupuesto para "{categories.find(c=>c.id === selectedCategoryId)?.name}"</label>

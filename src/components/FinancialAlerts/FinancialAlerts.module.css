@@ -1,0 +1,320 @@
+/* FinancialAlerts.module.css */
+
+.container {
+  background: var(--card-background);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.badge {
+  background: var(--error-color);
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.25rem 0.5rem;
+  border-radius: 12px;
+  min-width: 1.5rem;
+  text-align: center;
+}
+
+.alertsList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.alertItem {
+  display: flex;
+  gap: 1rem;
+  padding: 1rem;
+  background: var(--background-secondary);
+  border-radius: 8px;
+  border-left: 4px solid var(--border-color);
+  transition: all 0.2s ease;
+  cursor: pointer;
+  animation: alertSlideIn 0.3s ease-out;
+}
+
+.alertItem:hover {
+  background: var(--background-tertiary);
+}
+
+.alertItem.unread {
+  background: color-mix(in srgb, var(--primary-color) 5%, var(--background-secondary));
+  border-left-color: var(--primary-color);
+}
+
+.alertItem.severity-critical {
+  border-left-color: #dc2626;
+  background: color-mix(in srgb, #dc2626 5%, var(--background-secondary));
+}
+
+.alertItem.severity-high {
+  border-left-color: #ea580c;
+  background: color-mix(in srgb, #ea580c 5%, var(--background-secondary));
+}
+
+.alertItem.severity-medium {
+  border-left-color: #2563eb;
+  background: color-mix(in srgb, #2563eb 5%, var(--background-secondary));
+}
+
+.alertItem.severity-low {
+  border-left-color: #059669;
+  background: color-mix(in srgb, #059669 5%, var(--background-secondary));
+}
+
+.alertIcon {
+  flex-shrink: 0;
+  display: flex;
+  align-items: flex-start;
+  margin-top: 0.125rem;
+}
+
+.alertContent {
+  flex: 1;
+  min-width: 0;
+}
+
+.alertHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.alertTitle {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.alertType {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  background: var(--background-tertiary);
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  flex-shrink: 0;
+}
+
+.alertMessage {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin: 0 0 0.75rem;
+  line-height: 1.4;
+}
+
+.alertFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.alertTime {
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
+}
+
+.actionRequired {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--warning-color);
+  background: color-mix(in srgb, var(--warning-color) 15%, transparent);
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.alertData {
+  margin-top: 0.75rem;
+  padding: 0.75rem;
+  background: var(--background-primary);
+  border-radius: 6px;
+  border: 1px solid var(--border-light);
+}
+
+.dataItem {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.25rem;
+}
+
+.dataItem:last-child {
+  margin-bottom: 0;
+}
+
+.dataItem strong {
+  color: var(--text-primary);
+}
+
+.alertActions {
+  flex-shrink: 0;
+  display: flex;
+  align-items: flex-start;
+}
+
+.dismissButton {
+  padding: 0.25rem !important;
+  min-width: auto !important;
+  width: auto !important;
+}
+
+.moreAlerts {
+  text-align: center;
+  padding: 0.75rem;
+  margin-top: 0.75rem;
+  border-top: 1px solid var(--border-light);
+}
+
+.moreText {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+/* Empty state */
+.emptyState {
+  text-align: center;
+  padding: 2rem;
+  color: var(--text-secondary);
+}
+
+.emptyState svg {
+  color: var(--text-tertiary);
+  margin-bottom: 0.5rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .container {
+    padding: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+
+  .title {
+    justify-content: center;
+  }
+
+  .alertItem {
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 0.75rem;
+  }
+
+  .alertHeader {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+
+  .alertType {
+    align-self: flex-start;
+  }
+
+  .alertFooter {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .alertActions {
+    align-self: stretch;
+    justify-content: flex-end;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 0.5rem;
+    border-radius: 8px;
+  }
+
+  .alertsList {
+    gap: 0.5rem;
+  }
+
+  .alertItem {
+    padding: 0.5rem;
+  }
+
+  .alertData {
+    padding: 0.5rem;
+  }
+}
+
+/* Dark mode transitions */
+.container,
+.alertItem {
+  transition: 
+    background-color 0.3s ease,
+    border-color 0.3s ease,
+    color 0.3s ease;
+}
+
+/* Focus states for accessibility */
+.alertItem:focus {
+  outline: 2px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+.alertItem:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Animation for new alerts */
+@keyframes alertSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .alertItem {
+    animation: none;
+    transition: none;
+    transform: none;
+  }
+}

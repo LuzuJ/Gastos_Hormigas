@@ -5,7 +5,7 @@ import styles from './Notifications.module.css';
 
 interface NotificationsProps {
   notifications: Notification[];
-  onRemove: (id: number) => void;
+  onRemove: (id: number | string) => void;
 }
 
 export const Notifications: React.FC<NotificationsProps> = ({ notifications, onRemove }) => {

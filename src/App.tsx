@@ -27,7 +27,7 @@ const MainApp: React.FC<{ user: User }> = ({ user }) => {
       case PAGE_ROUTES.DASHBOARD: 
         return (
           <Suspense fallback={<PageLoader message="Cargando Dashboard..." />}>
-            <DashboardPage isGuest={isGuest} />
+            <DashboardPage isGuest={isGuest} userId={user.uid} />
           </Suspense>
         );
       case PAGE_ROUTES.REGISTRO: 
@@ -63,7 +63,7 @@ const MainApp: React.FC<{ user: User }> = ({ user }) => {
       default: 
         return (
           <Suspense fallback={<PageLoader message="Cargando..." />}>
-            <DashboardPage isGuest={false} />
+            <DashboardPage isGuest={false} userId={user.uid} />
           </Suspense>
         );
     }

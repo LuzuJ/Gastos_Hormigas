@@ -3,7 +3,18 @@ import { expensesService } from './expensesService';
 import { Timestamp } from 'firebase/firestore';
 import type { Category } from '../types';
 
+// Tipo para el callback de limpieza de notificaciones
+type ClearNotificationCallback = (fixedExpenseId: string) => void;
+
 export const automationService = {
+  // Callback para limpiar notificaciones - se establece desde el hook
+  clearNotificationCallback: null as ClearNotificationCallback | null,
+
+  // Método para establecer el callback
+  setClearNotificationCallback: (callback: ClearNotificationCallback | null) => {
+    automationService.clearNotificationCallback = callback;
+  },
+
   checkAndPostFixedExpenses: async (userId: string, categories: Category[]) => {
     try {
       // Obtener gastos fijos del usuario
@@ -36,6 +47,11 @@ export const automationService = {
           await fixedExpenseService.updateFixedExpense(userId, fixed.id, {
             lastPostedMonth: currentMonthMarker,
           });
+
+          // Limpiar notificaciones relacionadas con este gasto fijo
+          if (automationService.clearNotificationCallback) {
+            automationService.clearNotificationCallback(fixed.id);
+          }
         }
       }
     } catch (error) {

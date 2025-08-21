@@ -2,6 +2,7 @@ import React from 'react';
 import { IncomeForm } from '../components/IncomeForm/IncomeForm';
 import { FixedExpenses } from '../components/FixedExpenses/FixedExpenses';
 import { NetWorthManager } from '../components/NetWorthManager/NetWorthManager';
+import { PaymentSourceManager } from '../components/PaymentSourceManager/PaymentSourceManager';
 import { GuestBlockedFeature } from '../components/GuestBlockedFeature/GuestBlockedFeature';
 import { LoadingStateWrapper } from '../components/LoadingState/LoadingState';
 import { NetWorthSection } from '../components/PlanningPage/NetWorthSection';
@@ -141,6 +142,10 @@ export const PlanningPage: React.FC<PlanningPageProps> = ({ isGuest }) => {
                                 onAdd={async (data) => { await addFixedExpense(data); }}
                                 onDelete={async (id: string) => { await deleteFixedExpense(id); }}
                             />
+                        </div>
+
+                        <div className={styles.section}>
+                            <PaymentSourceManager />
                         </div>
                         
                         <div className={styles.section}>

@@ -125,13 +125,23 @@
 .summarySection,
 .budgetSection,
 .savingsSection,
-.guestSection {
+.guestSection,
+.notificationsSection {
   background: var(--background-card);
   border-radius: 20px;
   padding: 24px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   border: 1px solid var(--border-color);
   transition: all 0.3s ease;
+}
+
+/* Sección específica para notificaciones */
+.notificationsSection {
+  padding: 16px; /* Menos padding para notificaciones */
+}
+
+.fixedExpenseNotifications {
+  margin: 0;
 }
 
 .expenseFormSection:hover,
