@@ -861,7 +861,7 @@ describe('Integration: Automation Service Flow', () => {
       expect(totalAutomatedAmount).toBe(2280); // Total monthly fixed expenses
       
       // Verify all expenses were updated with June marker
-      const updateCalls = fixedExpenseService.updateFixedExpense = vi.fn().mock.calls;
+      const updateCalls = (fixedExpenseService.updateFixedExpense as any).mock.calls;
       updateCalls.forEach((call: any) => {
         expect(call[2]).toEqual({ lastPostedMonth: '2024-5' }); // June (month index 5)
       });
