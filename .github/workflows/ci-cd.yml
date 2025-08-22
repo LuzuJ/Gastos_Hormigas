@@ -9,7 +9,6 @@ on:
 
 env:
   NODE_VERSION: '18'
-  CACHE_KEY: node-modules-${{ hashFiles('**/package-lock.json') }}
 
 jobs:
   # ===== JOB 1: ANÁLISIS Y LINTING =====
