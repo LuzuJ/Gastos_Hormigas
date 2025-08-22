@@ -243,10 +243,6 @@ src/
 
 **🔗 URL de Producción**: [https://gestos-gastosv2.web.app](https://gestos-gastosv2.web.app)
 
-### **Credenciales de Prueba**
-- **Email**: demo@gastoshormigas.com
-- **Contraseña**: DemoSeguro123!
-
 ### **Modo Invitado**
 También puedes probar la aplicación usando el **modo invitado** sin necesidad de registro.
 
@@ -264,7 +260,9 @@ También puedes probar la aplicación usando el **modo invitado** sin necesidad 
 
 ## 🤝 Contribuciones
 
-¡Las contribuciones son bienvenidas! Este proyecto sigue las mejores prácticas de desarrollo colaborativo.
+¡Las contribuciones son bienvenidas! Este proyecto sigue las mejores prácticas de desarrollo colaborativo.  
+**Paypal**: [Paypal Luzu24Z](https://paypal.me/Luzu24Z)
+ 
 
 ### **Cómo Contribuir**
 
@@ -298,7 +296,7 @@ Este proyecto está licenciado bajo la **MIT License** - ver el archivo [LICENSE
 
 ¿Tienes preguntas o necesitas ayuda?
 
-- 📧 **Email**: soporte@gastoshormigas.com
+- 📧 **Email**: jonathanluzuriaga224@gmail.com
 - 🐛 **Issues**: [GitHub Issues](https://github.com/LuzuJ/Gastos_Hormigas/issues)
 - 📖 **Documentación**: Ver archivos ARCHITECTURE.md y TECHNICAL.md
 - 💬 **Discusiones**: [GitHub Discussions](https://github.com/LuzuJ/Gastos_Hormigas/discussions)
