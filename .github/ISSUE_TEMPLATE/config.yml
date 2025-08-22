@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 💬 GitHub Discussions
+    url: https://github.com/LuzuJ/Gastos_Hormigas/discussions
+    about: Preguntas generales, ideas y discusiones de la comunidad
+  - name: 📧 Contacto Directo
+    url: mailto:jonathanluzuriaga224@gmail.com
+    about: Para consultas privadas o comerciales
+  - name: 💰 Patrocinio
+    url: https://paypal.me/LuzuJ
+    about: Apoya el desarrollo del proyecto

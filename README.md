@@ -261,8 +261,7 @@ También puedes probar la aplicación usando el **modo invitado** sin necesidad 
 ## 🤝 Contribuciones
 
 ¡Las contribuciones son bienvenidas! Este proyecto sigue las mejores prácticas de desarrollo colaborativo.  
-**Paypal**: [Paypal Luzu24Z](https://paypal.me/Luzu24Z)
- 
+**Paypal**: [Paypal Luzu24Z](https://paypal.me/LuzuJ)  
 
 ### **Cómo Contribuir**
 
@@ -307,6 +306,6 @@ Este proyecto está licenciado bajo la **MIT License** - ver el archivo [LICENSE
 
 **💚 Hecho con amor para ayudarte a controlar tus finanzas 💚**
 
-[🌟 Dar Estrella](https://github.com/LuzuJ/Gastos_Hormigas) | [🐛 Reportar Bug](https://github.com/LuzuJ/Gastos_Hormigas/issues) | [💡 Solicitar Feature](https://github.com/LuzuJ/Gastos_Hormigas/issues)
+[🌟 Dar Estrella](https://github.com/LuzuJ/Gastos_Hormigas) | [🐛 Reportar Bug](https://github.com/LuzuJ/Gastos_Hormigas/issues/new?assignees=LuzuJ&labels=bug%2Ctriage&projects=&template=bug_report.md&title=%5BBUG%5D+) | [💡 Solicitar Feature](https://github.com/LuzuJ/Gastos_Hormigas/issues/new?assignees=LuzuJ&labels=enhancement%2Cfeature-request&projects=&template=feature_request.md&title=%5BFEATURE%5D+)
 
 </div>
