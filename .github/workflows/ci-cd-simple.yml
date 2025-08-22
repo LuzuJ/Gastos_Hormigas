@@ -6,7 +6,7 @@ on:
   workflow_dispatch: # Permite ejecución manual
 
 env:
-  NODE_VERSION: '18'
+  NODE_VERSION: '20'
 
 jobs:
   # ===== JOB 1: BUILD & DEPLOY =====
