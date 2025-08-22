@@ -109,7 +109,7 @@ jobs:
         id: firebase-deploy
         with:
           repoToken: '${{ secrets.GITHUB_TOKEN }}'
-          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_PRODUCTION }}'
+          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_GESTOS_GASTOSV2 }}'
           projectId: gastos-hormigas
           expires: 7d
 

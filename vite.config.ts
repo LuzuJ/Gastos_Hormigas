@@ -81,56 +81,167 @@ export default defineConfig({
     }
   },
   build: {
+    // ===== OPTIMIZACIÓN AVANZADA DE BUNDLES =====
     rollupOptions: {
       output: {
-        manualChunks: {
-          // Chunk para React y librerías principales
-          'react-vendor': ['react', 'react-dom'],
+        // 🎯 Estrategia de Manual Chunks más granular
+        manualChunks: (id) => {
+          // Vendor chunks principales
+          if (id.includes('react') && !id.includes('react-router')) {
+            return 'vendor-react';
+          }
+          if (id.includes('react-router')) {
+            return 'vendor-router';
+          }
+          if (id.includes('firebase')) {
+            return 'vendor-firebase';
+          }
           
-          // Chunk para Firebase
-          'firebase-vendor': [
-            'firebase/app',
-            'firebase/auth', 
-            'firebase/firestore'
-          ],
+          // Chunks de librerías específicas
+          if (id.includes('recharts') || id.includes('chart')) {
+            return 'vendor-charts';
+          }
+          if (id.includes('lucide-react')) {
+            return 'vendor-icons';
+          }
+          if (id.includes('react-hot-toast')) {
+            return 'vendor-toast';
+          }
+          if (id.includes('date-fns')) {
+            return 'vendor-dates';
+          }
           
-          // Dividir las librerías de UI en chunks más específicos
-          'icons-vendor': ['lucide-react'],
-          'toast-vendor': ['react-hot-toast'],
-          'charts-vendor': ['recharts'],
+          // Chunks de la aplicación por feature
+          if (id.includes('/pages/')) {
+            const pageName = id.split('/pages/')[1]?.split('/')[0] || id.split('/pages/')[1]?.split('.')[0];
+            return `page-${pageName}`;
+          }
           
-          // Chunk para servicios de la aplicación
-          'app-services': [
-            './src/services/expenses/expensesService',
-            './src/services/categories/categoryService',
-            './src/services/financials/financialsService',
-            './src/services/profile/userService',
-            './src/services/auth/authService'
-          ],
+          if (id.includes('/services/')) {
+            return 'app-services';
+          }
           
-          // Chunk para contextos y hooks
-          'app-state': [
-            './src/contexts/AppContext',
-            './src/hooks/expenses/useExpenses',
-            './src/hooks/categories/useCategories',
-            './src/hooks/financials/useFinancials'
-          ]
+          if (id.includes('/contexts/') || id.includes('/hooks/')) {
+            return 'app-state';
+          }
+          
+          if (id.includes('/components/') && id.includes('Chart')) {
+            return 'components-charts';
+          }
+          
+          if (id.includes('/components/') && (
+            id.includes('Modal') || 
+            id.includes('Manager') || 
+            id.includes('Analysis')
+          )) {
+            return 'components-heavy';
+          }
+          
+          // Componentes comunes ligeros
+          if (id.includes('/components/common/')) {
+            return 'components-common';
+          }
+          
+          // Node modules que no están categorizados
+          if (id.includes('node_modules')) {
+            return 'vendor-misc';
+          }
+        },
+        
+        // Naming strategy optimizada
+        chunkFileNames: (chunkInfo) => {
+          const name = chunkInfo.name || 'chunk';
+          return `assets/js/${name}-[hash].js`;
+        },
+        
+        // Assets naming optimizada
+        assetFileNames: (assetInfo) => {
+          const info = assetInfo.name?.split('.') || [];
+          const ext = info[info.length - 1];
+          
+          if (/png|jpe?g|svg|gif|tiff|bmp|ico/i.test(ext || '')) {
+            return `assets/images/[name]-[hash][extname]`;
+          }
+          if (/css/i.test(ext || '')) {
+            return `assets/css/[name]-[hash][extname]`;
+          }
+          if (/woff2?|ttf|eot/i.test(ext || '')) {
+            return `assets/fonts/[name]-[hash][extname]`;
+          }
+          
+          return `assets/[name]-[hash][extname]`;
         }
+      },
+      
+      // 🛡️ External dependencies para reducir bundle size
+      external: (id) => {
+        // Marcar como external librerías que se cargan via CDN si necesario
+        return false; // Por ahora bundleamos todo
       }
     },
-    // Aumentar el límite de advertencia a 800KB
-    chunkSizeWarningLimit: 800,
-    // Configuración para PWA
+    
+    // Configuración de build optimizada
+    chunkSizeWarningLimit: 800, // KB
     outDir: 'dist',
     assetsDir: 'assets',
-    sourcemap: false, // Deshabilitar sourcemaps en producción para menor tamaño
+    
+    // Source maps configurables por entorno
+    sourcemap: process.env.NODE_ENV === 'development',
+    
+    // Minificación avanzada
     minify: 'terser',
     terserOptions: {
       compress: {
-        drop_console: true, // Remover console.log en producción
-        drop_debugger: true
+        // Optimizaciones de producción
+        drop_console: process.env.NODE_ENV === 'production',
+        drop_debugger: true,
+        pure_funcs: ['console.log', 'console.info', 'console.debug'],
+        
+        // Optimizaciones específicas
+        passes: 2,
+        unsafe_arrows: true,
+        unsafe_methods: true,
+        unsafe_proto: true,
+        unsafe_regexp: true,
+        
+        // Dead code elimination
+        dead_code: true,
+        unused: true,
+        
+        // Reduce file size
+        reduce_vars: true,
+        collapse_vars: true,
+        hoist_funs: true,
+        hoist_vars: true
+      },
+      mangle: {
+        // Mantener nombres importantes para debugging
+        keep_classnames: false,
+        keep_fnames: false,
+        safari10: true,
+        
+        // Properties mangling para mayor reducción (cuidado con esto)
+        properties: false
+      },
+      format: {
+        // Remover comentarios
+        comments: false,
+        
+        // Configuración de formato
+        ecma: 2020,
+        safari10: true,
+        webkit: true
       }
-    }
+    },
+    
+    // Target browsers más específico
+    target: ['es2020', 'chrome80', 'firefox78', 'safari14', 'edge88'],
+    
+    // CSS code splitting
+    cssCodeSplit: true,
+    
+    // Reportar bundle size
+    reportCompressedSize: true
   },
   // Configuración del servidor de desarrollo
   server: {

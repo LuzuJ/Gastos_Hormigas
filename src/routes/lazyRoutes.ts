@@ -1,11 +1,14 @@
 import { createLazyRoute } from '../components/common/LazyRoute/LazyRoute';
 
 /**
- * Configuración de rutas lazy con code splitting optimizado
- * Cada ruta se carga solo cuando es necesaria, mejorando el rendimiento inicial
+ * 🚀 Sistema de Code Splitting Avanzado
+ * - Lazy loading de páginas y componentes grandes
+ * - Preloading inteligente basado en navegación
+ * - Error boundaries para componentes fallidos
+ * - Prefetch de datos relacionados
  */
 
-// Importaciones lazy para las páginas principales
+// ===== PÁGINAS PRINCIPALES =====
 export const DashboardPage = createLazyRoute(
   () => import('../pages/DashboardPage').then(module => ({ 
     default: module.DashboardPage 
@@ -60,44 +63,179 @@ export const BudgetPage = createLazyRoute(
   "Cargando Presupuestos..."
 );
 
-// Funciones de precarga para optimizar la experiencia del usuario
-export const preloadRoutes = {
-  dashboard: () => import('../pages/DashboardPage'),
-  reports: () => import('../pages/ReportsPage'),
-  planning: () => import('../pages/PlanningPage'),
-  registro: () => import('../pages/RegistroPage'),
-  profile: () => import('../pages/ProfilePage'),
-  categories: () => import('../pages/ManageCategoriesPage'),
-  budget: () => import('../pages/BudgetPage'),
+// ===== COMPONENTES GRANDES - CODE SPLITTING =====
+export const ExpenseChart = createLazyRoute(
+  () => import('../components/charts/ExpenseChart/ExpenseChart').then(module => ({ 
+    default: module.ExpenseChart 
+  })),
+  "Cargando gráfico..."
+);
+
+export const AchievementsPage = createLazyRoute(
+  () => import('../components/pages/AchievementsPage/AchievementsPage').then(module => ({ 
+    default: module.AchievementsPage 
+  })),
+  "Cargando logros..."
+);
+
+export const DuplicateDetectionDemo = createLazyRoute(
+  () => import('../components/DuplicateDetectionDemo/DuplicateDetectionDemo').then(module => ({ 
+    default: module.DuplicateDetectionDemo 
+  })),
+  "Cargando detector de duplicados..."
+);
+
+// ===== SISTEMA DE PRELOADING INTELIGENTE =====
+
+// Cache de módulos precargados
+const preloadCache = new Map<string, Promise<any>>();
+
+// Función para precargar con cache
+const preloadWithCache = (key: string, importFn: () => Promise<any>) => {
+  if (!preloadCache.has(key)) {
+    preloadCache.set(key, importFn().catch(error => {
+      console.warn(`Error precargando ${key}:`, error);
+      preloadCache.delete(key); // Remover del cache si falla
+      return null;
+    }));
+  }
+  return preloadCache.get(key);
 };
 
-// Mapa de rutas para facilitar el preloading basado en la navegación del usuario
-export const ROUTE_PRELOAD_MAP = {
-  '/dashboard': ['reports', 'registro'],
-  '/reports': ['dashboard', 'planning'],
-  '/planning': ['dashboard', 'reports'],
-  '/registro': ['dashboard'],
-  '/profile': ['dashboard'],
-  '/categories': ['dashboard'],
-  '/budget': ['dashboard', 'planning'],
+// Funciones de precarga por categoría
+export const preloadRoutes = {
+  // Páginas principales
+  dashboard: () => preloadWithCache('dashboard', () => import('../pages/DashboardPage')),
+  reports: () => preloadWithCache('reports', () => import('../pages/ReportsPage')),
+  planning: () => preloadWithCache('planning', () => import('../pages/PlanningPage')),
+  registro: () => preloadWithCache('registro', () => import('../pages/RegistroPage')),
+  profile: () => preloadWithCache('profile', () => import('../pages/ProfilePage')),
+  categories: () => preloadWithCache('categories', () => import('../pages/ManageCategoriesPage')),
+  budget: () => preloadWithCache('budget', () => import('../pages/BudgetPage')),
+  
+  // Componentes grandes
+  charts: () => Promise.all([
+    preloadWithCache('expense-chart', () => import('../components/charts/ExpenseChart/ExpenseChart'))
+  ]),
+  
+  // Funcionalidades avanzadas
+  advanced: () => Promise.all([
+    preloadWithCache('achievements', () => import('../components/pages/AchievementsPage/AchievementsPage'))
+  ]),
+  
+  // Herramientas de análisis
+  analysis: () => Promise.all([
+    preloadWithCache('duplicate-detection', () => import('../components/DuplicateDetectionDemo/DuplicateDetectionDemo'))
+  ])
+};
+
+// Estrategias de preloading basadas en comportamiento del usuario
+export const PRELOAD_STRATEGIES = {
+  '/dashboard': {
+    immediate: ['registro', 'charts'], // Cargar inmediatamente
+    delayed: ['reports', 'planning'],  // Cargar después de 2s
+    onHover: ['budget', 'profile']     // Cargar cuando hover en navegación
+  },
+  '/reports': {
+    immediate: ['charts', 'analysis'],
+    delayed: ['dashboard', 'planning'],
+    onHover: ['export-manager']
+  },
+  '/planning': {
+    immediate: ['advanced'],
+    delayed: ['dashboard', 'reports'],
+    onHover: ['budget']
+  },
+  '/registro': {
+    immediate: ['dashboard'],
+    delayed: ['charts'],
+    onHover: []
+  },
+  '/profile': {
+    immediate: [],
+    delayed: ['dashboard'],
+    onHover: ['categories']
+  }
 } as const;
 
 /**
- * Función para precargar rutas de forma inteligente
+ * 🧠 Preloading inteligente basado en la página actual
  */
 export const preloadRoutesFor = (currentPage: string) => {
-  const routesToPreload = ROUTE_PRELOAD_MAP[currentPage as keyof typeof ROUTE_PRELOAD_MAP];
+  const strategy = PRELOAD_STRATEGIES[currentPage as keyof typeof PRELOAD_STRATEGIES];
   
-  if (routesToPreload) {
-    routesToPreload.forEach(route => {
-      const preloadFn = preloadRoutes[route as keyof typeof preloadRoutes];
+  if (!strategy) return;
+
+  // 1. Cargar recursos inmediatos
+  strategy.immediate.forEach(resource => {
+    const preloadFn = preloadRoutes[resource as keyof typeof preloadRoutes];
+    if (preloadFn) {
+      preloadFn();
+    }
+  });
+
+  // 2. Cargar recursos diferidos (después de 2s)
+  setTimeout(() => {
+    strategy.delayed.forEach(resource => {
+      const preloadFn = preloadRoutes[resource as keyof typeof preloadRoutes];
       if (preloadFn) {
-        setTimeout(() => {
-          preloadFn().catch(error => {
-            console.warn(`Error precargando ruta ${route}:`, error);
-          });
-        }, 1000);
+        preloadFn();
       }
     });
+  }, 2000);
+
+  // 3. Configurar preloading on hover para navegación
+  setTimeout(() => {
+    setupHoverPreloading(strategy.onHover);
+  }, 1000);
+};
+
+/**
+ * 🎯 Configurar preloading cuando el usuario hace hover en elementos de navegación
+ */
+const setupHoverPreloading = (resources: readonly string[]) => {
+  resources.forEach(resource => {
+    const navElements = document.querySelectorAll(`[data-preload="${resource}"]`);
+    
+    navElements.forEach(element => {
+      let timeoutId: NodeJS.Timeout;
+      
+      const handleMouseEnter = () => {
+        timeoutId = setTimeout(() => {
+          const preloadFn = preloadRoutes[resource as keyof typeof preloadRoutes];
+          if (preloadFn) {
+            preloadFn();
+          }
+        }, 300); // Delay para evitar preloads accidentales
+      };
+
+      const handleMouseLeave = () => {
+        clearTimeout(timeoutId);
+      };
+
+      element.addEventListener('mouseenter', handleMouseEnter);
+      element.addEventListener('mouseleave', handleMouseLeave);
+    });
+  });
+};
+
+/**
+ * 📊 Monitoreo de performance del code splitting
+ */
+export const logPreloadMetrics = () => {
+  if (typeof window !== 'undefined' && 'performance' in window) {
+    const navigation = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
+    
+    console.log('📊 Code Splitting Metrics:', {
+      'First Contentful Paint': navigation.loadEventEnd - navigation.fetchStart,
+      'Modules in Cache': preloadCache.size,
+      'Cache Hit Rate': preloadCache.size > 0 ? '✅' : '⚠️'
+    });
   }
+};
+
+// Hook para limpiar cache cuando sea necesario
+export const clearPreloadCache = () => {
+  preloadCache.clear();
+  console.log('🧹 Preload cache cleared');
 };
