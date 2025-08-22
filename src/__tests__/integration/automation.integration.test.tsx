@@ -91,8 +91,8 @@ describe('Integration: Automation Service Flow', () => {
     vi.useFakeTimers();
     
     // Mock implementaciones por defecto
-    vi.mocked(fixedExpenseService.getFixedExpensesOnce).mockResolvedValue([]);
-    vi.mocked(expensesService.addExpense).mockResolvedValue({
+    (fixedExpenseService.getFixedExpensesOnce as any).mockResolvedValue([]);
+    (expensesService.addExpense as any).mockResolvedValue({
       id: 'new-expense-id',
       type: 'document',
       firestore: {} as any,
@@ -100,7 +100,7 @@ describe('Integration: Automation Service Flow', () => {
       parent: {} as any,
       converter: null
     } as any);
-    vi.mocked(fixedExpenseService.updateFixedExpense).mockResolvedValue();
+    (fixedExpenseService.updateFixedExpense as any).mockResolvedValue();
   });
 
   afterEach(() => {
@@ -132,7 +132,7 @@ describe('Integration: Automation Service Flow', () => {
         }
       ];
 
-      vi.mocked(fixedExpenseService.getFixedExpensesOnce).mockResolvedValue(mockFixedExpenses);
+      (fixedExpenseService.getFixedExpensesOnce as any).mockResolvedValue(mockFixedExpenses);
 
       // Act
       await automationService.checkAndPostFixedExpenses(mockUserId, mockCategories);
@@ -185,7 +185,7 @@ describe('Integration: Automation Service Flow', () => {
         }
       ];
 
-      vi.mocked(fixedExpenseService.getFixedExpensesOnce).mockResolvedValue(mockFixedExpenses);
+      ( as any).mockResolvedValue(mockFixedExpenses);
 
       // Act
       await automationService.checkAndPostFixedExpenses(mockUserId, mockCategories);
@@ -211,7 +211,7 @@ describe('Integration: Automation Service Flow', () => {
         }
       ];
 
-      vi.mocked(fixedExpenseService.getFixedExpensesOnce).mockResolvedValue(mockFixedExpenses);
+      ( as any).mockResolvedValue(mockFixedExpenses);
 
       // Act
       await automationService.checkAndPostFixedExpenses(mockUserId, mockCategories);
@@ -250,7 +250,7 @@ describe('Integration: Automation Service Flow', () => {
         }
       ];
 
-      vi.mocked(fixedExpenseService.getFixedExpensesOnce).mockResolvedValue(mockFixedExpenses);
+      ( as any).mockResolvedValue(mockFixedExpenses);
 
       // Act
       await automationService.checkAndPostFixedExpenses(mockUserId, categoriesWithoutGastoFijo);
@@ -291,7 +291,7 @@ describe('Integration: Automation Service Flow', () => {
         }
       ];
 
-      vi.mocked(fixedExpenseService.getFixedExpensesOnce).mockResolvedValue(mockFixedExpenses);
+      ( as any).mockResolvedValue(mockFixedExpenses);
 
       // Act
       await automationService.checkAndPostFixedExpenses(mockUserId, categoriesWithoutSubcategories);
@@ -322,7 +322,7 @@ describe('Integration: Automation Service Flow', () => {
         }
       ];
 
-      vi.mocked(fixedExpenseService.getFixedExpensesOnce).mockResolvedValue(mockFixedExpenses);
+      ( as any).mockResolvedValue(mockFixedExpenses);
 
       // Act
       await automationService.checkAndPostFixedExpenses(mockUserId, mockCategories);
@@ -355,7 +355,7 @@ describe('Integration: Automation Service Flow', () => {
         }
       ];
 
-      vi.mocked(fixedExpenseService.getFixedExpensesOnce).mockResolvedValue(mockFixedExpenses);
+      ( as any).mockResolvedValue(mockFixedExpenses);
 
       // Act
       await automationService.checkAndPostFixedExpenses(mockUserId, mockCategories);
@@ -382,7 +382,7 @@ describe('Integration: Automation Service Flow', () => {
         }
       ];
 
-      vi.mocked(fixedExpenseService.getFixedExpensesOnce).mockResolvedValue(mockFixedExpenses);
+      ( as any).mockResolvedValue(mockFixedExpenses);
 
       // Act
       await automationService.checkAndPostFixedExpenses(mockUserId, mockCategories);
@@ -418,7 +418,7 @@ describe('Integration: Automation Service Flow', () => {
         }
       ];
 
-      vi.mocked(fixedExpenseService.getFixedExpensesOnce).mockResolvedValue(mockFixedExpenses);
+      ( as any).mockResolvedValue(mockFixedExpenses);
 
       // Act
       await automationService.checkAndPostFixedExpenses(mockUserId, mockCategories);
@@ -471,7 +471,7 @@ describe('Integration: Automation Service Flow', () => {
         }
       ];
 
-      vi.mocked(fixedExpenseService.getFixedExpensesOnce).mockResolvedValue(mockFixedExpenses);
+      ( as any).mockResolvedValue(mockFixedExpenses);
 
       // Act
       await automationService.checkAndPostFixedExpenses(mockUserId, mockCategories);
@@ -500,7 +500,7 @@ describe('Integration: Automation Service Flow', () => {
       const testDate = new Date(2024, 2, 15); // March 15, 2024
       vi.setSystemTime(testDate);
       
-      vi.mocked(fixedExpenseService.getFixedExpensesOnce).mockResolvedValue([]);
+      ( as any).mockResolvedValue([]);
 
       // Act
       await automationService.checkAndPostFixedExpenses(mockUserId, mockCategories);
@@ -534,7 +534,7 @@ describe('Integration: Automation Service Flow', () => {
         }
       ];
 
-      vi.mocked(fixedExpenseService.getFixedExpensesOnce).mockResolvedValue(mockFixedExpenses);
+      ( as any).mockResolvedValue(mockFixedExpenses);
       
       // Mock the second addExpense call to fail
       vi.mocked(expensesService.addExpense)
@@ -595,7 +595,7 @@ describe('Integration: Automation Service Flow', () => {
         }
       ];
 
-      vi.mocked(fixedExpenseService.getFixedExpensesOnce).mockResolvedValue(mockFixedExpenses);
+      ( as any).mockResolvedValue(mockFixedExpenses);
       vi.mocked(expensesService.addExpense).mockRejectedValue(new Error('Add expense failed'));
 
       // Act
@@ -623,8 +623,8 @@ describe('Integration: Automation Service Flow', () => {
         }
       ];
 
-      vi.mocked(fixedExpenseService.getFixedExpensesOnce).mockResolvedValue(mockFixedExpenses);
-      vi.mocked(expensesService.addExpense).mockResolvedValue({
+      ( as any).mockResolvedValue(mockFixedExpenses);
+      ( as any).mockResolvedValue({
         id: 'success-id',
         type: 'document',
         firestore: {} as any,
@@ -669,7 +669,7 @@ describe('Integration: Automation Service Flow', () => {
         }
       ];
 
-      vi.mocked(fixedExpenseService.getFixedExpensesOnce).mockResolvedValue(mockFixedExpenses);
+      ( as any).mockResolvedValue(mockFixedExpenses);
 
       // Act
       await automationService.checkAndPostFixedExpenses(mockUserId, mockCategories);
@@ -708,7 +708,7 @@ describe('Integration: Automation Service Flow', () => {
         }
       ];
 
-      vi.mocked(fixedExpenseService.getFixedExpensesOnce).mockResolvedValue(mockFixedExpenses);
+      ( as any).mockResolvedValue(mockFixedExpenses);
 
       // Act
       await automationService.checkAndPostFixedExpenses(mockUserId, mockCategories);
@@ -743,7 +743,7 @@ describe('Integration: Automation Service Flow', () => {
         }
       ];
 
-      vi.mocked(fixedExpenseService.getFixedExpensesOnce).mockResolvedValue(mockFixedExpenses);
+      ( as any).mockResolvedValue(mockFixedExpenses);
 
       // Act
       await automationService.checkAndPostFixedExpenses(mockUserId, mockCategories);
@@ -797,7 +797,7 @@ describe('Integration: Automation Service Flow', () => {
         }
       ];
 
-      vi.mocked(fixedExpenseService.getFixedExpensesOnce).mockResolvedValue(monthlyFixedExpenses);
+      ( as any).mockResolvedValue(monthlyFixedExpenses);
 
       // Act
       await automationService.checkAndPostFixedExpenses(mockUserId, mockCategories);
@@ -846,7 +846,7 @@ describe('Integration: Automation Service Flow', () => {
         { id: 'internet', description: 'Internet Service', amount: 75, category: 'category-3', dayOfMonth: 1, lastPostedMonth: '2024-4' }
       ];
 
-      vi.mocked(fixedExpenseService.getFixedExpensesOnce).mockResolvedValue(comprehensiveFixedExpenses);
+      ( as any).mockResolvedValue(comprehensiveFixedExpenses);
 
       // Act
       await automationService.checkAndPostFixedExpenses(mockUserId, mockCategories);
