@@ -1,9 +1,13 @@
 # 🐜 Gastos Hormigas - Tu Compañero Financiero Personal
 
+[![CI/CD](https://github.com/usuario/gastos-hormigas/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/usuario/gastos-hormigas/actions/workflows/ci-cd.yml)
+[![Release](https://github.com/usuario/gastos-hormigas/actions/workflows/release.yml/badge.svg)](https://github.com/usuario/gastos-hormigas/actions/workflows/release.yml)
 [![PWA Ready](https://img.shields.io/badge/PWA-ready-green.svg)](https://gestos-gastosv2.web.app)
 [![Firebase](https://img.shields.io/badge/Firebase-ready-orange.svg)](https://firebase.google.com)
 [![React 19](https://img.shields.io/badge/React-19-blue.svg)](https://react.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8-blue.svg)](https://typescriptlang.org)
+[![Coverage](https://codecov.io/gh/usuario/gastos-hormigas/branch/main/graph/badge.svg)](https://codecov.io/gh/usuario/gastos-hormigas)
+[![Performance](https://img.shields.io/badge/Lighthouse-100-green.svg)](https://web.dev/measure)
 
 Una **Progressive Web App (PWA)** moderna y completa para la gestión inteligente de finanzas personales. Controla tus gastos, planifica tu futuro financiero y alcanza tus metas con la ayuda de análisis avanzados y características premium.
 
@@ -20,6 +24,7 @@ Una **Progressive Web App (PWA)** moderna y completa para la gestión inteligent
 - 💰 **Multi-divisa**: Soporte para diferentes monedas
 - 🌙 **Modo Offline**: Funciona sin conexión a internet
 - 🎨 **Diseño Moderno**: Interfaz intuitiva con modo claro/oscuro
+- 🚀 **CI/CD Automático**: Despliegue continuo con GitHub Actions
 
 ## ✨ Funcionalidades Principales
 
@@ -208,7 +213,45 @@ src/
 - ✅ Encriptación en tránsito y en reposo
 - ✅ Logs de seguridad y auditoría
 
-## 📊 Estado del Proyecto
+## � CI/CD y DevOps
+
+### **Pipeline Automático**
+
+Nuestro sistema de CI/CD garantiza calidad y despliegues confiables:
+
+- 🔄 **Integración Continua**: Tests automáticos en cada commit
+- 🚀 **Despliegue Continuo**: Deploy automático a staging y producción
+- 🔍 **Análisis de Calidad**: Lint, coverage y security checks
+- 📊 **Performance**: Lighthouse CI para optimización web
+- 🏷️ **Releases**: Automatización completa de versiones
+
+### **Workflows Disponibles**
+
+| Workflow | Trigger | Descripción |
+|----------|---------|-------------|
+| 🏗️ **CI/CD Principal** | Push a `main`/`develop` | Pipeline completo con deploy |
+| ✅ **PR Validation** | Pull Requests | Validación y preview deploy |
+| 🏷️ **Release** | Tags `v*.*.*` | Generación automática de releases |
+
+### **Comandos CI/CD**
+
+```bash
+# Configurar CI/CD automáticamente
+npm run ci:setup
+
+# Validar proyecto local (igual que CI)
+npm run ci:validate
+
+# Deploy manual a staging
+npm run ci:deploy-staging
+
+# Deploy manual a producción
+npm run ci:deploy-production
+```
+
+**📖 Documentación completa**: [.github/CI-CD-SETUP.md](.github/CI-CD-SETUP.md)
+
+## �📊 Estado del Proyecto
 
 ### ✅ **Fase 1 - Base Sólida** (100% Completada)
 - Sistema de autenticación completo

@@ -31,7 +31,22 @@
     "bundle:size": "npm run build && npx vite-bundle-analyzer dist",
     "optimize:imports": "node scripts/optimize-imports.cjs",
     "project:report": "node scripts/generate-project-report.js",
-    "project:status": "npm run project:report"
+    "project:status": "npm run project:report",
+    "ci:setup": "node scripts/setup-ci-cd.cjs",
+    "ci:validate": "npm run lint && npm run test:coverage && npm run build",
+    "ci:verify": "node scripts/verify-ci-cd.cjs",
+    "ci:security": "npm audit && npm audit --production",
+    "ci:performance": "npm run build && npx lhci autorun",
+    "ci:deploy-staging": "firebase deploy --only hosting:staging",
+    "ci:deploy-production": "firebase deploy --only hosting:production",
+    "ci:release": "npm run ci:validate && npm run ci:security && npm run ci:deploy-production",
+    "firebase:login": "firebase login",
+    "firebase:init": "firebase init hosting",
+    "firebase:deploy": "firebase deploy",
+    "firebase:targets": "firebase target:apply hosting production gastos-hormigas && firebase target:apply hosting staging gastos-hormigas-staging",
+    "github:secrets": "gh secret list",
+    "github:workflows": "gh workflow list",
+    "github:run": "gh run list --limit 5"
   },
   "dependencies": {
     "date-fns": "^4.1.0",

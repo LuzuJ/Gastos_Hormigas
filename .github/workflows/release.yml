@@ -1,0 +1,210 @@
+name: 🏷️ Release Automation
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version number (e.g., 1.2.3)'
+        required: true
+        default: '1.0.0'
+      release_type:
+        description: 'Release type'
+        required: true
+        default: 'release'
+        type: choice
+        options:
+        - release
+        - prerelease
+        - hotfix
+
+env:
+  NODE_VERSION: '18'
+
+jobs:
+  # ===== CREAR RELEASE =====
+  create-release:
+    name: 🏷️ Create Release
+    runs-on: ubuntu-latest
+    
+    outputs:
+      release-version: ${{ steps.version.outputs.version }}
+      release-notes: ${{ steps.notes.outputs.notes }}
+    
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 🏷️ Get version
+        id: version
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            VERSION="${{ github.event.inputs.version }}"
+          else
+            VERSION=${GITHUB_REF#refs/tags/v}
+          fi
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "📋 Version: $VERSION"
+
+      - name: 📝 Generate release notes
+        id: notes
+        run: |
+          # Obtener último tag
+          LAST_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || git rev-list --max-parents=0 HEAD)
+          
+          # Generar changelog
+          echo "## 🚀 Gastos Hormigas v${{ steps.version.outputs.version }}" > release_notes.md
+          echo "" >> release_notes.md
+          echo "### ✨ Nuevas Características" >> release_notes.md
+          git log --pretty=format:"- %s" $LAST_TAG..HEAD --grep="feat" >> release_notes.md || true
+          echo "" >> release_notes.md
+          echo "### 🐛 Correcciones" >> release_notes.md
+          git log --pretty=format:"- %s" $LAST_TAG..HEAD --grep="fix" >> release_notes.md || true
+          echo "" >> release_notes.md
+          echo "### 📚 Documentación" >> release_notes.md
+          git log --pretty=format:"- %s" $LAST_TAG..HEAD --grep="docs" >> release_notes.md || true
+          echo "" >> release_notes.md
+          echo "### 🔧 Mejoras Técnicas" >> release_notes.md
+          git log --pretty=format:"- %s" $LAST_TAG..HEAD --grep="refactor\|perf\|chore" >> release_notes.md || true
+          
+          # Agregar información adicional
+          echo "" >> release_notes.md
+          echo "---" >> release_notes.md
+          echo "### 📊 Estadísticas de la Release" >> release_notes.md
+          echo "- **Commits**: $(git rev-list --count $LAST_TAG..HEAD)" >> release_notes.md
+          echo "- **Archivos cambiados**: $(git diff --name-only $LAST_TAG..HEAD | wc -l)" >> release_notes.md
+          echo "- **Contribuidores**: $(git shortlog -sn $LAST_TAG..HEAD | wc -l)" >> release_notes.md
+          echo "" >> release_notes.md
+          echo "### 🌐 Enlaces" >> release_notes.md
+          echo "- [📱 Aplicación en vivo](https://gestos-gastosv2.web.app)" >> release_notes.md
+          echo "- [📖 Documentación](./README.md)" >> release_notes.md
+          echo "- [🏗️ Arquitectura](./ARCHITECTURE.md)" >> release_notes.md
+          
+          # Guardar en output
+          {
+            echo 'notes<<EOF'
+            cat release_notes.md
+            echo EOF
+          } >> $GITHUB_OUTPUT
+
+      - name: 🏷️ Create GitHub Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ steps.version.outputs.version }}
+          release_name: 🚀 Gastos Hormigas v${{ steps.version.outputs.version }}
+          body: ${{ steps.notes.outputs.notes }}
+          draft: false
+          prerelease: ${{ github.event.inputs.release_type == 'prerelease' }}
+
+  # ===== BUILD DE RELEASE =====
+  build-release:
+    name: 🏗️ Build Release
+    runs-on: ubuntu-latest
+    needs: create-release
+    
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 📦 Setup Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: 📥 Install dependencies
+        run: npm ci
+
+      - name: 🧪 Run full test suite
+        run: npm run test -- --coverage
+        env:
+          CI: true
+
+      - name: 🏗️ Build production release
+        run: npm run build
+        env:
+          VITE_APP_VERSION: v${{ needs.create-release.outputs.release-version }}
+          VITE_APP_ENV: production
+          VITE_FIREBASE_API_KEY: ${{ secrets.VITE_FIREBASE_API_KEY }}
+          VITE_FIREBASE_AUTH_DOMAIN: ${{ secrets.VITE_FIREBASE_AUTH_DOMAIN }}
+          VITE_FIREBASE_PROJECT_ID: ${{ secrets.VITE_FIREBASE_PROJECT_ID }}
+          VITE_FIREBASE_STORAGE_BUCKET: ${{ secrets.VITE_FIREBASE_STORAGE_BUCKET }}
+          VITE_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.VITE_FIREBASE_MESSAGING_SENDER_ID }}
+          VITE_FIREBASE_APP_ID: ${{ secrets.VITE_FIREBASE_APP_ID }}
+
+      - name: 📦 Create release archive
+        run: |
+          cd dist
+          tar -czf ../gastos-hormigas-v${{ needs.create-release.outputs.release-version }}.tar.gz .
+          cd ..
+          zip -r gastos-hormigas-v${{ needs.create-release.outputs.release-version }}.zip dist/
+
+      - name: 📤 Upload release assets
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-assets
+          path: |
+            gastos-hormigas-v${{ needs.create-release.outputs.release-version }}.tar.gz
+            gastos-hormigas-v${{ needs.create-release.outputs.release-version }}.zip
+
+  # ===== DEPLOY RELEASE =====
+  deploy-release:
+    name: 🚀 Deploy Release
+    runs-on: ubuntu-latest
+    needs: [create-release, build-release]
+    environment:
+      name: production
+      url: https://gestos-gastosv2.web.app
+    
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 📥 Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: release-assets
+
+      - name: 📦 Extract build files
+        run: |
+          tar -xzf gastos-hormigas-v${{ needs.create-release.outputs.release-version }}.tar.gz
+
+      - name: 🚀 Deploy to Firebase Production
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: '${{ secrets.GITHUB_TOKEN }}'
+          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_PRODUCTION }}'
+          projectId: gastos-hormigas
+          channelId: live
+
+      - name: 🎉 Release deployment success
+        run: |
+          echo "🎉 ¡Release v${{ needs.create-release.outputs.release-version }} desplegada exitosamente!"
+          echo "🌐 URL: https://gestos-gastosv2.web.app"
+          echo "📊 Version: v${{ needs.create-release.outputs.release-version }}"
+
+  # ===== NOTIFICACIONES =====
+  notify-release:
+    name: 📢 Notify Release
+    runs-on: ubuntu-latest
+    needs: [create-release, deploy-release]
+    if: always()
+    
+    steps:
+      - name: 📢 Success notification
+        if: needs.deploy-release.result == 'success'
+        run: |
+          echo "✅ Release v${{ needs.create-release.outputs.release-version }} completada"
+          echo "🚀 Aplicación actualizada en producción"
+          
+      - name: ❌ Failure notification
+        if: failure()
+        run: |
+          echo "❌ Release v${{ needs.create-release.outputs.release-version }} falló"
+          echo "🔍 Revisar logs para más detalles"

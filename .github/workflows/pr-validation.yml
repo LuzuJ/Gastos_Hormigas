@@ -1,0 +1,218 @@
+name: 🔍 PR Validation & Preview
+
+on:
+  pull_request:
+    branches: [main, develop]
+    types: [opened, synchronize, reopened, ready_for_review]
+
+env:
+  NODE_VERSION: '18'
+
+jobs:
+  # ===== VALIDACIÓN BÁSICA =====
+  pr-validation:
+    name: 🔍 PR Validation
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.draft == false
+    
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 📦 Setup Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: 📥 Install dependencies
+        run: npm ci
+
+      - name: 🧹 Lint check
+        run: npm run lint
+
+      - name: 🔍 Type check
+        run: npx tsc --noEmit
+
+      - name: 🧪 Run tests
+        run: npm run test -- --coverage
+        env:
+          CI: true
+
+      - name: 📊 Comment coverage report
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            if (fs.existsSync('./coverage/lcov-report/index.html')) {
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: '✅ Tests pasaron correctamente. Coverage report generado.'
+              });
+            }
+
+  # ===== BUILD DE PREVIEW =====
+  preview-build:
+    name: 🏗️ Preview Build
+    runs-on: ubuntu-latest
+    needs: pr-validation
+    
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 📦 Setup Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: 📥 Install dependencies
+        run: npm ci
+
+      - name: 🏗️ Build for preview
+        run: npm run build
+        env:
+          VITE_APP_ENV: preview
+          VITE_APP_VERSION: pr-${{ github.event.number }}
+
+      - name: 📤 Upload preview build
+        uses: actions/upload-artifact@v4
+        with:
+          name: preview-build-${{ github.event.number }}
+          path: dist/
+          retention-days: 7
+
+  # ===== DEPLOY PREVIEW =====
+  deploy-preview:
+    name: 🚀 Deploy Preview
+    runs-on: ubuntu-latest
+    needs: preview-build
+    if: github.event.action != 'closed'
+    
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 📥 Download preview build
+        uses: actions/download-artifact@v4
+        with:
+          name: preview-build-${{ github.event.number }}
+          path: dist/
+
+      - name: 🚀 Deploy to Firebase Preview
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        id: firebase-deploy
+        with:
+          repoToken: '${{ secrets.GITHUB_TOKEN }}'
+          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_PRODUCTION }}'
+          projectId: gastos-hormigas
+          expires: 7d
+
+      - name: 💬 Comment preview URL
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const previewUrl = '${{ steps.firebase-deploy.outputs.details_url }}';
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `
+              ## 🚀 Preview Deploy Listo!
+              
+              **🌐 URL de Preview**: [Ver aplicación](${ previewUrl })
+              
+              ### 🧪 Cosas para probar:
+              - [ ] Funcionalidad principal
+              - [ ] Responsive design
+              - [ ] PWA installation
+              - [ ] Modo offline
+              - [ ] Performance
+              
+              **⏱️ Expira en**: 7 días
+              **🔄 Actualizado en**: ${{ github.event.pull_request.updated_at }}
+              `
+            });
+
+  # ===== ANÁLISIS DE CAMBIOS =====
+  analyze-changes:
+    name: 📊 Analyze Changes
+    runs-on: ubuntu-latest
+    needs: pr-validation
+    
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 📊 Analyze file changes
+        run: |
+          echo "📊 Analizando cambios..."
+          
+          # Contar archivos cambiados
+          FILES_CHANGED=$(git diff --name-only origin/${{ github.base_ref }}...HEAD | wc -l)
+          
+          # Contar líneas agregadas/eliminadas
+          LINES_ADDED=$(git diff --shortstat origin/${{ github.base_ref }}...HEAD | grep -oE '[0-9]+ insertions?' | grep -oE '[0-9]+' || echo "0")
+          LINES_DELETED=$(git diff --shortstat origin/${{ github.base_ref }}...HEAD | grep -oE '[0-9]+ deletions?' | grep -oE '[0-9]+' || echo "0")
+          
+          # Verificar tipos de archivos
+          TS_FILES=$(git diff --name-only origin/${{ github.base_ref }}...HEAD | grep -E '\.(ts|tsx)$' | wc -l)
+          TEST_FILES=$(git diff --name-only origin/${{ github.base_ref }}...HEAD | grep -E '\.test\.(ts|tsx)$' | wc -l)
+          
+          echo "FILES_CHANGED=$FILES_CHANGED" >> $GITHUB_ENV
+          echo "LINES_ADDED=$LINES_ADDED" >> $GITHUB_ENV
+          echo "LINES_DELETED=$LINES_DELETED" >> $GITHUB_ENV
+          echo "TS_FILES=$TS_FILES" >> $GITHUB_ENV
+          echo "TEST_FILES=$TEST_FILES" >> $GITHUB_ENV
+
+      - name: 💬 Comment change analysis
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const analysis = `
+            ## 📊 Análisis de Cambios
+            
+            | Métrica | Valor |
+            |---------|-------|
+            | 📁 Archivos cambiados | ${{ env.FILES_CHANGED }} |
+            | ➕ Líneas agregadas | ${{ env.LINES_ADDED }} |
+            | ➖ Líneas eliminadas | ${{ env.LINES_DELETED }} |
+            | 📝 Archivos TypeScript | ${{ env.TS_FILES }} |
+            | 🧪 Archivos de test | ${{ env.TEST_FILES }} |
+            
+            ${parseInt('${{ env.TEST_FILES }}') === 0 && parseInt('${{ env.TS_FILES }}') > 0 ? 
+              '⚠️ **Consideración**: Se modificaron archivos TypeScript pero no se agregaron tests.' : 
+              '✅ Los cambios incluyen archivos de test apropiados.'}
+            `;
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: analysis
+            });
+
+  # ===== CLEANUP AL CERRAR PR =====
+  cleanup-preview:
+    name: 🧹 Cleanup Preview
+    runs-on: ubuntu-latest
+    if: github.event.action == 'closed'
+    
+    steps:
+      - name: 🧹 Clean up preview artifacts
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '🧹 Preview deployment limpiado. ¡Gracias por tu contribución!'
+            });
