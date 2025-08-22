@@ -864,7 +864,7 @@ describe('Integration: Automation Service Flow', () => {
       const updateCalls = (fixedExpenseService.updateFixedExpense as any).mock.calls;
       updateCalls.forEach((call: any) => {
         expect(call[2]).toEqual({ lastPostedMonth: '2024-5' }); // June (month index 5)
-      });
+      }); 
     });
   });
 });

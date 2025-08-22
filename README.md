@@ -1,354 +1,187 @@
-# 🐜 Gastos Hormigas - Tu Compañero Financiero Personal
+﻿#  GastUna **Progressive Web App (PWA)** moderna para la gestión inteligente de finanzas personales. Controla tus gastos, planifica tu futuro financiero y alcanza tus metas con análisis avanzados.
 
-[![CI/CD](https://github.com/usuario/gastos-hormigas/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/usuario/gastos-hormigas/actions/workflows/ci-cd.yml)
-[![Release](https://github.com/usuario/gastos-hormigas/actions/workflows/release.yml/badge.svg)](https://github.com/usuario/gastos-hormigas/actions/workflows/release.yml)
+## 🐜 ¿Qué son los "Gastos Hormigas"?
+
+Los **gastos hormigas** son esos pequeños desembolsos diarios que parecen insignificantes por separado, pero que al acumularse pueden representar una fuga importante en tu presupuesto:
+
+- ☕ **El café de la mañana** ($3 × 30 días = $90/mes)
+- 🚗 **Estacionamiento ocasional** ($5 × 15 veces = $75/mes)  
+- 🍫 **Snacks y dulces** ($2 × 20 veces = $40/mes)
+- 🎵 **Suscripciones olvidadas** ($10 × múltiples servicios)
+
+**¡Estos "pequeños" gastos pueden sumar $200+ al mes sin que te des cuenta!**
+
+## 💡 ¿Cómo te ayuda Gastos Hormigas?
+
+✅ **Visualiza el impacto real** - Ve cuánto gastas realmente en esas "pequeñeces"  
+✅ **Identifica patrones** - Descubre en qué y cuándo gastas más  
+✅ **Establece límites** - Crea presupuestos realistas por categoría  
+✅ **Toma control** - Reduce gastos innecesarios sin sacrificar tu calidad de vida  
+✅ **Ahorra inteligentemente** - Convierte esos "gastos hormigas" en ahorros reales
+
+## 🚀 Acceso DirectoHormigas - Tu Compañero Financiero Personal
+
+[![CI/CD](https://github.com/LuzuJ/Gastos_Hormigas/actions/workflows/ci-cd-simple.yml/badge.svg)](https://github.com/LuzuJ/Gastos_Hormigas/actions/workflows/ci-cd-simple.yml)
 [![PWA Ready](https://img.shields.io/badge/PWA-ready-green.svg)](https://gestos-gastosv2.web.app)
-[![Firebase](https://img.shields.io/badge/Firebase-ready-orange.svg)](https://firebase.google.com)
 [![React 19](https://img.shields.io/badge/React-19-blue.svg)](https://react.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8-blue.svg)](https://typescriptlang.org)
-[![Coverage](https://codecov.io/gh/usuario/gastos-hormigas/branch/main/graph/badge.svg)](https://codecov.io/gh/usuario/gastos-hormigas)
-[![Performance](https://img.shields.io/badge/Lighthouse-100-green.svg)](https://web.dev/measure)
 
-Una **Progressive Web App (PWA)** moderna y completa para la gestión inteligente de finanzas personales. Controla tus gastos, planifica tu futuro financiero y alcanza tus metas con la ayuda de análisis avanzados y características premium.
+Una **Progressive Web App (PWA)** moderna para la gestión inteligente de finanzas personales. Controla tus gastos, planifica tu futuro financiero y alcanza tus metas con análisis avanzados.
 
-## 🌟 ¿Por qué Gastos Hormigas?
+##  Acceso Directo
 
-**Gastos Hormigas** te ayuda a identificar y controlar esos pequeños gastos que, como hormigas, pueden parecer insignificantes individualmente pero que en conjunto impactan significativamente tu economía personal.
+**🌐 [Abrir App](https://gestos-gastosv2.web.app)** - ¡Pruébala ahora!
 
-### 🎯 **Características Destacadas**
+## 👥 ¿Para quién es esta app?
 
-- 📱 **PWA Completa**: Instálala como app nativa en cualquier dispositivo
-- 🔐 **Seguridad Avanzada**: Autenticación robusta con validación de contraseñas
-- 🧠 **IA Integrada**: Análisis inteligente y recomendaciones personalizadas
-- 📊 **Analytics Profundo**: Visualizaciones interactivas y reportes detallados
-- 💰 **Multi-divisa**: Soporte para diferentes monedas
-- 🌙 **Modo Offline**: Funciona sin conexión a internet
-- 🎨 **Diseño Moderno**: Interfaz intuitiva con modo claro/oscuro
-- 🚀 **CI/CD Automático**: Despliegue continuo con GitHub Actions
+### 🎯 **Perfecto para ti si...**
 
-## ✨ Funcionalidades Principales
+- 💭 **Te preguntas** "¿En qué se me va el dinero?"
+- 📱 **Quieres control** sin complicaciones ni registros tediosos
+- 💡 **Buscas insights** reales sobre tus hábitos de gasto
+- 🎯 **Deseas ahorrar** pero no sabes por dónde empezar
+- 📊 **Te gustan los datos** presentados de forma visual y clara
 
-### 💸 **Gestión de Gastos Inteligente**
-- ✅ Registro rápido con reconocimiento de patrones
-- ✅ Categorización automática y personalizable
-- ✅ Múltiples fuentes de pago (efectivo, tarjetas, digital)
-- ✅ Detector de gastos duplicados
-- ✅ Análisis de gastos hormigas (micro-gastos)
+### 📖 **Casos de uso reales**
 
-### 📊 **Dashboard Analítico**
-- ✅ Métricas financieras en tiempo real
-- ✅ Gráficos interactivos con Recharts
-- ✅ Tendencias mensuales y anuales
-- ✅ Comparativas de períodos
-- ✅ Alertas y notificaciones inteligentes
+**🍕 Sarah, 28 años, Marketing:**  
+*"Pensaba que gastaba $50/mes en comida rápida, pero la app me mostró que eran $180. Ahora cocino más y ahorro $100 mensuales."*
 
-### 🎯 **Presupuestos y Planificación**
-- ✅ Presupuestos dinámicos por categoría
-- ✅ Seguimiento de progreso visual
-- ✅ Recomendaciones de ajuste automático
-- ✅ Metas de ahorro con estrategias
-- ✅ Planificación financiera a largo plazo
+**👨‍💼 Carlos, 35 años, Ingeniero:**  
+*"Tenía 7 suscripciones que no usaba. Gastos Hormigas me ayudó a identificarlas y cancelé $60/mes en servicios innecesarios."*
 
-### 🔒 **Seguridad y Privacidad**
-- ✅ Autenticación multi-factor
-- ✅ Validación avanzada de contraseñas
-- ✅ Verificación de email obligatoria
-- ✅ Encriptación de datos sensibles
-- ✅ Sesiones seguras con expiración automática
+**👩‍🎓 Ana, 22 años, Estudiante:**  
+*"El modo invitado me permitió probar la app sin compromiso. Ahora uso los presupuestos para mis gastos universitarios."*
 
-### 👥 **Experiencia de Usuario**
-- ✅ Modo invitado para pruebas
-- ✅ Onboarding interactivo
-- ✅ Tutoriales contextuales
-- ✅ Interfaz responsive para todos los dispositivos
-- ✅ Accesibilidad optimizada (WCAG 2.1)
+## ✨ Características Principales
+
+- 📱 **PWA Completa** - Instálala como app nativa
+- 💸 **Gestión de Gastos** - Registro rápido y categorización inteligente
+- 📊 **Dashboard Analítico** - Métricas financieras en tiempo real
+- 🎯 **Presupuestos** - Planificación y seguimiento automático
+- 🔒 **Seguridad** - Autenticación robusta y datos encriptados
+- 🌙 **Modo Oscuro** - Diseño adaptativo y accesible
+- 👥 **Modo Invitado** - Prueba sin registro
+
+## 🚀 Guía Rápida de Uso
+
+### 📱 **Paso 1: Accede a la App**
+1. Visita [gestos-gastosv2.web.app](https://gestos-gastosv2.web.app)
+2. **Prueba sin registro** con el modo invitado, o
+3. **Crea tu cuenta** para sincronización completa
+
+### 💰 **Paso 2: Registra tus Gastos**
+1. Toca el botón **"+"** para agregar un gasto
+2. Ingresa la cantidad y selecciona la categoría
+3. Añade una descripción opcional
+4. ¡Listo! Tu gasto se registra instantáneamente
+
+### 📊 **Paso 3: Analiza tus Datos**
+1. **Dashboard Principal**: Ve tu resumen financiero
+2. **Gráficos Interactivos**: Analiza tendencias y patrones
+3. **Categorías**: Descubre dónde gastas más
+4. **Filtros por Fecha**: Compara diferentes períodos
+
+### 🎯 **Paso 4: Crea Presupuestos**
+1. Ve a la sección **"Presupuestos"**
+2. Establece límites por categoría
+3. Recibe alertas cuando te acerques al límite
+4. Ajusta según tus objetivos
+
+### 💡 **Pro Tips**
+- 🔄 **Automatiza**: Configura gastos recurrentes
+- 📱 **Instala**: Agrega la app a tu pantalla de inicio
+- 🌙 **Personaliza**: Cambia al modo oscuro para mayor comodidad
+- 💾 **Exporta**: Descarga tus datos en Excel/CSV
 
 ## 🛠️ Stack Tecnológico
 
-### **Frontend**
-- **React 19** - Framework principal con las últimas características
-- **TypeScript 5.8** - Tipado estático para mayor confiabilidad
-- **Vite 6** - Build tool ultrarrápido
-- **CSS Modules** - Estilos modulares y optimizados
+**Frontend:** React 19, TypeScript, Vite, Tailwind CSS  
+**Backend:** Firebase (Auth, Firestore, Hosting)  
+**Testing:** Vitest, Testing Library  
+**PWA:** Service Workers, Push Notifications
 
-### **Backend & Servicios**
-- **Firebase Auth** - Autenticación segura
-- **Firestore** - Base de datos NoSQL en tiempo real
-- **Firebase Hosting** - Hosting global optimizado
-- **Service Workers** - Cache inteligente y modo offline
+## ❓ Preguntas Frecuentes
 
-### **Librerías Principales**
-- **Recharts** - Visualizaciones de datos interactivas
-- **Lucide React** - Iconografía moderna y consistente
-- **React Hot Toast** - Notificaciones elegantes
-- **Zod** - Validación de esquemas robusta
-- **Date-fns** - Manipulación de fechas eficiente
+### 🔒 **¿Es segura mi información financiera?**
+Sí, completamente. Utilizamos Firebase Authentication y encriptación de datos. Tu información nunca se comparte con terceros y cumplimos con estándares de seguridad bancaria.
 
-### **Testing & Calidad**
-- **Vitest** - Framework de testing rápido
-- **Testing Library** - Testing centrado en el usuario
-- **ESLint** - Linting avanzado con reglas personalizadas
-- **Coverage V8** - Análisis de cobertura de código
+### 💰 **¿La app es gratuita?**
+Sí, Gastos Hormigas es 100% gratuita. Todas las funciones principales están disponibles sin costo.
 
-## 🚀 Inicio Rápido
+### 📱 **¿Necesito instalar algo?**
+No es necesario. Es una PWA que funciona en cualquier navegador. Opcionalmente puedes "instalarla" como app nativa para un acceso más rápido.
 
-### **Prerrequisitos**
-- Node.js 18+ ([Descargar](https://nodejs.org))
-- npm 9+ (incluido con Node.js)
-- Cuenta de Firebase ([Crear cuenta](https://firebase.google.com))
+### 🔄 **¿Puedo sincronizar entre dispositivos?**
+Sí, si te registras con una cuenta, tus datos se sincronizan automáticamente entre todos tus dispositivos.
 
-### **Instalación**
+### 👥 **¿Qué es el modo invitado?**
+Te permite probar todas las funciones sin crear una cuenta. Los datos se guardan localmente en tu dispositivo.
 
-1. **Clonar el repositorio**
-```bash
+### 📊 **¿Puedo exportar mis datos?**
+Sí, puedes exportar todos tus datos en formatos Excel (XLSX) y CSV para análisis externos o respaldos.
+
+### 🏦 **¿Se conecta con mi banco?**
+Actualmente no, pero está en nuestro roadmap. Por ahora el registro es manual para mayor control y privacidad.
+
+## 🚀 Desarrollo
+
+### Instalación
+
+`ash
+# Clonar repositorio
 git clone https://github.com/LuzuJ/Gastos_Hormigas.git
 cd Gastos_Hormigas
-```
 
-2. **Instalar dependencias**
-```bash
+# Instalar dependencias
 npm install
-```
 
-3. **Configurar Firebase**
-```bash
-# Copiar configuración de ejemplo
-cp src/config/firebase.example.ts src/config/firebase.ts
-
-# Editar con tus credenciales de Firebase
-# Obtén la configuración desde Firebase Console
-```
-
-4. **Iniciar desarrollo**
-```bash
+# Desarrollo local
 npm run dev
-```
 
-5. **Abrir en el navegador**
-```
-http://localhost:5173
-```
+# Ejecutar tests
+npm test
 
-## 📦 Comandos Disponibles
+# Build para producción
+npm run build
+`
 
-### **Desarrollo**
-```bash
-npm run dev                    # Servidor de desarrollo
-npm run build                  # Build de producción
-npm run preview               # Preview del build
-npm run build:analyze         # Análisis del bundle
-```
+### Configuración Firebase
 
-### **Testing**
-```bash
-npm run test                  # Ejecutar tests
-npm run test:watch           # Tests en modo watch
-npm run test:coverage        # Coverage completo
-npm run test:unit            # Solo tests unitarios
-npm run test:integration     # Solo tests de integración
-```
+1. Crear proyecto en [Firebase Console](https://console.firebase.google.com)
+2. Configurar Authentication (Email/Password)
+3. Crear base de datos Firestore
+4. Copiar configuración a .env:
 
-### **Calidad**
-```bash
-npm run lint                 # ESLint
-npm run quality:check        # Lint + tests + coverage
-npm run quality:report       # Generar reporte de calidad
-```
+`env
+VITE_FIREBASE_API_KEY=tu_api_key
+VITE_FIREBASE_AUTH_DOMAIN=tu_auth_domain
+VITE_FIREBASE_PROJECT_ID=tu_project_id
+VITE_FIREBASE_STORAGE_BUCKET=tu_storage_bucket
+VITE_FIREBASE_MESSAGING_SENDER_ID=tu_sender_id
+VITE_FIREBASE_APP_ID=tu_app_id
+`
 
-### **PWA & Deployment**
-```bash
-npm run pwa:build           # Build optimizado para PWA
-npm run pwa:test            # Probar PWA localmente
-npm run deploy:pwa          # Deploy a Firebase
-npm run pwa:icons-full      # Generar todos los iconos PWA
-```
+##  Contribuir
 
-## 🏗️ Arquitectura del Proyecto
+1. Fork del proyecto
+2. Crear rama para tu feature (git checkout -b feature/AmazingFeature)
+3. Commit cambios (git commit -m 'Add: Amazing Feature')
+4. Push a la rama (git push origin feature/AmazingFeature)
+5. Abrir Pull Request
 
-```
-src/
-├── components/              # Componentes React organizados por función
-│   ├── ui/                 # Componentes base reutilizables
-│   │   ├── Button/         # Botones con variantes
-│   │   ├── PasswordInput/  # Input de contraseña con validación
-│   │   └── ThemeToggler/   # Selector de tema
-│   ├── features/           # Componentes específicos de funcionalidades
-│   │   ├── expenses/       # Gestión de gastos
-│   │   ├── budget/         # Presupuestos
-│   │   └── analytics/      # Análisis y reportes
-│   └── layout/             # Componentes de layout y navegación
-├── pages/                  # Páginas principales de la aplicación
-│   ├── DashboardPage/      # Panel principal
-│   ├── LoginPage/          # Autenticación
-│   └── ReportsPage/        # Reportes y análisis
-├── hooks/                  # Custom hooks organizados por dominio
-│   ├── expenses/           # Hooks para gestión de gastos
-│   ├── auth/              # Hooks de autenticación
-│   └── utils/             # Hooks de utilidades
-├── services/               # Servicios organizados por función
-│   ├── auth/              # Servicios de autenticación
-│   ├── expenses/          # Servicios de gastos
-│   └── firebase/          # Configuración y utilidades de Firebase
-├── contexts/              # React Contexts para estado global
-├── utils/                 # Utilidades y helpers
-│   ├── validation/        # Validadores (Zod schemas)
-│   ├── formatters/        # Formateadores de datos
-│   └── constants/         # Constantes de la aplicación
-├── types/                 # Definiciones de tipos TypeScript
-└── config/                # Configuración (Firebase, ambiente)
-```
+##  Licencia
 
-## 🔒 Seguridad Implementada
+Este proyecto está bajo la Licencia MIT - ver [LICENSE](LICENSE) para detalles.
 
-### **Autenticación Robusta**
-- ✅ Validación de contraseñas con 7 criterios de seguridad
-- ✅ Verificación de email obligatoria para nuevos usuarios
-- ✅ Detección de patrones de contraseñas débiles
-- ✅ Rate limiting para prevenir ataques de fuerza bruta
-- ✅ Sesiones con expiración automática
+##  Roadmap
 
-### **Protección de Datos**
-- ✅ Reglas de Firestore con validación estricta
-- ✅ Sanitización de inputs del usuario
-- ✅ Encriptación en tránsito y en reposo
-- ✅ Logs de seguridad y auditoría
-
-## � CI/CD y DevOps
-
-### **Pipeline Automático**
-
-Nuestro sistema de CI/CD garantiza calidad y despliegues confiables:
-
-- 🔄 **Integración Continua**: Tests automáticos en cada commit
-- 🚀 **Despliegue Continuo**: Deploy automático a staging y producción
-- 🔍 **Análisis de Calidad**: Lint, coverage y security checks
-- 📊 **Performance**: Lighthouse CI para optimización web
-- 🏷️ **Releases**: Automatización completa de versiones
-
-### **Workflows Disponibles**
-
-| Workflow | Trigger | Descripción |
-|----------|---------|-------------|
-| 🏗️ **CI/CD Principal** | Push a `main`/`develop` | Pipeline completo con deploy |
-| ✅ **PR Validation** | Pull Requests | Validación y preview deploy |
-| 🏷️ **Release** | Tags `v*.*.*` | Generación automática de releases |
-
-### **Comandos CI/CD**
-
-```bash
-# Configurar CI/CD automáticamente
-npm run ci:setup
-
-# Validar proyecto local (igual que CI)
-npm run ci:validate
-
-# Deploy manual a staging
-npm run ci:deploy-staging
-
-# Deploy manual a producción
-npm run ci:deploy-production
-```
-
-**📖 Documentación completa**: [.github/CI-CD-SETUP.md](.github/CI-CD-SETUP.md)
-
-## �📊 Estado del Proyecto
-
-### ✅ **Fase 1 - Base Sólida** (100% Completada)
-- Sistema de autenticación completo
-- CRUD de gastos y categorías
-- Dashboard básico funcional
-- Gestión de presupuestos
-- Arquitectura escalable establecida
-
-### ✅ **Fase 2 - Características Avanzadas** (100% Completada)
-- PWA completa con instalación
-- Modo offline con Service Workers
-- Análisis financiero avanzado
-- Múltiples fuentes de pago
-- Reportes interactivos
-- Sistema de notificaciones
-
-### ✅ **Preparación Fase 3** (100% Completada)
-- Sistema de seguridad reforzado
-- Validación avanzada de contraseñas
-- Verificación de email automática
-- Optimizaciones de performance
-- Preparación para IA y características premium
-
-### 🚀 **Fase 3 - Características Premium** (Próximamente)
-- 🧠 Predicciones financieras con IA
-- 🎯 Recomendaciones personalizadas
-- 🏦 Integración con APIs bancarias
-- 📈 Análisis predictivo de gastos
-- 🤖 Asistente virtual financiero
-
-## 🌐 Demo en Vivo
-
-**🔗 URL de Producción**: [https://gestos-gastosv2.web.app](https://gestos-gastosv2.web.app)
-
-### **Modo Invitado**
-También puedes probar la aplicación usando el **modo invitado** sin necesidad de registro.
-
-## 📱 Instalación como PWA
-
-1. **En Escritorio (Chrome/Edge)**:
-   - Abre la aplicación en el navegador
-   - Busca el ícono de instalación en la barra de direcciones
-   - Haz clic en "Instalar Gastos Hormigas"
-
-2. **En Móvil (Android/iOS)**:
-   - Abre la aplicación en Chrome/Safari
-   - Toca el menú del navegador
-   - Selecciona "Agregar a pantalla de inicio"
-
-## 🤝 Contribuciones
-
-¡Las contribuciones son bienvenidas! Este proyecto sigue las mejores prácticas de desarrollo colaborativo.  
-**Paypal**: [Paypal Luzu24Z](https://paypal.me/LuzuJ)  
-
-### **Cómo Contribuir**
-
-1. **Fork** el repositorio
-2. **Crea una rama** para tu feature (`git checkout -b feature/NuevaCaracteristica`)
-3. **Commit** tus cambios (`git commit -m 'Agregar nueva característica'`)
-4. **Push** a la rama (`git push origin feature/NuevaCaracteristica`)
-5. **Abre un Pull Request** con descripción detallada
-
-### **Estándares de Código**
-- ✅ TypeScript estricto
-- ✅ ESLint + Prettier
-- ✅ Tests unitarios para nuevas funcionalidades
-- ✅ Documentación actualizada
-- ✅ Commits descriptivos siguiendo [Conventional Commits](https://conventionalcommits.org)
-
-## 📄 Licencia
-
-Este proyecto está licenciado bajo la **MIT License** - ver el archivo [LICENSE](LICENSE) para más detalles.
-
-## 🙏 Agradecimientos
-
-- 🔥 **Firebase** - Por la infraestructura backend robusta
-- ⚛️ **React Team** - Por el framework excepcional
-- 📊 **Recharts** - Por las visualizaciones elegantes
-- 🎨 **Lucide** - Por la iconografía consistente
-- 🧪 **Vitest** - Por el testing ultrarrápido
-- 🌍 **Open Source Community** - Por las herramientas increíbles
-
-## 📞 Soporte
-
-¿Tienes preguntas o necesitas ayuda?
-
-- 📧 **Email**: jonathanluzuriaga224@gmail.com
-- 🐛 **Issues**: [GitHub Issues](https://github.com/LuzuJ/Gastos_Hormigas/issues)
-- 📖 **Documentación**: Ver archivos ARCHITECTURE.md y TECHNICAL.md
-- 💬 **Discusiones**: [GitHub Discussions](https://github.com/LuzuJ/Gastos_Hormigas/discussions)
+- [ ] Integración bancaria automática
+- [ ] Análisis con IA para recomendaciones
+- [ ] Compartir gastos en grupo
+- [ ] Dashboard para familias
+- [ ] Integración con criptomonedas
 
 ---
 
-<div align="center">
-
-**💚 Hecho con amor para ayudarte a controlar tus finanzas 💚**
-
-[🌟 Dar Estrella](https://github.com/LuzuJ/Gastos_Hormigas) | [🐛 Reportar Bug](https://github.com/LuzuJ/Gastos_Hormigas/issues/new?assignees=LuzuJ&labels=bug%2Ctriage&projects=&template=bug_report.md&title=%5BBUG%5D+) | [💡 Solicitar Feature](https://github.com/LuzuJ/Gastos_Hormigas/issues/new?assignees=LuzuJ&labels=enhancement%2Cfeature-request&projects=&template=feature_request.md&title=%5BFEATURE%5D+)
-
-</div>
+**Desarrollado con  por [LuzuJ](https://github.com/LuzuJ)**
