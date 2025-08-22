@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { liabilityService } from '../../services/liabilityService';
+import { liabilityService } from '../../services/financials/liabilityService';
 import * as firebaseFirestore from 'firebase/firestore';
 import type { Liability, LiabilityFormData } from '../../types';
 

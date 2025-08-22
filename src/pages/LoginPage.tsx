@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
 import { auth } from '../config/firebase';
-import { authService } from '../services/authService';
-import { ThemeToggler } from '../components/ThemeToggler/ThemeToggler';
-import { Eye, EyeOff } from 'lucide-react';
+import { authService } from '../services/auth/authService';
+import { ThemeToggler } from '../components/ui/ThemeToggler/ThemeToggler';
+import { PasswordInput } from '../components/ui/PasswordInput/PasswordInput';
 import styles from './LoginPage.module.css';
 
 export const LoginPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [isSigningUp, setIsSigningUp] = useState(false); 
-  const [showPassword, setShowPassword] = useState(false); 
+  const [isPasswordValid, setIsPasswordValid] = useState(false);
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -56,6 +56,13 @@ export const LoginPage: React.FC = () => {
     setLoading(true);
     setError('');
 
+    // Validación adicional para registro
+    if (isSigningUp && !isPasswordValid) {
+      setError('Por favor, ingresa una contraseña que cumpla con los requisitos de seguridad.');
+      setLoading(false);
+      return;
+    }
+
     try {
       const result = isSigningUp
         ? await authService.signUpWithEmail(email, password, auth.currentUser)
@@ -100,27 +107,22 @@ export const LoginPage: React.FC = () => {
             required
             className={styles.input}
           />
-          <div className={styles.passwordWrapper}>
-            <input
-              type={showPassword ? 'text' : 'password'}
-              placeholder="Contraseña"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              minLength={6}
-              className={styles.input}
-            />
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className={styles.passwordToggle}
-              aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
-            >
-              {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-            </button>
-          </div>
+          <PasswordInput
+            value={password}
+            onChange={setPassword}
+            placeholder="Contraseña"
+            showValidation={isSigningUp}
+            required
+            className={styles.input}
+            autoComplete={isSigningUp ? "new-password" : "current-password"}
+            onValidationChange={setIsPasswordValid}
+          />
           {error && <p className={styles.error}>{error}</p>}
-          <button type="submit" className={styles.primaryButton} disabled={loading}>
+          <button 
+            type="submit" 
+            className={styles.primaryButton} 
+            disabled={loading || (isSigningUp && !isPasswordValid)}
+          >
             {buttonText}
           </button>
         </form>

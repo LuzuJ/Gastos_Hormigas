@@ -1,6 +1,6 @@
 import React, { createContext, useContext, type ReactNode } from 'react';
-import { useNetWorth } from '../hooks/useNetWorth';
-import { useSavingsGoals } from '../hooks/useSavingsGoals';
+import { useNetWorth } from '../hooks/financials/useNetWorth';
+import { useSavingsGoals } from '../hooks/savings/useSavingsGoals';
 
 // Contexto para patrimonio neto y metas de ahorro (relacionados con la planificación financiera)
 const NetWorthContext = createContext<ReturnType<typeof useNetWorth> | null>(null);

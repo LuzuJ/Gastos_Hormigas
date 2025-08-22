@@ -13,8 +13,9 @@ import {
   type User,
   type AuthError
 } from 'firebase/auth';
-import { userService } from './userService';
-import { categoryService } from './categoryService';
+import { userService } from './profile/userService';
+import { categoryService } from './categories/categoryService';
+import { sendVerificationEmail } from '../utils/emailVerification';
 
 const googleProvider = new GoogleAuthProvider();
 
@@ -67,6 +68,12 @@ export const authService = {
         const credential = EmailAuthProvider.credential(email, password);
         await linkWithCredential(anonymousUser, credential);
         await checkAndCreateNewUserDocument(anonymousUser);
+        
+        // Enviar email de verificación para usuarios convertidos de anónimos
+        if (!anonymousUser.emailVerified) {
+          await sendVerificationEmail(anonymousUser);
+        }
+        
         // CORRECCIÓN: Forzamos un reload aquí también.
         window.location.reload();
         return { success: true, user: anonymousUser };
@@ -74,6 +81,10 @@ export const authService = {
       
       const result = await createUserWithEmailAndPassword(auth, email, password);
       await checkAndCreateNewUserDocument(result.user);
+      
+      // Enviar email de verificación para nuevos usuarios
+      await sendVerificationEmail(result.user);
+      
       return { success: true, user: result.user };
     } catch (error) {
       const authError = error as AuthError;

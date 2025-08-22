@@ -1,19 +1,28 @@
 # 🔧 Documentación Técnica - Gastos Hormigas
 
-## 📋 Resumen Ejecutivo
+## 📋 Índice
 
-**Gastos Hormigas** es una aplicación web moderna de gestión financiera personal construida con React, TypeScript y Firebase. Diseñada con arquitectura escalable, patrones de desarrollo modernos y enfoque en la experiencia de usuario.
+- [1. Stack Tecnológico](#1-stack-tecnológico)
+- [2. Configuración del Entorno](#2-configuración-del-entorno)
+- [3. Arquitectura de Componentes](#3-arquitectura-de-componentes)
+- [4. Estado y Gestión de Datos](#4-estado-y-gestión-de-datos)
+- [5. Seguridad Implementada](#5-seguridad-implementada)
+- [6. PWA y Service Workers](#6-pwa-y-service-workers)
+- [7. Testing y Calidad](#7-testing-y-calidad)
+- [8. Build y Deployment](#8-build-y-deployment)
+- [9. Monitoring y Performance](#9-monitoring-y-performance)
+- [10. APIs y Servicios](#10-apis-y-servicios)
 
-## 🛠️ Stack Tecnológico
+## 1. Stack Tecnológico
 
-### **Core Technologies**
+### 🚀 **Frontend Core**
 
-| Componente | Tecnología | Versión | Propósito |
-|------------|------------|---------|-----------|
-| **Framework** | React | 19.1.0 | UI Library para SPA |
-| **Language** | TypeScript | 5.8.3 | Type Safety & Developer Experience |
-| **Build Tool** | Vite | 6.3.5 | Dev Server & Build Optimization |
-| **Backend** | Firebase | 11.9.1 | Authentication, Database, Hosting |
+| Tecnología | Versión | Propósito | Configuración |
+|---|---|---|---|
+| **React** | 19.1.0 | Framework principal | Create React App + TypeScript |
+| **TypeScript** | 5.8.0 | Tipado estático | Strict mode habilitado |
+| **Vite** | 6.0.1 | Build tool | HMR + optimizaciones |
+| **CSS Modules** | - | Estilos modulares | PostCSS + autoprefixer |
 | **Database** | Firestore | - | NoSQL Document Database |
 | **Styling** | CSS Modules | - | Scoped CSS & Theme System |
 

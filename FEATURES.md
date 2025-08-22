@@ -1,14 +1,131 @@
-# 📋 Documentación de Funcionalidades - Gastos Hormigas
+# ✨ Características y Funcionalidades - Gastos Hormigas
 
-## 🏠 **Dashboard Financiero**
+## 📋 Índice
 
-### **Resumen General**
-El Dashboard es el centro de control de la aplicación, proporcionando una vista panorámica de la situación financiera del usuario.
+- [� Funcionalidades Principales](#-funcionalidades-principales)
+- [💰 Gestión de Gastos](#-gestión-de-gastos)
+- [📊 Dashboard y Analytics](#-dashboard-y-analytics)
+- [🎯 Presupuestos y Planificación](#-presupuestos-y-planificación)
+- [🔒 Seguridad y Autenticación](#-seguridad-y-autenticación)
+- [📱 Progressive Web App (PWA)](#-progressive-web-app-pwa)
+- [👥 Experiencia de Usuario](#-experiencia-de-usuario)
+- [🛠️ Características Técnicas](#️-características-técnicas)
+- [🚀 Próximas Funcionalidades](#-próximas-funcionalidades)
 
-#### **Componentes Principales**
+## 🎯 Funcionalidades Principales
 
-| Componente | Descripción | Datos Mostrados |
-|------------|-------------|-----------------|
+### ✅ **Estado Actual** - Fase 2 Completada (100%)
+
+La aplicación cuenta con un conjunto completo de características avanzadas que la posicionan como una solución integral para la gestión de finanzas personales.
+
+---
+
+## 💰 Gestión de Gastos
+
+### 📝 **Registro de Gastos Inteligente**
+
+#### ✅ **Funcionalidades Implementadas**
+
+- **Formulario Intuitivo**: Interfaz optimizada para registro rápido
+  - Campos validados en tiempo real
+  - Autocompletado inteligente basado en historial
+  - Sugerencias de categorías automáticas
+  - Soporte para múltiples monedas
+
+- **Categorización Avanzada**
+  - Sistema de categorías personalizables
+  - Subcategorías para mayor granularidad
+  - Iconos personalizados por categoría
+  - Colores temáticos configurables
+
+- **Múltiples Fuentes de Pago**
+  - Efectivo, tarjetas de débito/crédito
+  - Monederos digitales (PayPal, etc.)
+  - Transferencias bancarias
+  - Criptomonedas (preparado para futuras integraciones)
+
+#### ✅ **Características Especiales**
+
+- **Detector de Duplicados**
+  - Algoritmo inteligente de detección
+  - Sugerencias de fusión automática
+  - Historial de duplicados procesados
+  - Configuración de sensibilidad
+
+- **Gastos Recurrentes**
+  - Configuración de frecuencia (diaria, semanal, mensual)
+  - Notificaciones automáticas
+  - Proyección de gastos futuros
+  - Gestión de vencimientos
+
+### 📱 **Experiencia Móvil Optimizada**
+
+- **Registro Rápido**: Formulario optimizado para móviles
+- **Scanner de Recibos**: Preparado para OCR (Fase 3)
+- **Geolocalización**: Detección automática de ubicación del gasto
+- **Modo Offline**: Sincronización automática al recuperar conexión
+
+---
+
+## 📊 Dashboard y Analytics
+
+### 📈 **Visualizaciones Interactivas**
+
+#### ✅ **Gráficos Implementados**
+
+- **Gráfico de Barras**: Gastos por categoría
+  - Filtros por período
+  - Comparativas mes a mes
+  - Drill-down por subcategoría
+  - Exportación de datos
+
+- **Gráfico Circular**: Distribución de gastos
+  - Porcentajes dinámicos
+  - Tooltips informativos
+  - Colores temáticos personalizables
+  - Vista de detalles expandible
+
+- **Gráfico de Líneas**: Tendencias temporales
+  - Análisis de tendencias mensuales
+  - Proyecciones futuras
+  - Identificación de patrones estacionales
+  - Comparativas año anterior
+
+- **Gráfico de Área**: Acumulación de gastos
+  - Vista de gastos acumulados
+  - Identificación de picos de gasto
+  - Análisis de variabilidad
+  - Métricas de consistencia
+
+#### ✅ **Métricas Avanzadas**
+
+- **KPIs Financieros**
+  - Gasto promedio diario/mensual
+  - Variación porcentual período anterior
+  - Tasa de ahorro actual
+  - Proyección de gastos anuales
+
+- **Análisis de Patrones**
+  - Días de mayor gasto
+  - Categorías más frecuentes
+  - Patrones estacionales
+  - Alertas de comportamiento anómalo
+
+### 🔍 **Análisis de Gastos Hormigas**
+
+#### ✅ **Detección Inteligente**
+
+- **Algoritmo de Identificación**
+  - Gastos menores a umbral configurable
+  - Frecuencia alta de transacciones pequeñas
+  - Análisis de impacto acumulado
+  - Categorización automática de micro-gastos
+
+- **Reportes Especializados**
+  - Impacto mensual de gastos hormigas
+  - Categorías más propensas
+  - Tendencias de comportamiento
+  - Sugerencias de optimización
 | **Balance General** | Resumen de ingresos vs gastos | • Ingresos del mes<br>• Gastos del mes<br>• Balance disponible<br>• Tendencia vs mes anterior |
 | **Gráfico de Gastos** | Distribución por categorías | • Top 5 categorías<br>• Porcentajes relativos<br>• Comparación temporal |
 | **Presupuesto Mensual** | Estado de presupuestos | • Progreso por categoría<br>• Alertas de exceso<br>• Recomendaciones |

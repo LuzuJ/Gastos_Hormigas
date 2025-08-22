@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { fixedExpenseService } from '../../services/fixedExpenseService';
+import { fixedExpenseService } from '../../services/expenses/fixedExpenseService';
 import * as firebaseFirestore from 'firebase/firestore';
 import type { FixedExpense } from '../../types';
 

@@ -1,13 +1,13 @@
 import React from 'react';
-import { IncomeForm } from '../components/IncomeForm/IncomeForm';
-import { FixedExpenses } from '../components/FixedExpenses/FixedExpenses';
-import { NetWorthManager } from '../components/NetWorthManager/NetWorthManager';
-import { PaymentSourceManager } from '../components/PaymentSourceManager/PaymentSourceManager';
-import { GuestBlockedFeature } from '../components/GuestBlockedFeature/GuestBlockedFeature';
+import { IncomeForm } from '../components/forms/IncomeForm/IncomeForm';
+import { FixedExpenses } from '../components/features/fixed-expenses/FixedExpenses/FixedExpenses';
+import { NetWorthManager } from '../components/features/financials/NetWorthManager/NetWorthManager';
+import { PaymentSourceManager } from '../components/features/payments/PaymentSourceManager/PaymentSourceManager';
+import { GuestBlockedFeature } from '../components/misc/GuestBlockedFeature/GuestBlockedFeature';
 import { LoadingStateWrapper } from '../components/LoadingState/LoadingState';
-import { NetWorthSection } from '../components/PlanningPage/NetWorthSection';
-import { SavingsGoalsSection } from '../components/PlanningPage/SavingsGoalsSection';
-import { DebtManagerSection } from '../components/PlanningPage/DebtManagerSection';
+import { NetWorthSection } from '../components/pages/PlanningPage/NetWorthSection';
+import { SavingsGoalsSection } from '../components/pages/PlanningPage/SavingsGoalsSection';
+import { DebtManagerSection } from '../components/pages/PlanningPage/DebtManagerSection';
 import {
     useCategoriesContext,
     useFinancialsContext,

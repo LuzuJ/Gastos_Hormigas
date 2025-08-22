@@ -1,6 +1,6 @@
 import React, { createContext, useContext, type ReactNode } from 'react';
-import { useExpenses } from '../hooks/useExpenses';
-import { useCategories } from '../hooks/useCategories';
+import { useExpenses } from '../hooks/expenses/useExpenses';
+import { useCategories } from '../hooks/categories/useCategories';
 
 // Contextos para gastos y categorías (muy relacionados)
 const ExpensesContext = createContext<ReturnType<typeof useExpenses> | null>(null);

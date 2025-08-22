@@ -1,5 +1,5 @@
 import React from 'react';
-import { DiagnosticPanel } from '../components/PlanningPage/DiagnosticPanel';
+import { DiagnosticPanel } from '../components/pages/PlanningPage/DiagnosticPanel';
 import {
     useCategoriesContext,
     useFinancialsContext,

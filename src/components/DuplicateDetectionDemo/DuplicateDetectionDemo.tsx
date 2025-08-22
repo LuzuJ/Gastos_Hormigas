@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { useDuplicateDetection } from '../../hooks/useDuplicateDetection';
-import { DuplicateWarning } from '../ExpenseForm/DuplicateWarning';
+import { useDuplicateDetection } from '../../hooks/expenses/useDuplicateDetection';
+import { DuplicateWarning } from '../forms/ExpenseForm/DuplicateWarning';
 import type { Expense } from '../../types';
 import { Timestamp } from 'firebase/firestore';
 import styles from './DuplicateDetectionDemo.module.css';

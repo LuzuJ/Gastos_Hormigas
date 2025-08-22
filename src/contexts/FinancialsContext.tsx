@@ -1,5 +1,5 @@
 import React, { createContext, useContext, type ReactNode } from 'react';
-import { useFinancials } from '../hooks/useFinancials';
+import { useFinancials } from '../hooks/financials/useFinancials';
 
 // Contexto para datos financieros (ingresos, gastos fijos, presupuestos)
 const FinancialsContext = createContext<ReturnType<typeof useFinancials> | null>(null);

@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { AuthProvider } from '../../contexts/AuthContext';
-import { authService } from '../../services/authService';
+import { authService } from '../../services/auth/authService';
 import * as firebaseAuth from 'firebase/auth';
 import * as firebaseFirestore from 'firebase/firestore';
 

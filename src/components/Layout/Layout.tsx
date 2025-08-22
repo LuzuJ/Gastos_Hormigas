@@ -1,10 +1,10 @@
 import React, { type ReactNode } from 'react';
-import styles from './Layout.module.css';
+import styles from './Layout/Layout.module.css';
 import { PAGE_ROUTES } from '../../constants';
-import { Notifications } from '../Notifications/Notifications';
-// 1. Importamos el hook de contexto para las notificaciones.
+import { Notifications } from '../misc/Notifications/Notifications';
 import { useNotificationsContext } from '../../contexts/AppContext';
-import { ThemeToggler } from '../ThemeToggler/ThemeToggler'; 
+import { ThemeToggler } from '../ui/ThemeToggler/ThemeToggler'; 
+import { OnlineStatus } from '../ui/OnlineStatus';
 import { UserPlus } from 'lucide-react';
 
 // El tipo 'Page' se mantiene igual.
@@ -40,6 +40,7 @@ export const Layout: React.FC<LayoutProps> = ({ currentPage, setCurrentPage, chi
         <h1>Panel de Gastos</h1>
         <p>Tu centro de control para entender y mejorar tus finanzas.</p>
         <div className={styles.headerActions}>
+          <OnlineStatus />
           {/* El componente de notificaciones ahora recibe los datos del contexto. */}
           <Notifications notifications={notifications} onRemove={removeNotification} />
           <ThemeToggler /> 

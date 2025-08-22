@@ -1,4 +1,4 @@
-import { AchievementsPage as AchievementsComponent } from '../components/AchievementsPage';
+import { AchievementsPage as AchievementsComponent } from '../components/features/achievements/AchievementsPage';
 import styles from './AchievementsPage.module.css';
 
 interface AchievementsPageProps {

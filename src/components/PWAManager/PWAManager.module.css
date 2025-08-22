@@ -1,0 +1,217 @@
+.pwaManager {
+  position: relative;
+}
+
+/* Indicador de conexión */
+.connectionStatus {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.connectionStatus.online {
+  background: rgba(16, 185, 129, 0.2);
+  color: #10b981;
+  border-color: rgba(16, 185, 129, 0.3);
+}
+
+.connectionStatus.offline {
+  background: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+  border-color: rgba(239, 68, 68, 0.3);
+  animation: pulse 2s infinite;
+}
+
+/* Prompt de instalación */
+.installPrompt {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  right: 20px;
+  z-index: 1000;
+  max-width: 400px;
+  margin: 0 auto;
+  animation: slideUp 0.5s ease-out;
+}
+
+.installContent {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: var(--background-card);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(10px);
+}
+
+.installIcon {
+  color: var(--primary-accent);
+  flex-shrink: 0;
+}
+
+.installText {
+  flex: 1;
+  min-width: 0;
+}
+
+.installText h3 {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 4px 0;
+}
+
+.installText p {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin: 0;
+  line-height: 1.3;
+}
+
+.installButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--primary-accent);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 16px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.installButton:hover {
+  background: var(--primary-accent);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.installButton:active {
+  transform: translateY(0);
+}
+
+/* Mensaje de app instalada */
+.installedMessage {
+  position: fixed;
+  top: 50px;
+  right: 10px;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  border-radius: 20px;
+  color: #10b981;
+  font-size: 0.75rem;
+  font-weight: 500;
+  backdrop-filter: blur(10px);
+}
+
+.installedIcon {
+  font-size: 14px;
+}
+
+/* Animaciones */
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 480px) {
+  .installPrompt {
+    left: 10px;
+    right: 10px;
+    bottom: 10px;
+  }
+  
+  .installContent {
+    padding: 12px;
+    gap: 12px;
+  }
+  
+  .installText h3 {
+    font-size: 0.85rem;
+  }
+  
+  .installText p {
+    font-size: 0.75rem;
+  }
+  
+  .installButton {
+    padding: 8px 12px;
+    font-size: 0.8rem;
+  }
+  
+  .connectionStatus {
+    top: 8px;
+    right: 8px;
+    padding: 4px 8px;
+    font-size: 0.7rem;
+  }
+}
+
+/* Tema oscuro */
+@media (prefers-color-scheme: dark) {
+  .installContent {
+    background: rgba(30, 41, 59, 0.95);
+    border-color: rgba(71, 85, 105, 0.5);
+  }
+  
+  .connectionStatus {
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+}
+
+/* Ocultar en modo standalone (cuando ya está instalada) */
+@media (display-mode: standalone) {
+  .installPrompt {
+    display: none;
+  }
+}
+
+@media (display-mode: fullscreen) {
+  .installPrompt {
+    display: none;
+  }
+}
+
+@media (display-mode: minimal-ui) {
+  .installPrompt {
+    display: none;
+  }
+}

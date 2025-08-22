@@ -1,5 +1,5 @@
 import React, { createContext, useContext, type ReactNode } from 'react';
-import { useUserProfile } from '../hooks/useUserProfile';
+import { useUserProfile } from '../hooks/profile/useUserProfile';
 
 // Contexto para autenticación y perfil de usuario
 const AuthContext = createContext<ReturnType<typeof useUserProfile> | null>(null);

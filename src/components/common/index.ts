@@ -11,5 +11,9 @@ export type { CardProps } from './Card/Card';
 export { Input } from './Input/Input';
 export type { InputProps } from './Input/Input';
 
+// Componentes de lazy loading para optimización de performance
+export { LazyRoute, createLazyRoute, usePreloadRoute } from './LazyRoute/LazyRoute';
+export { LazyChart, usePreloadCharts } from './LazyChart/LazyChart';
+
 // Re-exportar utilities para fácil acceso
 export * from '../../utils/formatters';

@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import { categoryService } from '../../services/categoryService';
+import { categoryService } from '../../services/categories/categoryService';
 import * as firebaseFirestore from 'firebase/firestore';
 import type { Category } from '../../types';
 

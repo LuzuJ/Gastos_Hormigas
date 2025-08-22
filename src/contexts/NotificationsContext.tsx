@@ -1,5 +1,5 @@
 import React, { createContext, useContext, type ReactNode } from 'react';
-import { useNotifications } from '../hooks/useNotifications';
+import { useNotifications } from '../hooks/notifications/useNotifications';
 
 // Contexto global para notificaciones (se usa en toda la app)
 const NotificationsContext = createContext<ReturnType<typeof useNotifications> | null>(null);

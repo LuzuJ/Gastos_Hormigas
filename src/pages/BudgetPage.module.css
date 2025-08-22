@@ -1,0 +1,13 @@
+/* Contenedor principal de la página de presupuestos */
+.container {
+  min-height: 100vh;
+  background: var(--background-main);
+  padding: 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .container {
+    padding: 0;
+  }
+}

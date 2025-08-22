@@ -1,0 +1,1 @@
+export { PWAManager } from './PWAManager';

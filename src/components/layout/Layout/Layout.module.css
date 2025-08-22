@@ -1,0 +1,150 @@
+.container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 1rem; 
+}
+
+@media (min-width: 768px) {
+  .container {
+    padding: 2rem;
+  }
+
+  .header p {
+    max-width: 350px; 
+    margin-left: auto; 
+    margin-right: auto; 
+  }
+}
+
+.header {
+  display: flex; /* Usamos flexbox */
+  flex-direction: column; /* Apilamos los elementos verticalmente */
+  align-items: center; /* Centramos todo horizontalmente */
+  margin-bottom: 0px;
+  position: relative; /* Necesario para los botones */
+}
+
+.header h1 {
+  font-size: 2.25rem; 
+  font-weight: 700;
+  color: var(--text-headings);
+  margin: 0;
+  margin-top: 2.5rem; 
+}
+
+.header p {
+  color: var(--text-secondary);
+  margin-top: 0.5rem;
+  font-size: 1rem;
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem; /* Espacio consistente entre íconos */
+  position: absolute; /* Lo posicionamos sobre el layout */
+  top: 0.5rem; /* Más espacio desde arriba */
+  right: 0.5rem; /* Más espacio desde la derecha */
+  z-index: 10; /* Asegurar que esté por encima de otros elementos */
+}
+
+.mainContent {
+  width: 100%;
+}
+
+.mainNav {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 2rem;
+  border-bottom: 1px solid var(--border-color);
+  flex-wrap: wrap; 
+}
+
+.navLink {
+  padding: 0.75rem 1rem; /* Menos padding horizontal para que quepan más elementos */
+  font-size: 0.9rem; /* Texto ligeramente más pequeño en móvil */
+  font-weight: 600; 
+  color: var(--text-secondary);
+  border: none;
+  background: none;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  border-bottom: 3px solid transparent;
+  transform: translateY(1px);
+}
+
+.navLink:hover {
+  color: var(--primary-accent);
+}
+
+.navLink.active {
+  color: var(--primary-accent);
+  border-bottom-color: var(--primary-accent);
+}
+
+@media (min-width: 768px) {
+  .header {
+    text-align: center;
+    flex-direction: row; /* Ponemos los elementos en fila */
+    justify-content: center; /* Centramos el texto */
+  }
+
+  .header h1 {
+    font-size: 2.75rem;
+  }
+
+  .headerActions {
+    top: 1rem; /* Más espacio desde arriba en desktop */
+    right: 1rem; /* Más espacio desde la derecha en desktop */
+    gap: 1rem; /* Más espacio entre íconos en desktop */
+  }
+}
+
+.footer {
+  text-align: center;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+}
+
+.guestBanner {
+  background-color: var(--warning-color);
+  color: var(--text-headings);
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.75rem;
+  margin-bottom: 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  text-align: center;
+}
+
+.guestBanner p {
+  margin: 0;
+  font-weight: 500;
+}
+
+.guestBanner button {
+  background-color: var(--background-card);
+  color: var(--warning-color-strong);
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+html[data-theme='dark'] .guestBanner {
+  background-color: var(--warning-color-strong);
+  color: var(--background-primary);
+}
+
+html[data-theme='dark'] .guestBanner button {
+  background-color: var(--background-primary);
+  color: var(--warning-color);
+}

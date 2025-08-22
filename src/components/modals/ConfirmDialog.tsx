@@ -1,6 +1,6 @@
 import React from 'react';
 import styles from './ConfirmDialog.module.css';
-import type { ConfirmDialogState } from '../../hooks/useConfirmDialog';
+import type { ConfirmDialogState } from '../../hooks/context/useConfirmDialog';
 import { Button } from '../common';
 
 interface ConfirmDialogProps {

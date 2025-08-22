@@ -1,0 +1,583 @@
+/* Contenedor principal */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Header */
+.header {
+  background: linear-gradient(135deg, var(--primary-accent), var(--secondary-accent));
+  border-radius: 20px;
+  padding: 32px;
+  color: white;
+  text-align: center;
+}
+
+.titleSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.subtitle {
+  margin: 0;
+  font-size: 16px;
+  opacity: 0.9;
+  font-weight: 400;
+}
+
+/* Pestañas de navegación */
+.tabs {
+  display: flex;
+  background: var(--background-card);
+  border-radius: 16px;
+  padding: 8px;
+  gap: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--border-color);
+}
+
+.tab {
+  flex: 1;
+  padding: 16px 24px;
+  background: transparent;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.tab:hover {
+  background: var(--background-hover);
+  color: var(--text-primary);
+}
+
+.tab.active {
+  background: var(--primary-accent);
+  color: white;
+  box-shadow: 0 4px 12px rgba(var(--primary-accent-rgb), 0.3);
+}
+
+/* Contenido de pestañas */
+.tabContent {
+  min-height: 400px;
+}
+
+/* Vista de resumen */
+.overviewContent {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+/* Cards de resumen */
+.summaryCards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.summaryCard {
+  background: var(--background-card);
+  border-radius: 16px;
+  padding: 24px;
+  border: 1px solid var(--border-color);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.summaryCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.cardIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  background: var(--primary-accent-light);
+  color: var(--primary-accent);
+  border-radius: 16px;
+  font-size: 24px;
+}
+
+.cardInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.cardLabel {
+  font-size: 14px;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.cardValue {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-headings);
+}
+
+.cardValue.positive {
+  color: var(--success-color);
+}
+
+.cardValue.negative {
+  color: var(--error-color);
+}
+
+/* Sección de progreso */
+.progressSection {
+  background: var(--background-card);
+  border-radius: 16px;
+  padding: 24px;
+  border: 1px solid var(--border-color);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.sectionTitle {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 0 20px 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text-headings);
+}
+
+/* Grid de estadísticas */
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.statCard {
+  background: var(--background-hover);
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+  border: 1px solid var(--border-color);
+}
+
+.statCard h4 {
+  margin: 0 0 8px 0;
+  font-size: 14px;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.statNumber {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--primary-accent);
+}
+
+/* Card de proyección */
+.projectionCard {
+  background: var(--background-card);
+  border-radius: 16px;
+  padding: 24px;
+  border: 1px solid var(--border-color);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.projectionContent {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.projectionStat {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.projectionStat:last-of-type {
+  border-bottom: none;
+}
+
+.projectionLabel {
+  font-size: 16px;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.projectionValue {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-headings);
+}
+
+.projectionValue.positive {
+  color: var(--success-color);
+}
+
+.projectionValue.negative {
+  color: var(--error-color);
+}
+
+.projectionStatus {
+  text-align: center;
+  padding: 16px;
+  border-radius: 12px;
+  background: var(--background-hover);
+}
+
+.onTrack {
+  color: var(--success-color);
+  font-weight: 600;
+}
+
+.offTrack {
+  color: var(--warning-color);
+  font-weight: 600;
+}
+
+/* Sección de sugerencias */
+.suggestionsContent {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.suggestionsHeader {
+  text-align: center;
+  padding: 24px;
+}
+
+.suggestionsHeader h3 {
+  margin: 0 0 8px 0;
+  font-size: 24px;
+  color: var(--text-headings);
+}
+
+.suggestionsHeader p {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 16px;
+}
+
+.suggestionsList {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.suggestionCard {
+  background: var(--background-card);
+  border-radius: 16px;
+  padding: 24px;
+  border: 1px solid var(--border-color);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.suggestionCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.suggestionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.suggestionType {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 24px;
+}
+
+.suggestionTypeText {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-headings);
+}
+
+.confidence {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.confidenceHigh {
+  background: var(--success-light);
+  color: var(--success-color);
+}
+
+.confidenceMedium {
+  background: var(--warning-light);
+  color: var(--warning-color);
+}
+
+.confidenceLow {
+  background: var(--info-light);
+  color: var(--info-color);
+}
+
+.suggestionDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.suggestionDetails h4 {
+  margin: 0;
+  font-size: 20px;
+  color: var(--text-headings);
+}
+
+.suggestionReason {
+  margin: 0;
+  font-size: 16px;
+  color: var(--text-primary);
+  line-height: 1.5;
+}
+
+.suggestionImpact {
+  margin: 0;
+  font-size: 14px;
+  color: var(--text-secondary);
+  font-style: italic;
+  line-height: 1.4;
+}
+
+.suggestionNumbers {
+  display: flex;
+  gap: 16px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--primary-accent);
+}
+
+.suggestionData {
+  padding: 12px 16px;
+  background: var(--background-hover);
+  border-radius: 8px;
+  border-left: 4px solid var(--primary-accent);
+}
+
+/* Implementación simple de BudgetSummary */
+.simpleBudgetSummary {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.budgetItem {
+  background: var(--background-hover);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.budgetInfo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.progressBarContainer {
+  width: 100%;
+  height: 8px;
+  background: var(--border-color);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progressBar {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.suggestionData small {
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+.suggestionActions {
+  margin-top: 16px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* Estado sin sugerencias */
+.noSuggestions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 64px 32px;
+  text-align: center;
+}
+
+.noSuggestionsIcon {
+  font-size: 64px;
+}
+
+.noSuggestions h3 {
+  margin: 0;
+  font-size: 24px;
+  color: var(--text-headings);
+}
+
+.noSuggestions p {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 16px;
+  max-width: 400px;
+}
+
+/* Estado vacío */
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  padding: 80px 32px;
+  text-align: center;
+  background: var(--background-card);
+  border-radius: 20px;
+  border: 2px dashed var(--border-color);
+}
+
+.emptyIcon {
+  color: var(--text-secondary);
+  opacity: 0.5;
+}
+
+.emptyTitle {
+  margin: 0;
+  font-size: 28px;
+  color: var(--text-headings);
+  font-weight: 700;
+}
+
+.emptyDescription {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 16px;
+  line-height: 1.6;
+  max-width: 500px;
+}
+
+/* Responsive design */
+@media (max-width: 1024px) {
+  .container {
+    padding: 16px;
+    gap: 20px;
+  }
+  
+  .summaryCards {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 16px;
+  }
+  
+  .tabs {
+    padding: 6px;
+    gap: 4px;
+  }
+  
+  .tab {
+    padding: 12px 16px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 768px) {
+  .header {
+    padding: 24px;
+  }
+  
+  .title {
+    font-size: 24px;
+  }
+  
+  .subtitle {
+    font-size: 14px;
+  }
+  
+  .summaryCards {
+    grid-template-columns: 1fr;
+  }
+  
+  .summaryCard {
+    padding: 20px;
+  }
+  
+  .cardIcon {
+    width: 48px;
+    height: 48px;
+    font-size: 20px;
+  }
+  
+  .cardValue {
+    font-size: 20px;
+  }
+  
+  .suggestionCard {
+    padding: 20px;
+  }
+  
+  .suggestionHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  .suggestionNumbers {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .tabs {
+    flex-wrap: wrap;
+  }
+  
+  .tab {
+    flex: none;
+    min-width: calc(50% - 4px);
+  }
+}

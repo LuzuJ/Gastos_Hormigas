@@ -1,9 +1,9 @@
 import React, { useState, useMemo, useEffect } from 'react';
 // 1. Eliminamos el controlador antiguo e importamos los hooks de contexto.
 import { useExpensesContext, useCategoriesContext } from '../contexts/AppContext';
-import { ExpenseList } from '../components/ExpenseList/ExpenseList';
+import { ExpenseList } from '../components/features/expenses/ExpenseList/ExpenseList';
 import { EditExpenseModal } from '../components/modals/EditExpenseModal/EditExpenseModal';
-import { ExpenseFilter, type DateRange, type FilterPeriod } from '../components/ExpenseFilter/ExpenseFilter';
+import { ExpenseFilter, type DateRange, type FilterPeriod } from '../components/features/expenses/ExpenseFilter/ExpenseFilter';
 import { LoadingStateWrapper } from '../components/LoadingState/LoadingState';
 import { BarChart3, TrendingUp } from 'lucide-react'; 
 import styles from './RegistroPage.module.css';

@@ -1,12 +1,12 @@
 import React from 'react';
-import { ExpenseForm } from '../components/ExpenseForm/ExpenseForm';
-import { Summary } from '../components/Summary/Summary';
-import { SavingsGoalSummary } from '../components/SavingsGoals/SavingsGoalSummary';
-import { BudgetSummary } from '../components/BudgetSummary/BudgetSummary';
-import { GuestBlockedFeature } from '../components/GuestBlockedFeature/GuestBlockedFeature';
+import { ExpenseForm } from '../components/forms/ExpenseForm/ExpenseForm';
+import { Summary } from '../components/features/reports/Summary/Summary';
+import { SavingsGoalSummary } from '../components/features/savings/SavingsGoals/SavingsGoalSummary';
+import { BudgetSummary } from '../components/features/financials/BudgetSummary/BudgetSummary';
+import { GuestBlockedFeature } from '../components/misc/GuestBlockedFeature/GuestBlockedFeature';
 import { LoadingStateWrapper } from '../components/LoadingState/LoadingState';
-import { FixedExpenseNotifications } from '../components/FixedExpenseNotifications';
-import { useFixedExpenseReminders } from '../hooks/useFixedExpenseReminders';
+import { FixedExpenseNotifications } from '../components/features/fixed-expenses/FixedExpenseNotifications';
+import { useFixedExpenseReminders } from '../hooks/expenses/useFixedExpenseReminders';
 import styles from './DashboardPage.module.css';
 import { formatCurrency } from '../utils/formatters';
 

@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { auth } from '../config/firebase';
-import { authService } from '../services/authService';
+import { authService } from '../services/auth/authService';
 import { LoadingStateWrapper } from '../components/LoadingState/LoadingState';
-import { ExportManager } from '../components/ExportManager';
+import { ExportManager } from '../components/features/reports/ExportManager/ExportManager';
+import { PasswordInput } from '../components/ui/PasswordInput/PasswordInput';
 import styles from './ProfilePage.module.css';
-import { LogOut, UserPlus, Eye, EyeOff } from 'lucide-react';
+import { LogOut, UserPlus } from 'lucide-react';
 import { useProfileContext } from '../contexts/AppContext';
-import type { Page } from '../components/Layout/Layout';
+import type { Page } from '../components/layout/Layout/Layout';
 import { PAGE_ROUTES } from '../constants';
 
 interface ProfilePageProps {
@@ -122,7 +123,7 @@ const GuestProfile: React.FC<{ setCurrentPage: (page: Page) => void }> = ({ setC
     const [error, setError] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [showPassword, setShowPassword] = useState(false);
+    const [isPasswordValid, setIsPasswordValid] = useState(false);
 
     const getFriendlyErrorMessage = (errorCode: string): string => {
         // ... (misma función de LoginPage)
@@ -145,6 +146,14 @@ const GuestProfile: React.FC<{ setCurrentPage: (page: Page) => void }> = ({ setC
         e.preventDefault();
         setLoading(true);
         setError('');
+
+        // Validación de contraseña para registro
+        if (!isPasswordValid) {
+            setError('Por favor, ingresa una contraseña que cumpla con los requisitos de seguridad.');
+            setLoading(false);
+            return;
+        }
+
         const result = await authService.signUpWithEmail(email, password, auth.currentUser);
         if (!result.success) {
             setError(getFriendlyErrorMessage(result.error as string));
@@ -169,14 +178,24 @@ const GuestProfile: React.FC<{ setCurrentPage: (page: Page) => void }> = ({ setC
                 
                 <form onSubmit={handleEmailSignUp} className={styles.guestActions}>
                     <input className={styles.input} type="email" placeholder="Correo electrónico" value={email} onChange={e => setEmail(e.target.value)} required />
-                    <div className={styles.passwordWrapper}>
-                        <input className={styles.input} type={showPassword ? 'text' : 'password'} placeholder="Crea una contraseña" value={password} onChange={e => setPassword(e.target.value)} required minLength={6} />
-                        <button type="button" onClick={() => setShowPassword(!showPassword)} className={styles.passwordToggleInForm}>
-                            {showPassword ? <EyeOff size={18}/> : <Eye size={18}/>}
-                        </button>
-                    </div>
+                    <PasswordInput
+                        value={password}
+                        onChange={setPassword}
+                        placeholder="Crea una contraseña"
+                        showValidation={true}
+                        required
+                        className={styles.input}
+                        autoComplete="new-password"
+                        onValidationChange={setIsPasswordValid}
+                    />
                     {error && <p className={styles.error}>{error}</p>}
-                    <button type="submit" className={styles.button} disabled={loading}>{loading ? 'Creando...' : 'Crear cuenta con correo'}</button>
+                    <button 
+                        type="submit" 
+                        className={styles.button} 
+                        disabled={loading || !isPasswordValid}
+                    >
+                        {loading ? 'Creando...' : 'Crear cuenta con correo'}
+                    </button>
                 </form>
 
                 <div className={styles.divider}>o</div>

@@ -2,16 +2,16 @@ import React, { Suspense, lazy, useState, useMemo } from 'react';
 // 1. Importamos el hook de contexto en lugar del controlador.
 import { useCombinedCalculationsContext, useExpensesContext, useCategoriesContext } from '../contexts/AppContext';
 import { LoadingSpinner } from '../components/LoadingState/LoadingState';
-import { ReportsFilter, type ReportsFilterState } from '../components/ReportsFilter';
-import { useReportsFilter } from '../hooks/useReportsFilter';
-import GastosHormigaAnalysis from '../components/GastosHormigaAnalysis';
+import { ReportsFilter, type ReportsFilterState } from '../components/features/reports/ReportsFilter/ReportsFilter';
+import { useReportsFilter } from '../hooks/financials/useReportsFilter';
+import GastosHormigaAnalysis from '../components/features/expenses/GastosHormigaAnalysis/GastosHormigaAnalysis';
 import styles from './ReportsPage.module.css';
-import { GuestBlockedFeature } from '../components/GuestBlockedFeature/GuestBlockedFeature';
+import { GuestBlockedFeature } from '../components/misc/GuestBlockedFeature/GuestBlockedFeature';
 
 // Lazy loading para componentes de gráficos pesados
-const MonthlyTrendChart = lazy(() => import('../components/MonthlyTrendChart/MonthlyTrendChart').then(module => ({ default: module.MonthlyTrendChart })));
-const ExpenseChart = lazy(() => import('../components/ExpenseChart/ExpenseChart').then(module => ({ default: module.ExpenseChart })));
-const ComparativeChart = lazy(() => import('../components/ComparativeChart/ComparativeChart').then(module => ({ default: module.ComparativeChart })));
+const MonthlyTrendChart = lazy(() => import('../components/charts/MonthlyTrendChart/MonthlyTrendChart').then(module => ({ default: module.MonthlyTrendChart })));
+const ExpenseChart = lazy(() => import('../components/charts/ExpenseChart/ExpenseChart').then(module => ({ default: module.ExpenseChart })));
+const ComparativeChart = lazy(() => import('../components/charts/ComparativeChart/ComparativeChart').then(module => ({ default: module.ComparativeChart })));
 
 // 2. El 'userId' ya no es necesario como prop, el AppProvider se encarga de él.
 export const ReportsPage: React.FC<{ isGuest: boolean }> = ({ isGuest }) => {

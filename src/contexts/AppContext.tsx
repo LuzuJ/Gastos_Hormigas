@@ -5,7 +5,7 @@ import { FinancialsProvider } from './FinancialsContext';
 import { PlanningProvider } from './PlanningContext';
 import { NotificationsProvider } from './NotificationsContext';
 import { CombinedCalculationsProvider } from './CombinedCalculationsContext';
-import { ErrorBoundary } from '../components/ErrorBoundary/ErrorBoundary';
+import { ErrorBoundary } from '../components/layout/ErrorBoundary/ErrorBoundary';
 
 // Re-exportar todos los hooks de contexto para mantener compatibilidad
 export { useAuthContext as useProfileContext } from './AuthContext';

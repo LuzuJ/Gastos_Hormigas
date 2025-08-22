@@ -41,9 +41,9 @@ vi.mock('../../services/fixedExpenseService');
 vi.mock('../../services/expensesService');
 
 // Importar después de los mocks
-import { automationService } from '../../services/automationService';
-import { fixedExpenseService } from '../../services/fixedExpenseService';
-import { expensesService } from '../../services/expensesService';
+import { automationService } from '../../services/automation/automationService';
+import { fixedExpenseService } from '../../services/expenses/fixedExpenseService';
+import { expensesService } from '../../services/expenses/expensesService';
 
 describe('Integration: Automation Service Flow', () => {
   const mockUserId = 'test-user-123';

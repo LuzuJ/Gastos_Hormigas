@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { savingsGoalService } from '../../services/savingsGoalService';
+import { savingsGoalService } from '../../services/savings/savingsGoalService';
 import * as firebaseFirestore from 'firebase/firestore';
 import type { SavingsGoal, SavingsGoalFormData } from '../../types';
 

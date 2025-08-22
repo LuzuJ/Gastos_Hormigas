@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { AchievementsPage } from '../components/AchievementsPage';
-import { AchievementManager } from '../components/AchievementManager';
+import { AchievementsPage } from '../components/features/achievements/AchievementsPage';
+import { AchievementManager } from '../components/features/achievements/AchievementManager/AchievementManager';
 import { Card } from '../components/common/Card/Card';
 import { Button } from '../components/common/Button/Button';
 import styles from './AchievementDemo.module.css';

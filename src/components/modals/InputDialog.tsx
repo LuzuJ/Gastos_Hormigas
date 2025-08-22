@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import styles from './InputDialog.module.css';
-import type { InputDialogState } from '../../hooks/useInputDialog';
+import type { InputDialogState } from '../../hooks/context/useInputDialog';
 import { Input, Button } from '../common';
 
 interface InputDialogProps {

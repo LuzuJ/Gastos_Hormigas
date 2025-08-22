@@ -1,24 +1,69 @@
-# 🏗️ Arquitectura del Sistema - Gastos Hormigas
+# 🏗️ Arquitectura de Gastos Hormigas
 
-## 📋 Visión General de la Arquitectura
+## 📋 Índice
 
-Gastos Hormigas está diseñado como una **Single Page Application (SPA)** moderna con arquitectura **component-based** y **service-oriented**, implementando patrones de diseño escalables y mantenibles.
+- [1. Visión General](#1-visión-general)
+- [2. Arquitectura de Alto Nivel](#2-arquitectura-de-alto-nivel)
+- [3. Estructura del Frontend](#3-estructura-del-frontend)
+- [4. Backend y Servicios](#4-backend-y-servicios)
+- [5. Gestión de Estado](#5-gestión-de-estado)
+- [6. Seguridad y Autenticación](#6-seguridad-y-autenticación)
+- [7. PWA y Performance](#7-pwa-y-performance)
+- [8. Testing y Calidad](#8-testing-y-calidad)
+- [9. Deployment y CI/CD](#9-deployment-y-cicd)
 
-## 🎯 Principios de Diseño
+## 1. Visión General
 
-### **1. Separación de Responsabilidades**
-- **Presentación**: Components y UI logic
-- **Estado**: Context providers y custom hooks
-- **Lógica de Negocio**: Services y utilities
-- **Datos**: Firebase Firestore y local storage
+Gastos Hormigas está construida como una **Progressive Web App (PWA)** moderna que utiliza una arquitectura de **Single Page Application (SPA)** con React 19, TypeScript y Firebase como backend-as-a-service.
 
-### **2. Escalabilidad**
-- **Modular**: Componentes independientes y reutilizables
-- **Lazy Loading**: Carga de componentes bajo demanda
-- **Code Splitting**: División del bundle por rutas
-- **Tree Shaking**: Eliminación de código no utilizado
+### 🎯 Principios Arquitectónicos
 
-### **3. Mantenibilidad**
+- **Modularidad**: Componentes independientes y reutilizables
+- **Escalabilidad**: Estructura preparada para crecimiento
+- **Performance**: Optimizaciones de carga y runtime
+- **Seguridad**: Autenticación robusta y validación estricta
+- **Offline-First**: Funcionalidad sin conexión
+- **Responsive**: Adaptable a cualquier dispositivo
+
+## 2. Arquitectura de Alto Nivel
+
+```mermaid
+graph TB
+    subgraph "Cliente (PWA)"
+        UI[UI Components]
+        State[State Management]
+        Cache[Service Worker Cache]
+    end
+    
+    subgraph "Servicios Firebase"
+        Auth[Firebase Auth]
+        DB[Firestore]
+        Hosting[Firebase Hosting]
+        Analytics[Firebase Analytics]
+    end
+    
+    subgraph "Desarrollo"
+        Build[Vite Build]
+        Test[Testing Suite]
+        CI[GitHub Actions]
+    end
+    
+    UI --> State
+    State --> Auth
+    State --> DB
+    Cache --> UI
+    Build --> Hosting
+    Test --> CI
+    CI --> Hosting
+```
+
+### 🔄 Flujo de Datos
+
+1. **UI Components** → Dispatch de acciones
+2. **Custom Hooks** → Lógica de negocio
+3. **React Context** → Estado global
+4. **Services Layer** → Comunicación con Firebase
+5. **Firebase** → Persistencia y autenticación
 - **TypeScript**: Tipado estático para prevenir errores
 - **Consistencia**: Patrones de código estandarizados
 - **Testing**: Cobertura de tests unitarios e integración

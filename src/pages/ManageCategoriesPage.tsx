@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { useCategoriesContext, useExpensesContext } from '../contexts/AppContext';
 import { LoadingStateWrapper } from '../components/LoadingState/LoadingState';
 import styles from './ManageCategoriesPage.module.css';
-import { CategoryItem } from '../components/CategoryItem/CategoryItem';
-import { CategoryStyleModal } from '../components/CategoryStyleModal/CategoryStyleModal';
+import { CategoryItem } from '../components/misc/CategoryItem/CategoryItem';
+import { CategoryStyleModal } from '../components/modals/CategoryStyleModal/CategoryStyleModal';
 import type { Category } from '../types';
 
 interface ManageCategoriesPageProps {

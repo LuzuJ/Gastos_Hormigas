@@ -1,5 +1,5 @@
 import React, { createContext, useContext, type ReactNode } from 'react';
-import { useCombinedCalculations } from '../hooks/useCombinedCalculations';
+import { useCombinedCalculations } from '../hooks/calculations/useCombinedCalculations';
 import { useExpensesContext, useCategoriesContext } from './ExpensesContext';
 import { useFinancialsContext } from './FinancialsContext';
 import { useNotificationsContext } from './NotificationsContext';

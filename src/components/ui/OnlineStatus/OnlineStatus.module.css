@@ -1,0 +1,84 @@
+.statusIndicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid var(--border-color);
+  background: var(--background-card);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.statusIndicator:hover {
+  border-color: var(--primary-accent);
+  background: var(--background-hover);
+}
+
+.online {
+  color: var(--success-color);
+}
+
+.offline {
+  color: var(--danger-color);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.online::after {
+  content: '';
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 12px;
+  height: 12px;
+  background: var(--success-color);
+  border-radius: 50%;
+  border: 2px solid var(--background-card);
+}
+
+.offline::after {
+  content: '';
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 12px;
+  height: 12px;
+  background: var(--danger-color);
+  border-radius: 50%;
+  border: 2px solid var(--background-card);
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .statusIndicator {
+    width: 36px;
+    height: 36px;
+  }
+  
+  .statusIndicator::after {
+    width: 10px;
+    height: 10px;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .offline {
+    animation: none;
+  }
+  
+  .statusIndicator {
+    transition: none;
+  }
+}

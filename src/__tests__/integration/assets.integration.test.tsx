@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { assetService } from '../../services/assetService';
+import { assetService } from '../../services/financials/assetService';
 import * as firebaseFirestore from 'firebase/firestore';
 import type { Asset, AssetFormData } from '../../types';
 

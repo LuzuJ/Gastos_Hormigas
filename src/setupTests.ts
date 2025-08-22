@@ -37,6 +37,8 @@ vi.mock('firebase/firestore', () => ({
   serverTimestamp: vi.fn(),
   arrayUnion: vi.fn(),
   arrayRemove: vi.fn(),
+  runTransaction: vi.fn(),
+  increment: vi.fn(),
   Timestamp: {
     now: vi.fn(() => ({ seconds: Date.now() / 1000, nanoseconds: 0 })),
     fromDate: vi.fn((date) => ({ seconds: date.getTime() / 1000, nanoseconds: 0 })),
