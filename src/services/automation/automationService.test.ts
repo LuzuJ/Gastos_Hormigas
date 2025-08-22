@@ -6,7 +6,7 @@ import { Timestamp } from 'firebase/firestore';
 import type { Category, FixedExpense } from '../../types';
 
 // Mock de los servicios de dependencias
-vi.mock('./fixedExpenseService', () => ({
+vi.mock('../expenses/fixedExpenseService', () => ({
   fixedExpenseService: {
     getFixedExpensesOnce: vi.fn(),
     updateFixedExpense: vi.fn()
@@ -16,13 +16,6 @@ vi.mock('./fixedExpenseService', () => ({
 vi.mock('../expenses/expensesService', () => ({
   expensesService: {
     addExpense: vi.fn()
-  }
-}));
-
-// Mock de Firestore Timestamp
-vi.mock('firebase/firestore', () => ({
-  Timestamp: {
-    fromDate: vi.fn((date) => ({ toDate: () => date, seconds: date.getTime() / 1000 }))
   }
 }));
 
@@ -80,7 +73,7 @@ describe('automationService', () => {
         }
       ];
 
-      vi.mocked(fixedExpenseService.getFixedExpensesOnce).mockResolvedValue(mockFixedExpenses);
+      (fixedExpenseService.getFixedExpensesOnce as any) = vi.fn().mockResolvedValue(mockFixedExpenses);
 
       await automationService.checkAndPostFixedExpenses(userId, mockCategories);
 
@@ -117,7 +110,7 @@ describe('automationService', () => {
         }
       ];
 
-      vi.mocked(fixedExpenseService.getFixedExpensesOnce).mockResolvedValue(mockFixedExpenses);
+      (fixedExpenseService.getFixedExpensesOnce as any) = vi.fn().mockResolvedValue(mockFixedExpenses);
 
       await automationService.checkAndPostFixedExpenses(userId, mockCategories);
 
@@ -137,7 +130,7 @@ describe('automationService', () => {
         }
       ];
 
-      vi.mocked(fixedExpenseService.getFixedExpensesOnce).mockResolvedValue(mockFixedExpenses);
+      (fixedExpenseService.getFixedExpensesOnce as any) = vi.fn().mockResolvedValue(mockFixedExpenses);
 
       await automationService.checkAndPostFixedExpenses(userId, mockCategories);
 
@@ -168,7 +161,7 @@ describe('automationService', () => {
         }
       ];
 
-      vi.mocked(fixedExpenseService.getFixedExpensesOnce).mockResolvedValue(mockFixedExpenses);
+      (fixedExpenseService.getFixedExpensesOnce as any) = vi.fn().mockResolvedValue(mockFixedExpenses);
 
       await automationService.checkAndPostFixedExpenses(userId, categoriesWithoutFixedSubcat);
 
@@ -183,7 +176,7 @@ describe('automationService', () => {
 
     it('debería manejar errores graciosamente', async () => {
       const error = new Error('Database error');
-      vi.mocked(fixedExpenseService.getFixedExpensesOnce).mockRejectedValue(error);
+      (fixedExpenseService.getFixedExpensesOnce as any) = vi.fn().mockRejectedValue(error);
 
       // No debería lanzar el error, solo loggearlo
       await expect(automationService.checkAndPostFixedExpenses(userId, mockCategories))
@@ -204,7 +197,7 @@ describe('automationService', () => {
         }
       ];
 
-      vi.mocked(fixedExpenseService.getFixedExpensesOnce).mockResolvedValue(mockFixedExpenses);
+      (fixedExpenseService.getFixedExpensesOnce as any) = vi.fn().mockResolvedValue(mockFixedExpenses);
 
       await automationService.checkAndPostFixedExpenses(userId, mockCategories);
 

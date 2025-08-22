@@ -757,7 +757,7 @@ describe('Integration: Automation Service Flow', () => {
   });
 
   describe('Business Logic Integration', () => {
-    it.skip('should demonstrate complete monthly automation cycle', async () => {
+    it('should demonstrate complete monthly automation cycle', async () => {
       // Arrange
       const testDate = new Date(2024, 2, 15); // March 15, 2024
       vi.setSystemTime(testDate);
@@ -808,8 +808,8 @@ describe('Integration: Automation Service Flow', () => {
       expect(fixedExpenseService.updateFixedExpense).toHaveBeenCalledTimes(3);
       
       // Verify each expense was processed correctly
-      const addExpenseCalls = expensesService.addExpense = vi.fn().mock.calls;
-      const updateCalls = fixedExpenseService.updateFixedExpense = vi.fn().mock.calls;
+      const addExpenseCalls = (expensesService.addExpense as any).mock.calls;
+      const updateCalls = (fixedExpenseService.updateFixedExpense as any).mock.calls;
       
       // Check that rent was posted
       expect(addExpenseCalls.some((call: any) => 

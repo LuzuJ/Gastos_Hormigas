@@ -24,7 +24,7 @@ describe('Hook useSavingsGoals', () => {
     vi.resetAllMocks();
 
     // Mock por defecto para evitar errores
-    (savingsGoalService.onSavingsGoalsUpdate as any).mockReturnValue(() => {});
+    (savingsGoalService.onSavingsGoalsUpdate as any) = vi.fn().mockReturnValue(() => {});
   });
 
   it('debería inicializar con array vacío y loading true', () => {
@@ -51,7 +51,7 @@ describe('Hook useSavingsGoals', () => {
   });
 
   it('debería actualizar las metas cuando se reciben datos', async () => {
-    (savingsGoalService.onSavingsGoalsUpdate as any).mockImplementation((userId: string, callback: (goals: SavingsGoal[]) => void) => {
+    (savingsGoalService.onSavingsGoalsUpdate as any) = vi.fn().mockImplementation((userId: string, callback: (goals: SavingsGoal[]) => void) => {
       callback(mockSavingsGoals);
       return () => {};
     });
@@ -65,7 +65,7 @@ describe('Hook useSavingsGoals', () => {
   });
 
   it('debería agregar una meta de ahorro exitosamente', async () => {
-    (savingsGoalService.addSavingsGoal as any).mockResolvedValue(undefined as any);
+    (savingsGoalService.addSavingsGoal as any) = vi.fn().mockResolvedValue(undefined);
 
     const { result } = renderHook(() => useSavingsGoals('test-user'));
 
@@ -82,7 +82,7 @@ describe('Hook useSavingsGoals', () => {
 
   it('debería manejar errores al agregar meta de ahorro', async () => {
     const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-    (savingsGoalService.addSavingsGoal as any).mockRejectedValue(new Error('Database error'));
+    (savingsGoalService.addSavingsGoal as any) = vi.fn().mockRejectedValue(new Error('Database error'));
 
     const { result } = renderHook(() => useSavingsGoals('test-user'));
 
@@ -119,7 +119,7 @@ describe('Hook useSavingsGoals', () => {
   });
 
   it('debería eliminar una meta de ahorro', async () => {
-    (savingsGoalService.deleteSavingsGoal as any).mockResolvedValue(undefined as any);
+    (savingsGoalService.deleteSavingsGoal as any) = vi.fn().mockResolvedValue(undefined);
 
     const { result } = renderHook(() => useSavingsGoals('test-user'));
 
@@ -139,12 +139,12 @@ describe('Hook useSavingsGoals', () => {
       update: vi.fn()
     };
 
-    (runTransaction as any).mockImplementation(async (db: any, transactionFn: any) => {
+    (runTransaction as any) = vi.fn().mockImplementation(async (db: any, transactionFn: any) => {
       return await transactionFn(mockTransaction as any);
     });
 
-    (increment as any).mockReturnValue('MOCK_INCREMENT' as any);
-    (doc as any).mockReturnValue('MOCK_DOC_REF' as any);
+    (increment as any) = vi.fn().mockReturnValue('MOCK_INCREMENT');
+    (doc as any) = vi.fn().mockReturnValue('MOCK_DOC_REF');
 
     const { result } = renderHook(() => useSavingsGoals('test-user'));
 
@@ -174,7 +174,7 @@ describe('Hook useSavingsGoals', () => {
       })
     };
 
-    (runTransaction as any).mockImplementation(async (db: any, transactionFn: any) => {
+    (runTransaction as any) = vi.fn().mockImplementation(async (db: any, transactionFn: any) => {
       return await transactionFn(mockTransaction as any);
     });
 
@@ -215,11 +215,11 @@ describe('Hook useSavingsGoals', () => {
       update: vi.fn()
     };
 
-    (runTransaction as any).mockImplementation(async (db: any, transactionFn: any) => {
+    (runTransaction as any) = vi.fn().mockImplementation(async (db: any, transactionFn: any) => {
       return await transactionFn(mockTransaction as any);
     });
 
-    (increment as any).mockReturnValue('MOCK_DECREMENT' as any);
+    (increment as any) = vi.fn().mockReturnValue('MOCK_DECREMENT');
 
     const { result } = renderHook(() => useSavingsGoals('test-user'));
 
@@ -235,7 +235,7 @@ describe('Hook useSavingsGoals', () => {
   it('debería rechazar quitar más fondos de los disponibles', async () => {
     const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     
-    (runTransaction as any).mockImplementation(async (db: any, transactionFn: any) => {
+    (runTransaction as any) = vi.fn().mockImplementation(async (db: any, transactionFn: any) => {
       throw new Error("No puedes quitar más dinero del que has ahorrado.");
     });
 
@@ -256,7 +256,7 @@ describe('Hook useSavingsGoals', () => {
 
   it('debería limpiar la suscripción al desmontar', () => {
     const unsubscribe = vi.fn();
-    (savingsGoalService.onSavingsGoalsUpdate as any).mockReturnValue(unsubscribe);
+    (savingsGoalService.onSavingsGoalsUpdate as any) = vi.fn().mockReturnValue(unsubscribe);
 
     const { unmount } = renderHook(() => useSavingsGoals('test-user'));
 
@@ -267,7 +267,7 @@ describe('Hook useSavingsGoals', () => {
 
   it('debería limpiar la suscripción al cambiar userId', () => {
     const unsubscribe = vi.fn();
-    (savingsGoalService.onSavingsGoalsUpdate as any).mockReturnValue(unsubscribe);
+    (savingsGoalService.onSavingsGoalsUpdate as any) = vi.fn().mockReturnValue(unsubscribe);
 
     const { rerender } = renderHook(
       ({ userId }: { userId: string | null }) => useSavingsGoals(userId),
