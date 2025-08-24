@@ -75,8 +75,12 @@ describe('authService', () => {
 
   describe('signInWithGoogle', () => {
     it('debería iniciar sesión con Google correctamente para usuario nuevo', async () => {
-      const mockResult = { user: mockUser };
-      (signInWithPopup as any) = vi.fn().mockResolvedValue(mockResult);
+      const mockResult = { 
+        user: mockUser, 
+        providerId: 'google.com', 
+        operationType: 'signIn' 
+      } as any;
+      vi.mocked(signInWithPopup).mockResolvedValue(mockResult);
 
       const result = await authService.signInWithGoogle(null);
 
@@ -91,12 +95,16 @@ describe('authService', () => {
 
     it('debería vincular cuenta de Google con usuario anónimo', async () => {
       const anonymousUser = { uid: 'anonymous-user' } as User;
-      const mockResult = { user: mockUser };
+      const mockResult = { 
+        user: mockUser, 
+        providerId: 'google.com', 
+        operationType: 'link' 
+      } as any;
       const mockCredential = { providerId: 'google.com' };
 
-      (signInWithPopup as any) = vi.fn().mockResolvedValue(mockResult);
+      vi.mocked(signInWithPopup).mockResolvedValue(mockResult);
       GoogleAuthProviderMock.credentialFromResult = vi.fn().mockReturnValue(mockCredential);
-      (linkWithCredential as any) = vi.fn().mockResolvedValue(mockResult);
+      vi.mocked(linkWithCredential).mockResolvedValue(mockResult);
 
       const result = await authService.signInWithGoogle(anonymousUser);
 
@@ -112,7 +120,7 @@ describe('authService', () => {
         name: 'FirebaseError'
       } as AuthError;
 
-      (signInWithPopup as any) = vi.fn().mockRejectedValue(authError);
+      vi.mocked(signInWithPopup).mockRejectedValue(authError);
 
       const result = await authService.signInWithGoogle(null);
 
@@ -125,8 +133,12 @@ describe('authService', () => {
 
   describe('signInAsGuest', () => {
     it('debería iniciar sesión como invitado correctamente', async () => {
-      const mockResult = { user: mockUser };
-      (signInAnonymously as any) = vi.fn().mockResolvedValue(mockResult);
+      const mockResult = { 
+        user: mockUser, 
+        providerId: 'anonymous', 
+        operationType: 'signIn' 
+      } as any;
+      vi.mocked(signInAnonymously).mockResolvedValue(mockResult);
 
       const result = await authService.signInAsGuest();
 
@@ -143,7 +155,7 @@ describe('authService', () => {
         name: 'FirebaseError'
       } as AuthError;
 
-      (signInAnonymously as any) = vi.fn().mockRejectedValue(authError);
+      vi.mocked(signInAnonymously).mockRejectedValue(authError);
 
       const result = await authService.signInAsGuest();
 
@@ -158,9 +170,13 @@ describe('authService', () => {
     it('debería registrar usuario con email correctamente', async () => {
       const email = 'newuser@example.com';
       const password = 'password123';
-      const mockResult = { user: mockUser };
+      const mockResult = { 
+        user: mockUser, 
+        providerId: 'password', 
+        operationType: 'signIn' 
+      } as any;
 
-      (createUserWithEmailAndPassword as any) = vi.fn().mockResolvedValue(mockResult);
+      vi.mocked(createUserWithEmailAndPassword).mockResolvedValue(mockResult);
 
       const result = await authService.signUpWithEmail(email, password, null);
 
@@ -180,8 +196,8 @@ describe('authService', () => {
       const anonymousUser = { uid: 'anonymous-user' } as User;
       const mockCredential = { providerId: 'password' };
 
-      (EmailAuthProvider.credential as any) = vi.fn().mockReturnValue(mockCredential);
-      (linkWithCredential as any) = vi.fn().mockResolvedValue({ user: anonymousUser });
+      vi.mocked(EmailAuthProvider.credential).mockReturnValue(mockCredential as any);
+      vi.mocked(linkWithCredential).mockResolvedValue({ user: anonymousUser } as any);
 
       const result = await authService.signUpWithEmail(email, password, anonymousUser);
 
@@ -199,7 +215,7 @@ describe('authService', () => {
         name: 'FirebaseError'
       } as AuthError;
 
-      (createUserWithEmailAndPassword as any) = vi.fn().mockRejectedValue(authError);
+      vi.mocked(createUserWithEmailAndPassword).mockRejectedValue(authError);
 
       const result = await authService.signUpWithEmail('test@example.com', 'password', null);
 
@@ -214,11 +230,15 @@ describe('authService', () => {
     it('debería iniciar sesión con email correctamente', async () => {
       const email = 'user@example.com';
       const password = 'password123';
-      const mockResult = { user: mockUser };
-      const mockProfile = { displayName: 'Test User', email, currency: 'USD' };
+      const mockResult = { 
+        user: mockUser, 
+        providerId: 'password', 
+        operationType: 'signIn' 
+      } as any;
+      const mockProfile = { displayName: 'Test User', email, currency: 'USD' as const };
 
-      (signInWithEmailAndPassword as any) = vi.fn().mockResolvedValue(mockResult);
-      (userService.getUserProfile as any) = vi.fn().mockResolvedValue(mockProfile);
+      vi.mocked(signInWithEmailAndPassword).mockResolvedValue(mockResult);
+      vi.mocked(userService.getUserProfile).mockResolvedValue(mockProfile);
 
       const result = await authService.signInWithEmail(email, password);
 
@@ -234,10 +254,14 @@ describe('authService', () => {
     it('debería cerrar sesión si el usuario no tiene perfil', async () => {
       const email = 'user@example.com';
       const password = 'password123';
-      const mockResult = { user: mockUser };
+      const mockResult = { 
+        user: mockUser, 
+        providerId: 'password', 
+        operationType: 'signIn' 
+      } as any;
 
-      (signInWithEmailAndPassword as any) = vi.fn().mockResolvedValue(mockResult);
-      (userService.getUserProfile as any) = vi.fn().mockResolvedValue(null);
+      vi.mocked(signInWithEmailAndPassword).mockResolvedValue(mockResult);
+      vi.mocked(userService.getUserProfile).mockResolvedValue(null);
 
       const result = await authService.signInWithEmail(email, password);
 
@@ -255,7 +279,7 @@ describe('authService', () => {
         name: 'FirebaseError'
       } as AuthError;
 
-      (signInWithEmailAndPassword as any) = vi.fn().mockRejectedValue(authError);
+      vi.mocked(signInWithEmailAndPassword).mockRejectedValue(authError);
 
       const result = await authService.signInWithEmail('test@example.com', 'wrongpassword');
 
@@ -281,7 +305,7 @@ describe('authService', () => {
           name: 'FirebaseError'
         } as AuthError;
 
-        (signInWithEmailAndPassword as any) = vi.fn().mockRejectedValue(authError);
+        vi.mocked(signInWithEmailAndPassword).mockRejectedValue(authError);
 
         const result = await authService.signInWithEmail('test@example.com', 'password');
 

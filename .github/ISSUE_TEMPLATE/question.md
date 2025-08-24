@@ -27,5 +27,4 @@ Describe cualquier solución que ya hayas intentado.
 ---
 **📚 Recursos útiles:**
 - [Documentación](../README.md)
-- [Arquitectura](../ARCHITECTURE.md)
-- [Features](../FEATURES.md)
+- [App en vivo](https://gestos-gastosv2.web.app)

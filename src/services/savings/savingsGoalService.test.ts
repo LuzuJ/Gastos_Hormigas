@@ -76,7 +76,7 @@ describe('savingsGoalService', () => {
       };
 
       // Mock de onSnapshot que ejecuta el callback inmediatamente
-      (onSnapshot as any) = vi.fn().mockImplementation((queryRef: any, successCallback: any, errorCallback: any) => {
+      vi.mocked(onSnapshot).mockImplementation((queryRef: any, successCallback: any, errorCallback: any) => {
         successCallback(mockSnapshot);
         return vi.fn();
       });
@@ -94,7 +94,7 @@ describe('savingsGoalService', () => {
       const error = new Error('Firestore error');
 
       // Mock de onSnapshot que ejecuta el error callback
-      (onSnapshot as any) = vi.fn().mockImplementation((queryRef: any, successCallback: any, errorCallback: any) => {
+      vi.mocked(onSnapshot).mockImplementation((queryRef: any, successCallback: any, errorCallback: any) => {
         errorCallback(error);
         return vi.fn();
       });
@@ -108,7 +108,7 @@ describe('savingsGoalService', () => {
       const callback = vi.fn();
       const mockUnsubscribe = vi.fn();
       
-      (onSnapshot as any) = vi.fn().mockReturnValue(mockUnsubscribe);
+      vi.mocked(onSnapshot).mockReturnValue(mockUnsubscribe);
 
       const unsubscribe = savingsGoalService.onSavingsGoalsUpdate(userId, callback);
 

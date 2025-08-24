@@ -161,15 +161,11 @@ export function createLazyRoute<T extends ComponentType<any>>(
   // Añadir método de prefetch al componente
   (LazyRouteWrapper as any).prefetch = () => {
     if (!componentCache.has(componentKey)) {
-      try {
-        importFn().then(() => {
-          console.log(`✅ Prefetched component`);
-        }).catch(error => {
-          console.warn(`⚠️ Failed to prefetch component:`, error);
-        });
-      } catch (error) {
-        console.warn(`⚠️ Error prefetching component:`, error);
-      }
+      importFn().then(() => {
+        console.log(`✅ Prefetched component`);
+      }).catch(error => {
+        console.warn(`⚠️ Failed to prefetch component:`, error);
+      });
     }
   };
 
@@ -272,8 +268,8 @@ export const LazyRouteMetrics: React.FC = () => {
         <div>Cached: {metrics.cachedComponents}</div>
       </div>
       <div className="max-h-32 overflow-y-auto">
-        {metrics.metrics.slice(0, 5).map((metric, index) => (
-          <div key={index} className="text-xs opacity-80">
+        {metrics.metrics.slice(0, 5).map((metric) => (
+          <div key={metric.component} className="text-xs opacity-80">
             {metric.component}: {metric.averageLoadTime}ms ({metric.loadCount}x)
           </div>
         ))}

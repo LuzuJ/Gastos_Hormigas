@@ -1,9 +1,16 @@
 import { renderHook, act, waitFor } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { useSavingsGoals } from './useSavingsGoals';
 import { savingsGoalService } from '../../services/savings/savingsGoalService';
 import { runTransaction, doc, increment } from 'firebase/firestore';
 import type { SavingsGoal } from '../../types';
+
+vi.mock('firebase/firestore', () => ({
+  getFirestore: vi.fn(),
+  runTransaction: vi.fn(),
+  doc: vi.fn(),
+  increment: vi.fn()
+}));
 
 // Mock de los servicios
 vi.mock('../../services/savings/savingsGoalService', () => ({
@@ -22,9 +29,12 @@ const mockSavingsGoals: SavingsGoal[] = [
 describe('Hook useSavingsGoals', () => {
   beforeEach(() => {
     vi.resetAllMocks();
-
     // Mock por defecto para evitar errores
     (savingsGoalService.onSavingsGoalsUpdate as any) = vi.fn().mockReturnValue(() => {});
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   it('debería inicializar con array vacío y loading true', () => {
@@ -139,12 +149,12 @@ describe('Hook useSavingsGoals', () => {
       update: vi.fn()
     };
 
-    (runTransaction as any) = vi.fn().mockImplementation(async (db: any, transactionFn: any) => {
+    (runTransaction as any).mockImplementation(async (db: any, transactionFn: any) => {
       return await transactionFn(mockTransaction as any);
     });
 
-    (increment as any) = vi.fn().mockReturnValue('MOCK_INCREMENT');
-    (doc as any) = vi.fn().mockReturnValue('MOCK_DOC_REF');
+  (increment as any).mockReturnValue({} as any);
+  (doc as any).mockReturnValue({ id: 'MOCK_DOC_REF' } as any); // Simula DocumentReference
 
     const { result } = renderHook(() => useSavingsGoals('test-user'));
 
@@ -155,15 +165,15 @@ describe('Hook useSavingsGoals', () => {
 
     expect(addResult).toEqual({ success: true });
     expect(doc).toHaveBeenCalledWith(
-      expect.any(Object),
+      undefined,
       'users',
       'test-user',
       'savingsGoals',
       'goal-123'
     );
     expect(increment).toHaveBeenCalledWith(200);
-    expect(mockTransaction.update).toHaveBeenCalledWith('MOCK_DOC_REF', {
-      currentAmount: 'MOCK_INCREMENT'
+    expect(mockTransaction.update).toHaveBeenCalledWith({ id: 'MOCK_DOC_REF' }, {
+      currentAmount: {}
     });
   });
 
@@ -174,7 +184,7 @@ describe('Hook useSavingsGoals', () => {
       })
     };
 
-    (runTransaction as any) = vi.fn().mockImplementation(async (db: any, transactionFn: any) => {
+    (runTransaction as any).mockImplementation(async (db: any, transactionFn: any) => {
       return await transactionFn(mockTransaction as any);
     });
 
@@ -215,11 +225,11 @@ describe('Hook useSavingsGoals', () => {
       update: vi.fn()
     };
 
-    (runTransaction as any) = vi.fn().mockImplementation(async (db: any, transactionFn: any) => {
+    (runTransaction as any).mockImplementation(async (db: any, transactionFn: any) => {
       return await transactionFn(mockTransaction as any);
     });
 
-    (increment as any) = vi.fn().mockReturnValue('MOCK_DECREMENT');
+  (increment as any).mockReturnValue({} as any);
 
     const { result } = renderHook(() => useSavingsGoals('test-user'));
 
@@ -235,7 +245,7 @@ describe('Hook useSavingsGoals', () => {
   it('debería rechazar quitar más fondos de los disponibles', async () => {
     const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     
-    (runTransaction as any) = vi.fn().mockImplementation(async (db: any, transactionFn: any) => {
+    (runTransaction as any).mockImplementation(async (db: any, transactionFn: any) => {
       throw new Error("No puedes quitar más dinero del que has ahorrado.");
     });
 
