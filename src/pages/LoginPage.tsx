@@ -51,6 +51,7 @@ export const LoginPage: React.FC = () => {
     }
   };
 
+  // Corrección: Asegurar que setLoading(false) se llame en todos los casos y mejorar manejo de errores.
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -67,16 +68,18 @@ export const LoginPage: React.FC = () => {
       const result = isSigningUp
         ? await authService.signUpWithEmail(email, password, auth.currentUser)
         : await authService.signInWithEmail(email, password);
-      
+
       if (!result.success) {
         setError(getFriendlyErrorMessage(result.error as string));
-        setLoading(false);
+      } else {
+        // Éxito: Aquí podrías redirigir o manejar el estado de usuario logueado.
+        console.log('Usuario autenticado:', result.user);
       }
-      // Si el inicio de sesión es exitoso, onAuthStateChanged en App.tsx se encarga del resto.
-      // No cambiamos setLoading(false) aquí para que se mantenga el estado de carga hasta la redirección
     } catch (error) {
+      console.error('Error inesperado:', error);
       setError('Ocurrió un error inesperado. Por favor, inténtalo de nuevo.');
-      setLoading(false);
+    } finally {
+      setLoading(false); // Asegurar que el estado de carga se desactive siempre.
     }
   };
 
