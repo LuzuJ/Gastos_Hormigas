@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { onAuthStateChanged, signOut, type User } from 'firebase/auth';
 import { auth } from './config/firebase';
 import { userService } from './services/profile/userService';
+import { authService } from './services/auth/authService';
 import { AppProvider } from './contexts/AppContext';
 import { Layout, type Page } from './components/layout/Layout/Layout';
 import { PWAManager } from './components/PWAManager';
@@ -65,6 +66,17 @@ export default function App() {
   const [isValidatingUser, setIsValidatingUser] = useState<boolean>(false);
 
   useEffect(() => {
+    // Handle Google Sign-In redirect result first (for mobile devices)
+    const handleInitialRedirect = async () => {
+      const redirectResult = await authService.handleRedirectResult();
+      if (redirectResult.error) {
+        console.error('Error handling redirect:', redirectResult.error);
+      }
+    };
+    
+    // Handle redirect immediately
+    handleInitialRedirect();
+    
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       setIsValidatingUser(true);
       

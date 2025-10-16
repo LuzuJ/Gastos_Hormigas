@@ -2,9 +2,12 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { authService } from './authService';
 import { userService } from '../profile/userService';
 import { categoryService } from '../categories/categoryService';
+import { isMobileDevice } from '../../utils/deviceDetection';
 import {
   GoogleAuthProvider,
   signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
   signOut,
   signInAnonymously,
   linkWithCredential,
@@ -24,6 +27,8 @@ vi.mock('firebase/auth', () => ({
     credential: vi.fn()
   },
   signInWithPopup: vi.fn(),
+  signInWithRedirect: vi.fn(),
+  getRedirectResult: vi.fn(),
   signOut: vi.fn(),
   signInAnonymously: vi.fn(),
   linkWithCredential: vi.fn(),
@@ -52,6 +57,11 @@ vi.mock('../categories/categoryService', () => ({
   categoryService: {
     initializeDefaultCategories: vi.fn()
   }
+}));
+
+// Mock device detection
+vi.mock('../../utils/deviceDetection', () => ({
+  isMobileDevice: vi.fn()
 }));
 
 // Mock de window.location.reload
@@ -322,6 +332,117 @@ describe('authService', () => {
       await authService.signOut();
 
       expect(signOut).toHaveBeenCalledWith({ type: 'auth' });
+    });
+  });
+
+  describe('Google Sign-In con detección de dispositivo móvil', () => {
+    beforeEach(() => {
+      vi.mocked(isMobileDevice).mockReturnValue(false);
+      Object.defineProperty(window, 'localStorage', {
+        value: {
+          getItem: vi.fn(),
+          setItem: vi.fn(),
+          removeItem: vi.fn(),
+        },
+        writable: true
+      });
+    });
+
+    it('debería usar signInWithPopup en dispositivos de escritorio', async () => {
+      vi.mocked(isMobileDevice).mockReturnValue(false);
+      const mockResult = { 
+        user: mockUser, 
+        providerId: 'google.com', 
+        operationType: 'signIn' 
+      } as any;
+      vi.mocked(signInWithPopup).mockResolvedValue(mockResult);
+
+      const result = await authService.signInWithGoogle(null);
+
+      expect(signInWithPopup).toHaveBeenCalled();
+      expect(signInWithRedirect).not.toHaveBeenCalled();
+      expect(result).toEqual({ success: true, user: mockUser });
+    });
+
+    it('debería usar signInWithRedirect en dispositivos móviles', async () => {
+      vi.mocked(isMobileDevice).mockReturnValue(true);
+      (signInWithRedirect as any).mockResolvedValue(undefined);
+
+      const result = await authService.signInWithGoogle(null);
+
+      expect(signInWithRedirect).toHaveBeenCalled();
+      expect(signInWithPopup).not.toHaveBeenCalled();
+      expect(window.localStorage.setItem).not.toHaveBeenCalled();
+      expect(result).toEqual({ success: true, user: null });
+    });
+
+    it('debería guardar flag para vincular usuario anónimo en móvil', async () => {
+      vi.mocked(isMobileDevice).mockReturnValue(true);
+      (signInWithRedirect as any).mockResolvedValue(undefined);
+      const anonymousUser = { uid: 'anonymous-user' } as User;
+
+      await authService.signInWithGoogle(anonymousUser);
+
+      expect(window.localStorage.setItem).toHaveBeenCalledWith('pendingAnonymousLink', 'true');
+      expect(signInWithRedirect).toHaveBeenCalled();
+    });
+  });
+
+  describe('handleRedirectResult', () => {
+    beforeEach(() => {
+      Object.defineProperty(window, 'localStorage', {
+        value: {
+          getItem: vi.fn(),
+          setItem: vi.fn(),
+          removeItem: vi.fn(),
+        },
+        writable: true
+      });
+    });
+
+    it('debería manejar resultado de redirección exitoso', async () => {
+      const mockResult = { 
+        user: mockUser, 
+        providerId: 'google.com' 
+      } as any;
+      vi.mocked(getRedirectResult).mockResolvedValue(mockResult);
+
+      const result = await authService.handleRedirectResult();
+
+      expect(getRedirectResult).toHaveBeenCalled();
+      expect(userService.createUserProfile).toHaveBeenCalledWith(mockUser);
+      expect(categoryService.initializeDefaultCategories).toHaveBeenCalledWith(mockUser.uid);
+      expect(result).toEqual({ success: true, user: mockUser });
+    });
+
+    it('debería retornar success sin usuario cuando no hay resultado de redirección', async () => {
+      vi.mocked(getRedirectResult).mockResolvedValue(null);
+
+      const result = await authService.handleRedirectResult();
+
+      expect(result).toEqual({ success: true, user: null });
+    });
+
+    it('debería limpiar flag de vinculación pendiente', async () => {
+      const mockResult = { 
+        user: mockUser, 
+        providerId: 'google.com' 
+      } as any;
+      vi.mocked(getRedirectResult).mockResolvedValue(mockResult);
+      vi.mocked(window.localStorage.getItem).mockReturnValue('true');
+
+      await authService.handleRedirectResult();
+
+      expect(window.localStorage.removeItem).toHaveBeenCalledWith('pendingAnonymousLink');
+    });
+
+    it('debería manejar errores de redirección', async () => {
+      const mockError = { code: 'auth/popup-closed-by-user' } as AuthError;
+      vi.mocked(getRedirectResult).mockRejectedValue(mockError);
+
+      const result = await authService.handleRedirectResult();
+
+      expect(result).toEqual({ success: false, error: 'auth/popup-closed-by-user' });
     });
   });
 });
