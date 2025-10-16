@@ -492,6 +492,60 @@ export const ExpenseSchema = z.object({
 export type ExpenseFormData = z.infer<typeof ExpenseSchema>;
 ```
 
+### Autenticación Multiplataforma
+
+La aplicación utiliza un sistema de autenticación adaptativo que detecta el tipo de dispositivo y aplica el método más apropiado para una mejor experiencia de usuario.
+
+#### Autenticación con Google
+
+**Dispositivos de Escritorio:**
+```typescript
+// Usa signInWithPopup - abre Google Auth en ventana emergente
+await signInWithPopup(auth, googleProvider);
+```
+
+**Dispositivos Móviles:**
+```typescript
+// Usa signInWithRedirect - redirige a Google Auth y vuelve a la app
+await signInWithRedirect(auth, googleProvider);
+// Después del redirect, la app procesa el resultado:
+await getRedirectResult(auth);
+```
+
+#### Detección Automática de Dispositivo
+
+```typescript
+// src/utils/deviceDetection.ts
+export const isMobileDevice = (): boolean => {
+  const userAgent = navigator.userAgent || navigator.vendor;
+  const mobileRegex = /android|iphone|ipad|ipod|mobile/i;
+  const isMobileUA = mobileRegex.test(userAgent.toLowerCase());
+  const hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+  const isSmallScreen = window.innerWidth <= 768;
+  
+  return isMobileUA || (hasTouch && isSmallScreen);
+};
+```
+
+#### Flujo de Autenticación
+
+1. **Usuario hace clic en "Continuar con Google"**
+2. **Sistema detecta tipo de dispositivo:**
+   - Desktop: Abre popup de Google Auth
+   - Mobile: Redirige a Google Auth
+3. **Autenticación en Google**
+4. **Retorno a la aplicación:**
+   - Desktop: Popup se cierra, resultado inmediato
+   - Mobile: Navegador redirige de vuelta, `handleRedirectResult()` procesa el resultado
+5. **Creación de perfil de usuario y categorías por defecto**
+
+#### Ventajas del Sistema Adaptativo
+
+- ✅ **Mejor compatibilidad móvil** - Los popups suelen ser bloqueados en móviles
+- ✅ **Experiencia nativa** - El redirect se integra mejor con el navegador móvil
+- ✅ **Misma experiencia desktop** - Los usuarios de escritorio mantienen su flujo familiar
+- ✅ **Soporte para usuarios anónimos** - Vinculación automática de cuentas anónimas
+
 ### Content Security Policy
 
 ```html
