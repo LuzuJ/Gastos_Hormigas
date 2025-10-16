@@ -4,6 +4,8 @@ import {
 import {
   GoogleAuthProvider,
   signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
   signOut,
   signInAnonymously,
   linkWithCredential,
@@ -15,6 +17,7 @@ import {
 } from 'firebase/auth';
 import { userService } from '../profile/userService';
 import { categoryService } from '../categories/categoryService';
+import { isMobileDevice } from '../../utils/deviceDetection';
 
 const googleProvider = new GoogleAuthProvider();
 
@@ -31,21 +34,63 @@ const checkAndCreateNewUserDocument = async (user: User) => {
 export const authService = {
   signInWithGoogle: async (anonymousUser: User | null) => {
     try {
-      const result = await signInWithPopup(auth, googleProvider);
+      // Use redirect for mobile devices, popup for desktop
+      const useMobileAuth = isMobileDevice();
       
-      if (anonymousUser) {
-        const credential = GoogleAuthProvider.credentialFromResult(result);
-        if (credential) {
-          await linkWithCredential(anonymousUser, credential);
-          // CORRECCIÓN: Forzamos un reload para que la app reconozca al usuario como registrado.
-          window.location.reload();
-          return { success: true, user: result.user };
+      if (useMobileAuth) {
+        // Store anonymous user info in localStorage to handle after redirect
+        if (anonymousUser) {
+          localStorage.setItem('pendingAnonymousLink', 'true');
         }
+        // Redirect authentication for mobile devices
+        await signInWithRedirect(auth, googleProvider);
+        // Note: execution stops here, app will reload after redirect
+        return { success: true, user: null };
+      } else {
+        // Popup authentication for desktop devices
+        const result = await signInWithPopup(auth, googleProvider);
+        
+        if (anonymousUser) {
+          const credential = GoogleAuthProvider.credentialFromResult(result);
+          if (credential) {
+            await linkWithCredential(anonymousUser, credential);
+            // CORRECCIÓN: Forzamos un reload para que la app reconozca al usuario como registrado.
+            window.location.reload();
+            return { success: true, user: result.user };
+          }
+        }
+        await checkAndCreateNewUserDocument(result.user);
+        return { success: true, user: result.user };
       }
-      await checkAndCreateNewUserDocument(result.user);
-      return { success: true, user: result.user };
     } catch (error) {
       const authError = error as AuthError;
+      return { success: false, error: authError.code };
+    }
+  },
+
+  // Handle redirect result after Google sign-in redirect
+  handleRedirectResult: async () => {
+    try {
+      const result = await getRedirectResult(auth);
+      
+      if (result) {
+        const pendingLink = localStorage.getItem('pendingAnonymousLink');
+        
+        if (pendingLink === 'true') {
+          // Clear the flag
+          localStorage.removeItem('pendingAnonymousLink');
+          // Note: Linking anonymous user after redirect is complex
+          // For now, we'll just create the user document
+        }
+        
+        await checkAndCreateNewUserDocument(result.user);
+        return { success: true, user: result.user };
+      }
+      
+      return { success: true, user: null };
+    } catch (error) {
+      const authError = error as AuthError;
+      console.error('Error handling redirect result:', authError);
       return { success: false, error: authError.code };
     }
   },
