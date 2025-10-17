@@ -1,4 +1,5 @@
-import type { Timestamp } from 'firebase/firestore';
+// Los timestamps de Supabase son strings ISO en formato UTC
+type SupabaseTimestamp = string;
 
 // Interfaz para las categorías personalizadas
 export interface Category {
@@ -23,7 +24,7 @@ export interface Expense {
   amount: number;
   categoryId: string;
   subCategory: string;
-  createdAt: Timestamp | null;
+  createdAt: SupabaseTimestamp | null;
   paymentSourceId?: string;  // Nueva propiedad opcional
 }
 
@@ -70,7 +71,7 @@ export interface PaymentSource {
   icon?: string;             // Icono personalizado
   color?: string;            // Color para identificación visual
   autoUpdate?: boolean;      // Si se actualiza automáticamente el saldo
-  lastUpdated?: Timestamp;   // Última actualización del saldo
+  lastUpdated?: SupabaseTimestamp;   // Última actualización del saldo
 }
 
 // === RECURRING INCOME TYPES ===
@@ -82,9 +83,9 @@ export interface RecurringIncome {
   name: string;
   amount: number;
   frequency: RecurringIncomeFrequency;
-  startDate: Timestamp;
-  nextDate: Timestamp;        // Próxima fecha de ingreso
-  lastProcessed?: Timestamp;  // Última vez que se procesó
+  startDate: SupabaseTimestamp;
+  nextDate: SupabaseTimestamp;        // Próxima fecha de ingreso
+  lastProcessed?: SupabaseTimestamp;  // Última vez que se procesó
   paymentSourceId?: string;   // A qué fuente de pago va
   isActive: boolean;
   description?: string;
@@ -99,13 +100,13 @@ export interface AutomaticTransaction {
   amount: number;
   type: 'income' | 'expense';
   frequency: RecurringIncomeFrequency;
-  nextDate: Timestamp;
+  nextDate: SupabaseTimestamp;
   fromPaymentSourceId?: string;  // De qué fuente sale (para gastos)
   toPaymentSourceId?: string;    // A qué fuente va (para ingresos)
   categoryId?: string;           // Para gastos automáticos
   description?: string;
   isActive: boolean;
-  lastProcessed?: Timestamp;
+  lastProcessed?: SupabaseTimestamp;
 }
 
 // === FINANCIAL ALERTS TYPES ===
@@ -126,10 +127,10 @@ export interface FinancialAlert {
   message: string;
   severity: 'low' | 'medium' | 'high' | 'critical';
   isRead: boolean;
-  createdAt: Timestamp;
+  createdAt: SupabaseTimestamp;
   actionable: boolean;      // Si requiere acción del usuario
   data?: Record<string, any>; // Datos adicionales para la alerta
-  expiresAt?: Timestamp;    // Cuándo expira la alerta
+  expiresAt?: SupabaseTimestamp;    // Cuándo expira la alerta
 }
 
 // === ENHANCED EXPENSE TYPE ===
@@ -144,7 +145,7 @@ export interface EnhancedExpense extends Expense {
 // === FINANCIAL DASHBOARD TYPES ===
 
 export interface FinancialSnapshot {
-  date: Timestamp;
+  date: SupabaseTimestamp;
   totalAssets: number;
   totalLiabilities: number;
   netWorth: number;
@@ -160,7 +161,7 @@ export interface PaymentSourceBalance {
   type: PaymentSourceType;
   currentBalance: number;
   projectedBalance: number; // Proyección considerando transacciones futuras
-  lastUpdated: Timestamp;
+  lastUpdated: SupabaseTimestamp;
   pendingTransactions: {
     income: number;
     expenses: number;
@@ -168,7 +169,7 @@ export interface PaymentSourceBalance {
 }
 
 export interface FinancialForecast {
-  date: Timestamp;
+  date: SupabaseTimestamp;
   projectedIncome: number;
   projectedExpenses: number;
   projectedCashFlow: number;
@@ -176,7 +177,7 @@ export interface FinancialForecast {
     id: string;
     name: string;
     amount: number;
-    dueDate: Timestamp;
+    dueDate: SupabaseTimestamp;
     type: 'debt' | 'fixed_expense' | 'automatic';
   }[];
   alerts: FinancialAlert[];
@@ -189,7 +190,7 @@ export interface Transaction {
   type: 'income' | 'expense' | 'transfer';
   amount: number;
   description: string;
-  date: Timestamp;
+  date: SupabaseTimestamp;
   fromPaymentSourceId?: string;
   toPaymentSourceId?: string;
   categoryId?: string;
@@ -202,7 +203,7 @@ export type ExpenseFormData = {
   amount: number;
   categoryId: string;
   subCategory: string;
-  createdAt: Timestamp;
+  createdAt: SupabaseTimestamp;
   paymentSourceId?: string;  // Nueva propiedad opcional
 };
 
@@ -227,7 +228,7 @@ export interface Asset {
   value: number;
   type: 'cash' | 'investment' | 'property'; // Tipos de ejemplo
   description?: string; // Descripción opcional del activo
-  lastUpdated?: Timestamp; // Fecha de última actualización
+  lastUpdated?: SupabaseTimestamp; // Fecha de última actualización
 }
 export type AssetFormData = Omit<Asset, 'id' | 'lastUpdated'>;
 
@@ -242,9 +243,9 @@ export interface Liability {
   duration?: number; // Duración del préstamo en meses
   dueDate?: string; // Fecha de vencimiento (YYYY-MM-DD)
   description?: string; // Descripción adicional
-  lastUpdated?: Timestamp; // Fecha de última actualización
+  lastUpdated?: SupabaseTimestamp; // Fecha de última actualización
   isArchived?: boolean; // Indica si la deuda está archivada (pagada completamente)
-  archivedAt?: Timestamp; // Fecha cuando se archivó la deuda
+  archivedAt?: SupabaseTimestamp; // Fecha cuando se archivó la deuda
 }
 export type LiabilityFormData = Omit<Liability, 'id' | 'lastUpdated'>;
 
@@ -255,7 +256,7 @@ export interface DebtPayment {
   id: string;
   liabilityId: string;
   amount: number;
-  paymentDate: Timestamp;
+  paymentDate: SupabaseTimestamp;
   description?: string;
   paymentType: 'regular' | 'extra' | 'interest_only';
 }
@@ -314,7 +315,7 @@ export interface Achievement {
     period?: 'monthly' | 'yearly' | 'total'; // Período de evaluación
   };
   isUnlocked: boolean;
-  unlockedAt?: Timestamp;
+  unlockedAt?: SupabaseTimestamp;
   progress: number; // Progreso actual hacia el logro (0-100)
 }
 

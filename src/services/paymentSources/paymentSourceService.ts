@@ -1,3 +1,7 @@
+/**
+ * @deprecated Este servicio está obsoleto y será eliminado en futuras versiones.
+ * Utilizar paymentSourceServiceRepo en su lugar que implementa el patrón repositorio.
+ */
 import { 
   collection, 
   doc, 

@@ -1,40 +1,53 @@
-import { db } from '../../config/firebase';
-import {
-    collection, onSnapshot, addDoc, doc, deleteDoc,
-    query, serverTimestamp, type QuerySnapshot, type DocumentData
-} from 'firebase/firestore';
+import { repositoryFactory } from '../../repositories';
 import type { SavingsGoal, SavingsGoalFormData } from '../../types';
-import { FIRESTORE_PATHS } from '../../constants';
 
-const appId = import.meta.env.VITE_FIREBASE_PROJECT_ID || 'default-app';
+// Tipo para mantener compatibilidad con código existente
 type SavingsGoalsCallback = (data: SavingsGoal[], error?: Error) => void;
 
-const getSavingsGoalsCollectionRef = (userId: string) => {
-    return collection(db, FIRESTORE_PATHS.USERS, userId, FIRESTORE_PATHS.SAVINGS_GOALS);
-};
-
+/**
+ * Servicio para la gestión de metas de ahorro
+ * @deprecated Favor de utilizar savingsGoalServiceRepo.ts que implementa el patrón repositorio
+ */
 export const savingsGoalService = {
     onSavingsGoalsUpdate: (userId: string, callback: SavingsGoalsCallback) => {
-        const q = query(getSavingsGoalsCollectionRef(userId));
-        return onSnapshot(q, (snapshot: QuerySnapshot<DocumentData>) => {
-            const goals = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as SavingsGoal));
-            callback(goals);
-        }, (error) => {
+        try {
+            // Este servicio está siendo migrado al patrón repositorio
+            // Se recomienda usar savingsGoalServiceRepo.onSavingsGoalsUpdate en su lugar
+            return repositoryFactory.getSavingsGoalRepository().subscribeToSavingsGoals(
+                userId, 
+                (goals) => callback(goals)
+            );
+        } catch (error) {
             console.error("Error fetching savings goals:", error);
-            callback([], error);
-        });
+            callback([], error instanceof Error ? error : new Error(String(error)));
+            // Devolver función noop para mantener la compatibilidad
+            return () => {};
+        }
     },
 
-    addSavingsGoal: (userId: string, goalData: SavingsGoalFormData) => {
-        return addDoc(getSavingsGoalsCollectionRef(userId), {
-            ...goalData,
-            currentAmount: 0,
-            createdAt: serverTimestamp()
-        });
+    addSavingsGoal: async (userId: string, goalData: SavingsGoalFormData) => {
+        // Este servicio está siendo migrado al patrón repositorio
+        // Se recomienda usar savingsGoalServiceRepo.addSavingsGoal en su lugar
+        try {
+            await repositoryFactory.getSavingsGoalRepository().addSavingsGoal(userId, goalData);
+            // La API original retornaba una promesa pero no un valor específico
+            return { id: 'created' }; // Simular el retorno de un DocumentReference
+        } catch (error) {
+            console.error("Error adding savings goal:", error);
+            throw error;
+        }
     },
 
-    deleteSavingsGoal: (userId: string, goalId: string) => {
-        const goalDocRef = doc(db, FIRESTORE_PATHS.USERS, userId, FIRESTORE_PATHS.SAVINGS_GOALS, goalId);
-        return deleteDoc(goalDocRef);
+    deleteSavingsGoal: async (userId: string, goalId: string) => {
+        // Este servicio está siendo migrado al patrón repositorio
+        // Se recomienda usar savingsGoalServiceRepo.deleteSavingsGoal en su lugar
+        try {
+            await repositoryFactory.getSavingsGoalRepository().deleteSavingsGoal(userId, goalId);
+            // La API original retornaba una promesa pero no un valor específico
+            return true;
+        } catch (error) {
+            console.error("Error deleting savings goal:", error);
+            throw error;
+        }
     },
 };

@@ -44,6 +44,13 @@ export const LoginPage = createLazyRoute(
   "Cargando..."
 );
 
+export const AuthCallbackPage = createLazyRoute(
+  () => import('../pages/AuthCallbackPage').then(module => ({ 
+    default: module.default 
+  })),
+  "Completando autenticación..."
+);
+
 export const ProfilePage = createLazyRoute(
   () => import('../pages/ProfilePage').then(module => ({ 
     default: module.ProfilePage 

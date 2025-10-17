@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { onAuthStateChanged, signOut, type User } from 'firebase/auth';
-import { auth } from './config/firebase';
-import { userService } from './services/profile/userService';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AppProvider } from './contexts/AppContext';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { Layout, type Page } from './components/layout/Layout/Layout';
 import { PWAManager } from './components/PWAManager';
 import { Toaster } from 'react-hot-toast';
 import { PAGE_ROUTES } from './constants';
+import { LoadingSpinner } from './components/common/LoadingSpinner';
 import { 
   DashboardPage,
   ReportsPage,
@@ -16,23 +16,49 @@ import {
   ProfilePage,
   ManageCategoriesPage,
   BudgetPage,
+  AuthCallbackPage,
   preloadRoutesFor
 } from './routes/lazyRoutes';
 
+// Componente que protege las rutas que requieren autenticación
+const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { user, isLoading } = useAuth();
+  
+  if (isLoading) {
+    return (
+      <div className="loading-screen">
+        <LoadingSpinner size="large" />
+        <p>Cargando...</p>
+      </div>
+    );
+  }
+  
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+  
+  return <>{children}</>;
+};
+
 // Componente para la aplicación principal, se muestra cuando el usuario está logueado
-const MainApp: React.FC<{ user: User }> = ({ user }) => {
+const MainApp: React.FC = () => {
+  const { user } = useAuth();
   const [currentPage, setCurrentPage] = useState<Page>(PAGE_ROUTES.DASHBOARD);
-  const isGuest = user.isAnonymous;
+  const isGuest = user?.app_metadata?.provider === 'anonymous';
 
   // Precargar rutas relacionadas cuando se carga una página
   useEffect(() => {
     preloadRoutesFor(currentPage);
   }, [currentPage]);
 
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+
   const renderPage = () => {
     switch (currentPage) {
       case PAGE_ROUTES.DASHBOARD: 
-        return <DashboardPage isGuest={isGuest} userId={user.uid} />;
+        return <DashboardPage isGuest={isGuest} userId={user.id} />;
       case PAGE_ROUTES.REGISTRO: 
         return <RegistroPage />;
       case PAGE_ROUTES.PLANNING: 
@@ -44,9 +70,9 @@ const MainApp: React.FC<{ user: User }> = ({ user }) => {
       case PAGE_ROUTES.BUDGET: 
         return <BudgetPage isGuest={isGuest} />;
       case PAGE_ROUTES.PROFILE: 
-        return <ProfilePage userId={user.uid} isGuest={isGuest} setCurrentPage={setCurrentPage} />;
+        return <ProfilePage userId={user.id} isGuest={isGuest} setCurrentPage={setCurrentPage} />;
       default: 
-        return <DashboardPage isGuest={false} userId={user.uid} />;
+        return <DashboardPage isGuest={false} userId={user.id} />;
     }
   };
 
@@ -57,67 +83,36 @@ const MainApp: React.FC<{ user: User }> = ({ user }) => {
   );
 };
 
-
 // Componente principal de la aplicación
 export default function App() {
-  const [user, setUser] = useState<User | null>(null);
-  const [isAuthReady, setIsAuthReady] = useState<boolean>(false);
-  const [isValidatingUser, setIsValidatingUser] = useState<boolean>(false);
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-      setIsValidatingUser(true);
-      
-      if (currentUser && !currentUser.isAnonymous) {
-        // Para usuarios registrados, verificar que tengan perfil completo
-        try {
-          const userProfile = await userService.getUserProfile(currentUser.uid);
-          
-          if (!userProfile) {
-            // Intentar crear el perfil automáticamente en lugar de rechazar
-            await userService.createUserProfile(currentUser);
-            const newProfile = await userService.getUserProfile(currentUser.uid);
-            
-            if (newProfile) {
-              setUser(currentUser);
-            } else {
-              // Solo rechazar si realmente no se puede crear el perfil
-              await signOut(auth);
-              setUser(null);
-            }
-          } else {
-            setUser(currentUser);
-          }
-        } catch (error) {
-          console.error('Error verificando perfil de usuario:', error);
-          // En caso de error, permitir el acceso pero loggear el problema
-          setUser(currentUser);
-        }
-      } else {
-        // Usuario anónimo o no autenticado
-        setUser(currentUser);
-      }
-      
-      setIsValidatingUser(false);
-      setIsAuthReady(true);
-    });
-    return () => unsubscribe();
-  }, []);
-
-  if (!isAuthReady || isValidatingUser) {
-    return <div className="loading-screen">Cargando...</div>;
-  }
-
   return (
-    // AppProvider envuelve toda la lógica condicional
-    <AppProvider userId={user?.uid || null}>
-      <PWAManager showInstallPrompt={true} />
-      <Toaster position="bottom-center" />
-      {user ? (
-        <MainApp user={user} />
-      ) : (
-        <LoginPage />
-      )}
-    </AppProvider>
+    <BrowserRouter>
+      <AuthProvider>
+        <AppProvider>
+          <PWAManager showInstallPrompt={true} />
+          <Toaster position="bottom-center" />
+          
+          <Routes>
+            {/* Ruta de callback para OAuth */}
+            <Route path="/auth/callback" element={<AuthCallbackPage />} />
+            
+            {/* Rutas de autenticación */}
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/registro" element={<RegistroPage />} />
+            
+            {/* Rutas protegidas */}
+            <Route path="/dashboard" element={
+              <ProtectedRoute>
+                <MainApp />
+              </ProtectedRoute>
+            } />
+            
+            {/* Redirección para rutas no definidas */}
+            <Route path="/" element={<Navigate to="/dashboard" replace />} />
+            <Route path="*" element={<Navigate to="/dashboard" replace />} />
+          </Routes>
+        </AppProvider>
+      </AuthProvider>
+    </BrowserRouter>
   );
 }

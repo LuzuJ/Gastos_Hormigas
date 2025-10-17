@@ -1,29 +1,19 @@
-import { doc, getDoc, updateDoc, setDoc } from 'firebase/firestore';
-import { db } from '../../config/firebase';
-import { FIRESTORE_PATHS } from '../../constants';
+import { repositoryFactory } from '../../repositories';
 import type { UserProfile } from '../../types';
-import type { User } from 'firebase/auth';
+import type { User } from '@supabase/supabase-js';
 
-const appId = import.meta.env.VITE_FIREBASE_PROJECT_ID || 'default-app';
-
-const getUserDocRef = (userId: string) => {
-    return doc(db, FIRESTORE_PATHS.USERS, userId);
-};
-
+/**
+ * Servicio para la gestión de usuarios
+ * 
+ * @deprecated Favor de utilizar userServiceRepo.ts que implementa el patrón repositorio
+ */
 export const userService = {
     // Crea el perfil inicial de un usuario
     createUserProfile: async (user: User) => {
-        const userDocRef = getUserDocRef(user.uid);
         try {
-            const userDoc = await getDoc(userDocRef);
-            if (!userDoc.exists()) {
-                const profileData = {
-                    displayName: user.displayName || user.email?.split('@')[0] || 'Usuario',
-                    email: user.email || '',
-                    currency: 'USD' as const,
-                };
-                await setDoc(userDocRef, profileData);
-            }
+            // Este servicio está siendo migrado al patrón repositorio
+            // Se recomienda usar userServiceRepo.createUserProfile en su lugar
+            return await repositoryFactory.getUserRepository().createUserProfile(user);
         } catch (error) {
             console.error('Error al crear el perfil de usuario:', error);
             throw error;
@@ -33,17 +23,9 @@ export const userService = {
     // Obtiene el perfil de un usuario
     getUserProfile: async (userId: string): Promise<UserProfile | null> => {
         try {
-            const userDoc = await getDoc(getUserDocRef(userId));
-            if (userDoc.exists()) {
-                const data = userDoc.data();
-                // Asegurar que el perfil tenga todos los campos requeridos
-                return {
-                    displayName: data.displayName || 'Usuario',
-                    email: data.email || '',
-                    currency: data.currency || 'USD',
-                } as UserProfile;
-            }
-            return null;
+            // Este servicio está siendo migrado al patrón repositorio
+            // Se recomienda usar userServiceRepo.getUserProfile en su lugar
+            return await repositoryFactory.getUserRepository().getUserProfile(userId);
         } catch (error) {
             console.error('Error al obtener el perfil de usuario:', error);
             return null;
@@ -51,7 +33,37 @@ export const userService = {
     },
 
     // Actualiza el perfil de un usuario
-    updateUserProfile: (userId: string, data: Partial<UserProfile>) => {
-        return updateDoc(getUserDocRef(userId), data);
+    updateUserProfile: async (userId: string, profileData: Partial<UserProfile>) => {
+        try {
+            // Este servicio está siendo migrado al patrón repositorio
+            // Se recomienda usar userServiceRepo.updateUserProfile en su lugar
+            await repositoryFactory.getUserRepository().update(userId, userId, profileData);
+        } catch (error) {
+            console.error('Error al actualizar el perfil de usuario:', error);
+            throw error;
+        }
+    },
+
+    // Función adicional: Eliminar perfil de usuario
+    deleteUserProfile: async (userId: string) => {
+        try {
+            // Este servicio está siendo migrado al patrón repositorio
+            // Se recomienda usar userServiceRepo.deleteUserProfile en su lugar
+            await repositoryFactory.getUserRepository().delete(userId, userId);
+        } catch (error) {
+            console.error('Error al eliminar el perfil de usuario:', error);
+            throw error;
+        }
+    },
+
+    // Función adicional: Obtener estadísticas del usuario
+    getUserStats: async (userId: string) => {
+        try {
+            // Ahora usamos el repositorio de estadísticas
+            return await repositoryFactory.getUserStatsRepository().getUserStats(userId);
+        } catch (error) {
+            console.error('Error al obtener estadísticas del usuario:', error);
+            return null;
+        }
     }
 };

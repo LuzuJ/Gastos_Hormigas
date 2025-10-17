@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
-import { userService } from '../../services/profile/userService';
-import { auth } from '../../config/firebase';
+import { userServiceRepo } from '../../services/profile/userServiceRepo';
+import { supabase } from '../../config/supabase';
 import { useLoadingState, handleAsyncOperation } from '../context/useLoadingState';
 import type { UserProfile } from '../../types';
 
@@ -20,12 +20,16 @@ export const useUserProfile = (userId: string | null) => {
         clearError();
         
         try {
-            let userProfile = await userService.getUserProfile(id);
+            let userProfile = await userServiceRepo.getUserProfile(id);
             
             // Si el perfil no existe, crearlo automáticamente
-            if (!userProfile && auth.currentUser) {
-                await userService.createUserProfile(auth.currentUser);
-                userProfile = await userService.getUserProfile(id);
+            if (!userProfile) {
+                // Obtener el usuario actual de Supabase
+                const { data } = await supabase.auth.getUser();
+                if (data?.user) {
+                    await userServiceRepo.createUserProfile(data.user);
+                    userProfile = await userServiceRepo.getUserProfile(id);
+                }
             }
             
             setProfile(userProfile);
@@ -53,7 +57,7 @@ export const useUserProfile = (userId: string | null) => {
 
         return await handleAsyncOperation(
             async () => {
-                await userService.updateUserProfile(userId, data);
+                await userServiceRepo.updateUserProfile(userId, data);
                 await fetchProfile(userId); // Vuelve a cargar el perfil para reflejar los cambios
             },
             'Error al actualizar el perfil'

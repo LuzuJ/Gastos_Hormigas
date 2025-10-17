@@ -5,7 +5,7 @@ import {
     type QuerySnapshot, type DocumentData, Timestamp
 } from 'firebase/firestore';
 import type { Expense, ExpenseFormData } from '../../types';
-import { FIRESTORE_PATHS } from '../../constants'; // 1. Importamos las constantes
+import { FIRESTORE_PATHS } from '../../constants-legacy'; // 1. Importamos las constantes
 
 const appId = import.meta.env.VITE_FIREBASE_PROJECT_ID || 'default-app';
 type ExpensesCallback = (data: Expense[], error?: Error) => void;

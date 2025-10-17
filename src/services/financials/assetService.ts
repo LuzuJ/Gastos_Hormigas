@@ -1,9 +1,13 @@
+/**
+ * @deprecated Este servicio está obsoleto y será eliminado en futuras versiones.
+ * Utilizar assetServiceRepo en su lugar que implementa el patrón repositorio.
+ */
 import { db } from '../../config/firebase';
 import {
     collection, onSnapshot, addDoc, doc, deleteDoc, updateDoc, query, Timestamp
 } from 'firebase/firestore';
 import type { Asset, AssetFormData } from '../../types';
-import { FIRESTORE_PATHS } from '../../constants';
+import { FIRESTORE_PATHS } from '../../constants-legacy';
 
 type AssetsCallback = (data: Asset[]) => void;
 

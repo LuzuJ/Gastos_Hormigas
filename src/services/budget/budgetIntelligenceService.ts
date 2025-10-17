@@ -85,7 +85,7 @@ export class BudgetIntelligenceService {
     
     // Filtrar gastos del mes actual
     const monthlyExpenses = expenses.filter(expense => {
-      const expenseDate = expense.createdAt?.toDate() || new Date();
+      const expenseDate = expense.createdAt ? new Date(expense.createdAt) : new Date();
       return expenseDate >= monthStart && expenseDate <= monthEnd;
     });
 
@@ -208,7 +208,10 @@ export class BudgetIntelligenceService {
     
     // Filtrar gastos del mes actual
     const monthlyExpenses = expenses.filter(expense => {
-      const expenseDate = expense.createdAt?.toDate() || new Date();
+      // Convertir string ISO a objeto Date
+      const expenseDate = expense.createdAt 
+        ? new Date(expense.createdAt) 
+        : new Date();
       return expenseDate >= monthStart && expenseDate <= monthEnd;
     });
 
@@ -384,7 +387,9 @@ export class BudgetIntelligenceService {
       const monthEnd = endOfMonth(targetMonth);
       
       const monthlyExpenses = expenses.filter(expense => {
-        const expenseDate = expense.createdAt?.toDate() || new Date();
+        const expenseDate = expense.createdAt 
+          ? new Date(expense.createdAt) 
+          : new Date();
         return expense.categoryId === categoryId && 
                expenseDate >= monthStart && 
                expenseDate <= monthEnd;

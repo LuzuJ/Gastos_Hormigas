@@ -4,7 +4,7 @@ import { db } from '../../config/firebase'; // Necesitamos la referencia a la DB
 import { doc, runTransaction, increment } from 'firebase/firestore';
 import { useLoadingState, handleAsyncOperation } from '../context/useLoadingState';
 import type { SavingsGoal, SavingsGoalFormData } from '../../types';
-import { FIRESTORE_PATHS } from '../../constants';
+import { FIRESTORE_PATHS } from '../../constants-legacy';
 
 const appId = import.meta.env.VITE_FIREBASE_PROJECT_ID || 'default-app';
 

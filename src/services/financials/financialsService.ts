@@ -1,33 +1,40 @@
-import { db } from '../../config/firebase';
-import { doc, onSnapshot, setDoc, type DocumentData } from 'firebase/firestore';
+import { repositoryFactory } from '../../repositories';
 import type { Financials } from '../../types';
-import { FIRESTORE_PATHS } from '../../constants'; // 1. Importamos las constantes
 
-const appId = import.meta.env.VITE_FIREBASE_PROJECT_ID || 'default-app';
+// Tipo para mantener compatibilidad con código existente
 type FinancialsCallback = (data: Financials | null, error?: Error) => void;
 
-// 2. Usamos las constantes para la ruta del documento
-const getFinancialsDocRef = (userId: string) => {
-    return doc(db, FIRESTORE_PATHS.USERS, userId, FIRESTORE_PATHS.FINANCIALS, FIRESTORE_PATHS.FINANCIALS_SUMMARY_DOC);
-};
-
+/**
+ * Servicio para la gestión de información financiera
+ * @deprecated Favor de utilizar financialsServiceRepo.ts que implementa el patrón repositorio
+ */
 export const financialsService = {
     onFinancialsUpdate: (userId: string, callback: FinancialsCallback) => {
-        const financialsDocRef = getFinancialsDocRef(userId);
-        return onSnapshot(financialsDocRef, (snapshot: DocumentData) => {
-            if (snapshot.exists()) {
-                callback(snapshot.data() as Financials);
-            } else {
-                callback(null);
-            }
-        }, (error) => {
+        try {
+            // Este servicio está siendo migrado al patrón repositorio
+            // Se recomienda usar financialsServiceRepo.onFinancialsUpdate en su lugar
+            return repositoryFactory.getFinancialsRepository().subscribeToFinancials(
+                userId, 
+                (financials) => callback(financials)
+            );
+        } catch (error) {
             console.error("Error fetching financials:", error);
-            callback(null, error);
-        });
+            callback(null, error instanceof Error ? error : new Error(String(error)));
+            // Devolver función noop para mantener la compatibilidad
+            return () => {};
+        }
     },
 
-    setMonthlyIncome: (userId: string, income: number) => {
-        const financialsDocRef = getFinancialsDocRef(userId);
-        return setDoc(financialsDocRef, { monthlyIncome: income }, { merge: true });
+    setMonthlyIncome: async (userId: string, income: number) => {
+        // Este servicio está siendo migrado al patrón repositorio
+        // Se recomienda usar financialsServiceRepo.setMonthlyIncome en su lugar
+        try {
+            await repositoryFactory.getFinancialsRepository().updateFinancials(userId, { monthlyIncome: income });
+            // La API original retornaba una promesa pero no un valor específico
+            return true;
+        } catch (error) {
+            console.error("Error setting monthly income:", error);
+            throw error;
+        }
     },
 };

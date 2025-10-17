@@ -1,49 +1,81 @@
-import { db } from '../../config/firebase';
-import {
-    collection, onSnapshot, addDoc, doc, deleteDoc,
-    query, type QuerySnapshot, type DocumentData, 
-    updateDoc, getDocs
-} from 'firebase/firestore';
+import { repositoryFactory } from '../../repositories';
 import type { FixedExpense } from '../../types';
-import { FIRESTORE_PATHS } from '../../constants'; // 1. Importamos las constantes
 
-const appId = import.meta.env.VITE_FIREBASE_PROJECT_ID || 'default-app';
+// Tipo para mantener compatibilidad con código existente
 type FixedExpensesCallback = (data: FixedExpense[], error?: Error) => void;
 
-// 2. Usamos las constantes para construir la ruta
-const getFixedExpensesCollectionRef = (userId: string) => {
-    return collection(db, FIRESTORE_PATHS.USERS, userId, FIRESTORE_PATHS.FIXED_EXPENSES);
-};
-
+/**
+ * Servicio para la gestión de gastos fijos
+ * @deprecated Favor de utilizar fixedExpenseServiceRepo.ts que implementa el patrón repositorio
+ */
 export const fixedExpenseService = {
     onFixedExpensesUpdate: (userId: string, callback: FixedExpensesCallback) => {
-        const q = query(getFixedExpensesCollectionRef(userId));
-        return onSnapshot(q, (snapshot: QuerySnapshot<DocumentData>) => {
-            const fixedExpenses = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as FixedExpense));
-            callback(fixedExpenses.sort((a, b) => a.dayOfMonth - b.dayOfMonth));
-        }, (error) => {
+        try {
+            // Este servicio está siendo migrado al patrón repositorio
+            // Se recomienda usar fixedExpenseServiceRepo.onFixedExpensesUpdate en su lugar
+            return repositoryFactory.getFixedExpenseRepository().subscribeToFixedExpenses(
+                userId, 
+                (fixedExpenses) => callback(
+                    // Mantener el mismo ordenamiento que la versión original
+                    fixedExpenses.sort((a, b) => a.dayOfMonth - b.dayOfMonth)
+                )
+            );
+        } catch (error) {
             console.error("Error fetching fixed expenses:", error);
-            callback([], error);
-        });
+            callback([], error instanceof Error ? error : new Error(String(error)));
+            // Devolver función noop para mantener la compatibilidad
+            return () => {};
+        }
     },
 
-    addFixedExpense: (userId: string, data: Omit<FixedExpense, 'id'>) => {
-        return addDoc(getFixedExpensesCollectionRef(userId), data);
+    addFixedExpense: async (userId: string, data: Omit<FixedExpense, 'id'>) => {
+        // Este servicio está siendo migrado al patrón repositorio
+        // Se recomienda usar fixedExpenseServiceRepo.addFixedExpense en su lugar
+        try {
+            await repositoryFactory.getFixedExpenseRepository().addFixedExpense(userId, data);
+            // La API original retornaba una promesa pero no un valor específico
+            return true;
+        } catch (error) {
+            console.error("Error adding fixed expense:", error);
+            throw error;
+        }
     },
 
-    deleteFixedExpense: (userId: string, fixedExpenseId: string) => {
-        // 3. Y finalmente aquí también
-        const fixedExpenseDocRef = doc(db, FIRESTORE_PATHS.USERS, userId, FIRESTORE_PATHS.FIXED_EXPENSES, fixedExpenseId);
-        return deleteDoc(fixedExpenseDocRef);
+    deleteFixedExpense: async (userId: string, fixedExpenseId: string) => {
+        // Este servicio está siendo migrado al patrón repositorio
+        // Se recomienda usar fixedExpenseServiceRepo.deleteFixedExpense en su lugar
+        try {
+            await repositoryFactory.getFixedExpenseRepository().deleteFixedExpense(userId, fixedExpenseId);
+            // La API original retornaba una promesa pero no un valor específico
+            return true;
+        } catch (error) {
+            console.error("Error deleting fixed expense:", error);
+            throw error;
+        }
     },
+    
     getFixedExpensesOnce: async (userId: string) => {
-        const snapshot = await getDocs(getFixedExpensesCollectionRef(userId));
-        return snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as FixedExpense));
+        // Este servicio está siendo migrado al patrón repositorio
+        // Se recomienda usar fixedExpenseServiceRepo.getFixedExpenses en su lugar
+        try {
+            return await repositoryFactory.getFixedExpenseRepository().getFixedExpenses(userId);
+        } catch (error) {
+            console.error("Error getting fixed expenses:", error);
+            return [];
+        }
     },
 
     // Actualiza un gasto fijo específico (para marcarlo como registrado)
-    updateFixedExpense: (userId: string, goalId: string, data: Partial<FixedExpense>) => {
-        const fixedExpenseDocRef = doc(db, FIRESTORE_PATHS.USERS, userId, FIRESTORE_PATHS.FIXED_EXPENSES, goalId);
-        return updateDoc(fixedExpenseDocRef, data);
+    updateFixedExpense: async (userId: string, fixedExpenseId: string, data: Partial<FixedExpense>) => {
+        // Este servicio está siendo migrado al patrón repositorio
+        // Se recomienda usar fixedExpenseServiceRepo.updateFixedExpense en su lugar
+        try {
+            await repositoryFactory.getFixedExpenseRepository().updateFixedExpense(userId, fixedExpenseId, data);
+            // La API original retornaba una promesa pero no un valor específico
+            return true;
+        } catch (error) {
+            console.error("Error updating fixed expense:", error);
+            throw error;
+        }
     }
 };

@@ -1,0 +1,1 @@
+export { SupabaseRepositoryFactory } from './SupabaseRepositoryFactory';

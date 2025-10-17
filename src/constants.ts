@@ -13,22 +13,28 @@ export const PAGE_ROUTES = {
 } as const; // 'as const' hace los valores de solo lectura para mayor seguridad
 
 /**
- * Nombres de las colecciones y documentos en Firestore.
- * Centralizar esto previene errores de tipeo al construir las rutas de la base de datos.
+ * Nombres de las tablas en Supabase PostgreSQL.
+ * Centralizar esto previene errores de tipeo al construir las consultas SQL.
  */
-export const FIRESTORE_PATHS = {
-  ARTIFACTS: 'artifacts',
+export const SUPABASE_TABLES = {
   USERS: 'users',
   CATEGORIES: 'categories',
   SUBCATEGORIES: 'subcategories',
   EXPENSES: 'expenses',
   FINANCIALS: 'financials',
-  FIXED_EXPENSES: 'fixedExpenses',
-  FINANCIALS_SUMMARY_DOC: 'summary',
-  SAVINGS_GOALS: 'savingsGoals',
+  FIXED_EXPENSES: 'fixed_expenses',
+  SAVINGS_GOALS: 'savings_goals',
   ASSETS: 'assets',
   LIABILITIES: 'liabilities',
-  DEBT_PAYMENTS: 'debtPayments',
+  DEBT_PAYMENTS: 'debt_payments',
+  PAYMENT_SOURCES: 'payment_sources',
+  RECURRING_INCOME: 'recurring_income',
+  AUTOMATIC_TRANSACTIONS: 'automatic_transactions',
+  FINANCIAL_ALERTS: 'financial_alerts',
+  TRANSACTIONS: 'transactions',
+  ACHIEVEMENTS: 'achievements',
+  USER_STATS: 'user_stats',
+  MONTHLY_STATS: 'monthly_stats',
 } as const;
 
 export const defaultCategoriesStructure = [
