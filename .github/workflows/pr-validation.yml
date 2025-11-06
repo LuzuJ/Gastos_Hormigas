@@ -79,6 +79,8 @@ jobs:
         env:
           VITE_APP_ENV: preview
           VITE_APP_VERSION: pr-${{ github.event.number }}
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
 
       - name: 📤 Upload preview build
         uses: actions/upload-artifact@v4
