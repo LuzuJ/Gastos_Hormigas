@@ -117,6 +117,13 @@ export default defineConfig({
             return `page-${pageName}`;
           }
           
+          // Services: separar por carpeta para evitar dependencias circulares
+          if (id.includes('/services/auth/') || id.includes('/services/authService')) {
+            return 'app-auth';
+          }
+          if (id.includes('/services/financials/') || id.includes('/services/categories/')) {
+            return 'app-core-services';
+          }
           if (id.includes('/services/')) {
             return 'app-services';
           }
