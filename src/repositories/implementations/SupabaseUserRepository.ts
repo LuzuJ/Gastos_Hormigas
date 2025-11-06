@@ -105,9 +105,9 @@ export class SupabaseUserRepository extends SupabaseRepository<UserProfile, stri
       displayName: data.display_name || 'Usuario',
       email: data.email || '',
       currency: data.currency || 'USD',
-      avatarUrl: data.avatar_url,
-      theme: data.theme,
-      language: data.language,
+      avatarUrl: data.avatar_url || undefined,
+      theme: data.theme || undefined,
+      language: data.language || undefined,
     };
   }
   
