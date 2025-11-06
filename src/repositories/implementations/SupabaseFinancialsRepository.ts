@@ -6,11 +6,16 @@ import type { RealtimeChannel } from '@supabase/supabase-js';
 
 /**
  * Tipo para información financiera en la base de datos de Supabase
+ * Alineado con el esquema real de la tabla financials
  */
 interface SupabaseFinancials {
   id: string;
   user_id: string;
   monthly_income: number;
+  emergency_fund: number;
+  total_debt: number;
+  created_at?: string;
+  updated_at?: string;
 }
 
 /**
@@ -20,7 +25,7 @@ export class SupabaseFinancialsRepository
   extends SupabaseRepository<Financials, string> 
   implements IFinancialsRepository {
   
-  private subscriptions: Map<string, RealtimeChannel> = new Map();
+  private readonly subscriptions: Map<string, RealtimeChannel> = new Map();
   
   constructor() {
     super(SUPABASE_TABLES.FINANCIALS);
@@ -120,7 +125,14 @@ export class SupabaseFinancialsRepository
     this.subscriptions.set(userId, channel);
     
     // También disparar una carga inicial de datos
-    this.getFinancials(userId).then(callback);
+    this.getFinancials(userId)
+      .then(financials => {
+        callback(financials);
+      })
+      .catch(error => {
+        console.error(`[SupabaseFinancialsRepository] Error loading initial financials:`, error);
+        callback(null);
+      });
     
     // Devolver función para cancelar la suscripción
     return () => {
@@ -137,6 +149,8 @@ export class SupabaseFinancialsRepository
   protected mapDatabaseToModel(data: SupabaseFinancials): Financials {
     return {
       monthlyIncome: data.monthly_income,
+      emergencyFund: data.emergency_fund,
+      totalDebt: data.total_debt,
     };
   }
   
@@ -150,6 +164,12 @@ export class SupabaseFinancialsRepository
     
     if (data.monthlyIncome !== undefined) {
       databaseData.monthly_income = data.monthlyIncome;
+    }
+    if (data.emergencyFund !== undefined) {
+      databaseData.emergency_fund = data.emergencyFund;
+    }
+    if (data.totalDebt !== undefined) {
+      databaseData.total_debt = data.totalDebt;
     }
     
     return databaseData;

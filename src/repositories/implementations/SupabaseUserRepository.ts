@@ -23,7 +23,7 @@ export class SupabaseUserRepository extends SupabaseRepository<UserProfile, stri
     try {
       const { data, error } = await this.client
         .from(SUPABASE_TABLES.USERS)
-        .select('display_name, email, currency')
+        .select('display_name, email, currency, avatar_url, theme, language')
         .eq('id', userId)
         .single();
       
@@ -39,6 +39,9 @@ export class SupabaseUserRepository extends SupabaseRepository<UserProfile, stri
           displayName: data.display_name || 'Usuario',
           email: data.email || '',
           currency: data.currency || 'USD',
+          avatarUrl: data.avatar_url,
+          theme: data.theme,
+          language: data.language,
         };
       }
       
@@ -102,6 +105,9 @@ export class SupabaseUserRepository extends SupabaseRepository<UserProfile, stri
       displayName: data.display_name || 'Usuario',
       email: data.email || '',
       currency: data.currency || 'USD',
+      avatarUrl: data.avatar_url,
+      theme: data.theme,
+      language: data.language,
     };
   }
   
@@ -121,6 +127,15 @@ export class SupabaseUserRepository extends SupabaseRepository<UserProfile, stri
     }
     if (data.currency !== undefined) {
       databaseData.currency = data.currency;
+    }
+    if (data.avatarUrl !== undefined) {
+      databaseData.avatar_url = data.avatarUrl;
+    }
+    if (data.theme !== undefined) {
+      databaseData.theme = data.theme;
+    }
+    if (data.language !== undefined) {
+      databaseData.language = data.language;
     }
     
     return databaseData;

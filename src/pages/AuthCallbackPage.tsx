@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { supabase } from '../config/supabase';
-import { userServiceRepo } from '../services/profile/userServiceRepo';
-import { categoryServiceRepo } from '../services/categories/categoryServiceRepo';
+import { userInitializationService } from '../services/userInitializationService';
 import { LoadingSpinner } from '../components/common/LoadingSpinner';
 
 /**
@@ -27,17 +26,39 @@ export const AuthCallbackPage: React.FC = () => {
         }
 
         if (data?.session?.user) {
-          // Verificar si el usuario necesita inicialización
           const user = data.session.user;
           
-          // Verificar si ya existe un perfil para este usuario
-          const profile = await userServiceRepo.getUserProfile(user.id);
+          console.log('Usuario autenticado:', user.id);
           
-          if (!profile) {
-            // Si es la primera vez que inicia sesión, crear perfil y categorías por defecto
-            await userServiceRepo.createUserProfile(user);
-            await categoryServiceRepo.initializeDefaultCategories(user.id);
-            console.log('Perfil y categorías inicializadas para el nuevo usuario');
+          // Dar tiempo al trigger de Supabase para crear los datos
+          // El trigger debería ejecutarse automáticamente
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          
+          // Verificar si ya existe un perfil
+          try {
+            const { data: profile, error: profileError } = await supabase
+              .from('users')
+              .select('id')
+              .eq('id', user.id)
+              .single();
+            
+            if (profileError && profileError.code === 'PGRST116') {
+              // No existe perfil, crearlo manualmente como fallback
+              console.warn('Trigger no ejecutado, inicializando datos manualmente...');
+              
+              // Usar el servicio de inicialización completo
+              const success = await userInitializationService.initializeCompleteUserData(user.id);
+              
+              if (success) {
+                console.log('✅ Datos inicializados correctamente');
+              } else {
+                console.error('❌ Error al inicializar datos del usuario');
+              }
+            } else if (profile) {
+              console.log('✅ Perfil ya existe, datos ya inicializados');
+            }
+          } catch (error) {
+            console.error('Error verificando perfil:', error);
           }
           
           // Redirigir al dashboard

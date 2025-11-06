@@ -2,6 +2,15 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App'
 import './index.css'
+import { supabase } from './config/supabase'
+import { userInitializationService } from './services/userInitializationService'
+
+// Exponer supabase y servicios globalmente para debugging (solo en desarrollo)
+if (import.meta.env.DEV) {
+  (window as any).supabase = supabase;
+  (window as any).userInitializationService = userInitializationService;
+  console.log('🔧 Debug mode: supabase y userInitializationService disponibles globalmente');
+}
 
 // Registrar Service Worker para PWA
 if ('serviceWorker' in navigator) {

@@ -81,6 +81,16 @@ export class SupabaseExpenseRepository
    * @returns Una función para cancelar la suscripción
    */
   subscribeToExpenses(userId: string, callback: (expenses: Expense[]) => void): () => void {
+    // Primero, cargar los datos existentes
+    this.getExpenses(userId)
+      .then(expenses => {
+        callback(expenses);
+      })
+      .catch(error => {
+        console.error('Error loading initial expenses:', error);
+        callback([]);
+      });
+    
     // Crear un canal para los gastos
     const channel = this.client
       .channel(`${SUPABASE_TABLES.EXPENSES}-${userId}`)
@@ -121,8 +131,8 @@ export class SupabaseExpenseRepository
       description: data.description,
       amount: data.amount,
       categoryId: data.category_id,
-      subCategory: data.sub_category,
-      createdAt: data.created_at,
+      subCategory: data.subcategory_id || '', // subcategory_id es UUID en BD, string en modelo
+      createdAt: data.date || data.created_at, // date es la fecha del gasto
       paymentSourceId: data.payment_source_id || undefined
     };
   }
@@ -145,13 +155,25 @@ export class SupabaseExpenseRepository
       databaseData.category_id = data.categoryId;
     }
     if (data.subCategory !== undefined) {
-      databaseData.sub_category = data.subCategory;
+      // subCategory en el modelo es string, pero subcategory_id en BD es UUID
+      // Si es un UUID válido, lo usamos; si no, lo dejamos null
+      databaseData.subcategory_id = data.subCategory || null;
     }
     if (data.createdAt !== undefined) {
-      databaseData.created_at = data.createdAt;
+      // createdAt del modelo se mapea a 'date' (fecha del gasto)
+      databaseData.date = data.createdAt;
     }
     if (data.paymentSourceId !== undefined) {
       databaseData.payment_source_id = data.paymentSourceId;
+    }
+    if (data.notes !== undefined) {
+      databaseData.notes = data.notes;
+    }
+    if (data.isFixed !== undefined) {
+      databaseData.is_fixed = data.isFixed;
+    }
+    if (data.tags !== undefined) {
+      databaseData.tags = data.tags;
     }
     if (data.user_id !== undefined) {
       databaseData.user_id = data.user_id;

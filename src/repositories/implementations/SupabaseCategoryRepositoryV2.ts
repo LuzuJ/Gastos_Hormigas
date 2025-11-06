@@ -13,6 +13,30 @@ export class SupabaseCategoryRepositoryV2 extends SupabaseRepository<Category, s
   }
   
   /**
+   * Inicializa todos los datos por defecto para un usuario nuevo (categorías, métodos de pago, logros, etc.)
+   * @param userId - ID del usuario
+   * @returns Una promesa que resuelve a true si la operación fue exitosa
+   */
+  async initializeCompleteUserData(userId: string): Promise<boolean> {
+    try {
+      // NOTA: El trigger handle_new_user() en la BD ya crea automáticamente:
+      // - Perfil de usuario en la tabla users
+      // - 9 categorías predefinidas
+      // - 3 métodos de pago predefinidos
+      // - Datos financieros iniciales
+      // - Estadísticas de usuario
+      // - Estadísticas del mes actual
+      // Por lo tanto, NO necesitamos crear datos manualmente aquí
+      
+      console.log('[SupabaseCategoryRepositoryV2] El trigger handle_new_user() ya inicializó los datos del usuario');
+      return true;
+    } catch (error) {
+      console.error('Error al verificar inicialización de datos del usuario:', error);
+      return false;
+    }
+  }
+
+  /**
    * Inicializa las categorías por defecto para un usuario nuevo
    * @param userId - ID del usuario
    * @returns Una promesa que resuelve a true si la operación fue exitosa
@@ -31,15 +55,77 @@ export class SupabaseCategoryRepositoryV2 extends SupabaseRepository<Category, s
       }
       
       if (!existingCategories || existingCategories.length === 0) {
-        // Crear categorías por defecto usando la función de inicialización
-        const { error } = await this.client.rpc('initialize_default_categories', { user_id: userId });
-        if (error) throw error;
+        // Usar la función completa de inicialización que incluye todo
+        return await this.initializeCompleteUserData(userId);
       }
       
       return true;
     } catch (error) {
       console.error('Error al inicializar categorías por defecto:', error);
       return false;
+    }
+  }
+
+  /**
+   * Crea categorías por defecto manualmente (fallback si la función RPC no está disponible)
+   * @param userId - ID del usuario
+   */
+  private async createDefaultCategoriesManually(userId: string): Promise<void> {
+    const defaultCategories = [
+      { name: 'Alimento', icon: 'Pizza', color: '#FFC300', subcategories: ['Supermercado', 'Restaurante', 'Delivery'] },
+      { name: 'Transporte', icon: 'Car', color: '#FF5733', subcategories: ['Gasolina', 'Transporte Público', 'Taxi/Uber'] },
+      { name: 'Hogar', icon: 'Home', color: '#C70039', subcategories: ['Servicios (Luz, Agua)', 'Decoración', 'Reparaciones'] },
+      { name: 'Entretenimiento', icon: 'Gamepad2', color: '#900C3F', subcategories: ['Suscripciones', 'Cine', 'Salidas'] },
+      { name: 'Salud', icon: 'HeartPulse', color: '#581845', subcategories: ['Farmacia', 'Consulta Médica'] },
+      { name: 'Otro', icon: 'ShoppingBag', color: '#2a9d8f', subcategories: ['General'] }
+    ];
+
+    for (const categoryData of defaultCategories) {
+      try {
+        // Crear la categoría
+        const { data: category, error: categoryError } = await this.client
+          .from(SUPABASE_TABLES.CATEGORIES)
+          .insert({
+            user_id: userId,
+            name: categoryData.name,
+            icon: categoryData.icon,
+            color: categoryData.color,
+            is_active: true
+          })
+          .select()
+          .single();
+
+        if (categoryError) throw categoryError;
+
+        // Crear las subcategorías
+        for (const subCategoryName of categoryData.subcategories) {
+          const { error: subCategoryError } = await this.client
+            .from(SUPABASE_TABLES.SUBCATEGORIES)
+            .insert({
+              category_id: category.id,
+              name: subCategoryName
+            });
+
+          if (subCategoryError) {
+            console.error(`Error creating subcategory ${subCategoryName}:`, subCategoryError);
+          }
+        }
+      } catch (error) {
+        console.error(`Error creating category ${categoryData.name}:`, error);
+      }
+    }
+
+    // También crear estadísticas de usuario y financials
+    try {
+      await this.client.from('user_stats').insert({ user_id: userId }).select().single();
+    } catch (error) {
+      // Ignorar si ya existe
+    }
+
+    try {
+      await this.client.from('financials').insert({ user_id: userId }).select().single();
+    } catch (error) {
+      // Ignorar si ya existe
     }
   }
   
@@ -50,6 +136,8 @@ export class SupabaseCategoryRepositoryV2 extends SupabaseRepository<Category, s
    */
   async getCategoriesWithSubcategories(userId: string): Promise<Category[]> {
     try {
+      console.log('[SupabaseCategoryRepositoryV2] Obteniendo categorías para usuario:', userId);
+      
       const { data, error } = await this.client
         .from(SUPABASE_TABLES.CATEGORIES)
         .select(`
@@ -57,8 +145,9 @@ export class SupabaseCategoryRepositoryV2 extends SupabaseRepository<Category, s
           name,
           icon,
           color,
-          is_default,
-          budget,
+          description,
+          budget_amount,
+          is_active,
           subcategories (
             id,
             name
@@ -68,23 +157,26 @@ export class SupabaseCategoryRepositoryV2 extends SupabaseRepository<Category, s
         .order('name');
       
       if (error) {
+        console.error('[SupabaseCategoryRepositoryV2] Error de Supabase al obtener categorías:', error);
         throw error;
       }
+      
+      console.log('[SupabaseCategoryRepositoryV2] Categorías obtenidas:', data?.length || 0);
       
       return data?.map(category => ({
         id: category.id,
         name: category.name,
         icon: category.icon || undefined,
         color: category.color || undefined,
-        isDefault: category.is_default,
-        budget: category.budget || undefined,
+        isDefault: true, // Todas son por defecto en el nuevo esquema
+        budget: category.budget_amount || undefined,
         subcategories: (category.subcategories || []).map(subcategory => ({
           id: subcategory.id,
           name: subcategory.name
         }))
       })) || [];
     } catch (error) {
-      console.error('Error al obtener categorías con subcategorías:', error);
+      console.error('[SupabaseCategoryRepositoryV2] Error al obtener categorías con subcategorías:', error);
       return [];
     }
   }
@@ -237,6 +329,18 @@ export class SupabaseCategoryRepositoryV2 extends SupabaseRepository<Category, s
    * @returns Una función para cancelar la suscripción
    */
   subscribeToCategories(userId: string, callback: (categories: Category[]) => void): () => void {
+    // IMPORTANTE: Cargar datos iniciales inmediatamente
+    console.log('[SupabaseCategoryRepositoryV2] Cargando datos iniciales para suscripción');
+    this.getCategoriesWithSubcategories(userId)
+      .then(categories => {
+        console.log('[SupabaseCategoryRepositoryV2] Datos iniciales cargados:', categories.length);
+        callback(categories);
+      })
+      .catch(error => {
+        console.error('[SupabaseCategoryRepositoryV2] Error al cargar datos iniciales:', error);
+        callback([]); // Llamar callback con array vacío para desbloquear la UI
+      });
+    
     // Crear un canal para las categorías
     const channel = this.client
       .channel(`${SUPABASE_TABLES.CATEGORIES}-${userId}`)
@@ -249,6 +353,7 @@ export class SupabaseCategoryRepositoryV2 extends SupabaseRepository<Category, s
         }, 
         () => {
           // Cuando hay cambios, obtenemos las categorías actualizadas
+          console.log('[SupabaseCategoryRepositoryV2] Cambio detectado en categories');
           this.getCategoriesWithSubcategories(userId)
             .then(categories => {
               callback(categories);
@@ -266,6 +371,7 @@ export class SupabaseCategoryRepositoryV2 extends SupabaseRepository<Category, s
         },
         () => {
           // Cuando hay cambios en subcategorías
+          console.log('[SupabaseCategoryRepositoryV2] Cambio detectado en subcategories');
           this.getCategoriesWithSubcategories(userId)
             .then(categories => {
               callback(categories);
@@ -294,8 +400,8 @@ export class SupabaseCategoryRepositoryV2 extends SupabaseRepository<Category, s
       name: data.name,
       icon: data.icon || undefined,
       color: data.color || undefined,
-      isDefault: data.is_default,
-      budget: data.budget || undefined,
+      isDefault: true, // Todas son por defecto en el nuevo esquema
+      budget: data.budget_amount || undefined,
       subcategories: (data.subcategories || []).map((subcategory: any) => ({
         id: subcategory.id,
         name: subcategory.name
@@ -320,11 +426,14 @@ export class SupabaseCategoryRepositoryV2 extends SupabaseRepository<Category, s
     if (data.color !== undefined) {
       databaseData.color = data.color;
     }
-    if (data.isDefault !== undefined) {
-      databaseData.is_default = data.isDefault;
+    if (data.description !== undefined) {
+      databaseData.description = data.description;
     }
     if (data.budget !== undefined) {
-      databaseData.budget = data.budget;
+      databaseData.budget_amount = data.budget;
+    }
+    if (data.isActive !== undefined) {
+      databaseData.is_active = data.isActive;
     }
     if (data.user_id !== undefined) {
       databaseData.user_id = data.user_id;

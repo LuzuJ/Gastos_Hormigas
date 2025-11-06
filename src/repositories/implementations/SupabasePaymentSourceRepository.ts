@@ -19,7 +19,7 @@ interface SupabasePaymentSource {
   icon?: string;
   color?: string;
   auto_update?: boolean;
-  last_updated?: string;
+  updated_at?: string;
 }
 
 /**
@@ -195,7 +195,7 @@ export class SupabasePaymentSourceRepository
       icon: data.icon,
       color: data.color,
       autoUpdate: data.auto_update,
-      lastUpdated: data.last_updated,
+      lastUpdated: data.updated_at,
     };
   }
   
@@ -232,7 +232,7 @@ export class SupabasePaymentSourceRepository
       databaseData.auto_update = data.autoUpdate;
     }
     if (data.lastUpdated !== undefined) {
-      databaseData.last_updated = data.lastUpdated;
+      databaseData.updated_at = data.lastUpdated;
     }
     
     return databaseData;

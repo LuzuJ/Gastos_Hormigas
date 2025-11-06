@@ -1,8 +1,12 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { assetService } from '../../services/financials/assetService';
-import { liabilityService } from '../../services/financials/liabilityService';
+import { AssetServiceRepo } from '../../services/assetServiceRepo';
+import { LiabilityServiceRepo } from '../../services/liabilityServiceRepo';
 import { useLoadingState, handleAsyncOperation } from '../context/useLoadingState';
 import type { Asset, Liability, AssetFormData, LiabilityFormData } from '../../types';
+
+// Crear instancias de los servicios repositorio
+const assetServiceRepo = new AssetServiceRepo();
+const liabilityServiceRepo = new LiabilityServiceRepo();
 
 export const useNetWorth = (userId: string | null) => {
     const [assets, setAssets] = useState<Asset[]>([]);
@@ -27,12 +31,12 @@ export const useNetWorth = (userId: string | null) => {
             startLoading();
             clearError();
 
-            const unsubscribeAssets = assetService.onAssetsUpdate(userId, (data) => {
+            const unsubscribeAssets = assetServiceRepo.subscribeToAssets(userId, (data: Asset[]) => {
                 setAssets(data);
                 stopLoading();
             });
 
-            const unsubscribeLiabilities = liabilityService.onLiabilitiesUpdate(userId, (data) => {
+            const unsubscribeLiabilities = liabilityServiceRepo.subscribeToLiabilities(userId, (data: Liability[]) => {
                 setLiabilities(data);
                 stopLoading();
             });
@@ -62,7 +66,7 @@ export const useNetWorth = (userId: string | null) => {
         }
 
         return await handleAsyncOperation(
-            () => assetService.addAsset(userId, data),
+            () => assetServiceRepo.addAsset(userId, data),
             'Error al agregar el activo'
         );
     }, [userId]);
@@ -73,7 +77,7 @@ export const useNetWorth = (userId: string | null) => {
         }
 
         return await handleAsyncOperation(
-            () => assetService.updateAsset(userId, id, data),
+            () => assetServiceRepo.updateAsset(userId, id, data),
             'Error al actualizar el activo'
         );
     }, [userId]);
@@ -84,7 +88,7 @@ export const useNetWorth = (userId: string | null) => {
         }
 
         return await handleAsyncOperation(
-            () => assetService.deleteAsset(userId, id),
+            () => assetServiceRepo.deleteAsset(userId, id),
             'Error al eliminar el activo'
         );
     }, [userId]);
@@ -95,7 +99,7 @@ export const useNetWorth = (userId: string | null) => {
         }
 
         return await handleAsyncOperation(
-            () => liabilityService.addLiability(userId, data),
+            () => liabilityServiceRepo.addLiability(userId, data),
             'Error al agregar el pasivo'
         );
     }, [userId]);
@@ -106,7 +110,7 @@ export const useNetWorth = (userId: string | null) => {
         }
 
         return await handleAsyncOperation(
-            () => liabilityService.updateLiability(userId, id, data),
+            () => liabilityServiceRepo.updateLiability(userId, id, data),
             'Error al actualizar el pasivo'
         );
     }, [userId]);
@@ -117,7 +121,7 @@ export const useNetWorth = (userId: string | null) => {
         }
 
         return await handleAsyncOperation(
-            () => liabilityService.deleteLiability(userId, id),
+            () => liabilityServiceRepo.deleteLiability(userId, id),
             'Error al eliminar el pasivo'
         );
     }, [userId]);

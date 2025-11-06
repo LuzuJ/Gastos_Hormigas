@@ -1,41 +1,38 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { expensesService } from '../../services/expenses/expensesService';
+import { expenseServiceRepo } from '../../services/expense/expenseServiceRepo';
 import { useLoadingState, handleAsyncOperation } from '../context/useLoadingState';
 import type { Expense, ExpenseFormData } from '../../types';
 
 export const useExpenses = (userId: string | null) => {
     const [expenses, setExpenses] = useState<Expense[]>([]);
     const [isEditing, setIsEditing] = useState<Expense | null>(null);
-    const { 
-        loading: loadingExpenses, 
-        error: expensesError, 
-        startLoading, 
-        stopLoading, 
-        setErrorState, 
-        clearError 
-    } = useLoadingState(true);
+    const [loadingExpenses, setLoadingExpenses] = useState(true);
+    const [expensesError, setExpensesError] = useState<string | null>(null);
 
     useEffect(() => {
         if (!userId) {
             setExpenses([]);
-            stopLoading();
+            setLoadingExpenses(false);
             return;
         }
 
-        startLoading();
-        clearError();
+        setLoadingExpenses(true);
+        setExpensesError(null);
 
-        const unsubscribe = expensesService.onExpensesUpdate(userId, (data, error) => {
+        const unsubscribe = expenseServiceRepo.onExpensesUpdate(userId, (data: Expense[], error?: Error) => {            
             if (error) {
-                setErrorState('Error al cargar los gastos: ' + error.message);
+                setExpensesError('Error al cargar los gastos. Intenta recargar la página.');
+                setLoadingExpenses(false);
                 return;
             }
-            setExpenses(data);
-            stopLoading();
+            setExpenses(data || []);
+            setLoadingExpenses(false);
         });
 
-        return () => unsubscribe();
-    }, [userId]); // Solo userId como dependencia
+        return () => {
+            unsubscribe();
+        };
+    }, [userId]);
 
     const addExpense = useCallback(async (data: ExpenseFormData) => {
         if (!userId) {
@@ -43,8 +40,8 @@ export const useExpenses = (userId: string | null) => {
         }
         
         return await handleAsyncOperation(
-            () => expensesService.addExpense(userId, data),
-            'Error al guardar el gasto'
+            () => expenseServiceRepo.addExpense(userId, data),
+            'Error al agregar el gasto'
         );
     }, [userId]);
 
@@ -54,7 +51,7 @@ export const useExpenses = (userId: string | null) => {
         }
 
         return await handleAsyncOperation(
-            () => expensesService.updateExpense(userId, expenseId, data),
+            () => expenseServiceRepo.updateExpense(userId, expenseId, data),
             'Error al actualizar el gasto'
         );
     }, [userId]);
@@ -65,7 +62,7 @@ export const useExpenses = (userId: string | null) => {
         }
 
         return await handleAsyncOperation(
-            () => expensesService.deleteExpense(userId, expenseId),
+            () => expenseServiceRepo.deleteExpense(userId, expenseId),
             'Error al eliminar el gasto'
         );
     }, [userId]);
@@ -74,9 +71,16 @@ export const useExpenses = (userId: string | null) => {
         const todayStart = new Date();
         todayStart.setHours(0, 0, 0, 0);
         return expenses
-            .filter(expense => (expense.createdAt?.toDate() ?? new Date(0)) >= todayStart)
+            .filter(expense => {
+                const expenseDate = expense.createdAt ? new Date(expense.createdAt) : new Date(0);
+                return expenseDate >= todayStart;
+            })
             .reduce((total, expense) => total + expense.amount, 0);
     }, [expenses]);
+
+    const clearExpensesError = useCallback(() => {
+        setExpensesError(null);
+    }, []);
 
     return {
         expenses,
@@ -86,7 +90,7 @@ export const useExpenses = (userId: string | null) => {
         // Estados de carga y error
         loadingExpenses,
         expensesError,
-        clearExpensesError: clearError,
+        clearExpensesError,
         // Operaciones
         addExpense,
         updateExpense,

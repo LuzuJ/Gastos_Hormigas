@@ -34,31 +34,35 @@ export class MockRepositoryFactory implements IRepositoryFactory {
     };
   }
   
-  getExpenseRepository() {
+  getExpenseRepository(): any {
     throw new Error('No implementado para pruebas');
   }
   
-  getFixedExpenseRepository() {
+  getFixedExpenseRepository(): any {
     throw new Error('No implementado para pruebas');
   }
   
-  getFinancialsRepository() {
+  getFinancialsRepository(): any {
     throw new Error('No implementado para pruebas');
   }
   
-  getSavingsGoalRepository() {
+  getSavingsGoalRepository(): any {
     throw new Error('No implementado para pruebas');
   }
   
-  getAssetRepository() {
+  getAssetRepository(): any {
     throw new Error('No implementado para pruebas');
   }
   
-  getLiabilityRepository() {
+  getLiabilityRepository(): any {
     throw new Error('No implementado para pruebas');
   }
   
-  getPaymentSourceRepository() {
+  getPaymentSourceRepository(): any {
+    throw new Error('No implementado para pruebas');
+  }
+  
+  getUserStatsRepository(): any {
     throw new Error('No implementado para pruebas');
   }
 }

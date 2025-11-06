@@ -1,17 +1,11 @@
 import { supabase } from '../../config/supabase';
 import type { User, Session, AuthError } from '@supabase/supabase-js';
-import { userServiceRepo } from '../profile/userServiceRepo';
-import { categoryServiceRepo } from '../categories/categoryServiceRepo';
+// categoryServiceRepo YA NO ES NECESARIO - El trigger handle_new_user() crea todo automáticamente
+// userServiceRepo se mantiene solo para verificación de perfil en signInWithEmail
 
-const checkAndCreateNewUserDocument = async (user: User) => {
-  try {
-    await userServiceRepo.createUserProfile(user);
-    await categoryServiceRepo.initializeDefaultCategories(user.id);
-    console.log('Documento de usuario y categorías inicializados correctamente');
-  } catch (error) {
-    console.error('Error al inicializar datos de usuario:', error);
-  }
-};
+// ELIMINADO: checkAndCreateNewUserDocument
+// Ya no es necesario porque el trigger handle_new_user() en Supabase
+// crea automáticamente el perfil, categorías, subcategorías y payment sources
 
 export const authService = {
   signInWithGoogle: async (anonymousUser: User | null = null) => {
@@ -19,7 +13,7 @@ export const authService = {
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`
+          redirectTo: `${globalThis.location.origin}/auth/callback`
         }
       });
       
@@ -38,19 +32,38 @@ export const authService = {
 
   signInAsGuest: async () => {
     try {
-      const { data, error } = await supabase.auth.signInAnonymously();
+      // Crear una cuenta temporal con un email único para simular usuario invitado
+      const tempEmail = `guest_${Date.now()}@temp.local`;
+      const tempPassword = `temp_${Math.random().toString(36).substring(2, 15)}`;
+      
+      console.log('Creando usuario invitado temporal...');
+      
+      const { data, error } = await supabase.auth.signUp({
+        email: tempEmail,
+        password: tempPassword,
+        options: {
+          data: {
+            display_name: 'Invitado',
+            is_guest: true
+          }
+        }
+      });
       
       if (error) {
+        console.error('Error al crear usuario invitado:', error);
         return { success: false, error: error.message };
       }
       
-      if (data.user) {
-        await checkAndCreateNewUserDocument(data.user);
-      }
+      // El trigger handle_new_user() en Supabase crea automáticamente:
+      // - Perfil de usuario
+      // - Categorías y subcategorías por defecto
+      // - Fuente de pago por defecto
+      // - Estadísticas mensuales
       
       return { success: true, user: data.user };
     } catch (error) {
       const authError = error as AuthError;
+      console.error('Error inesperado en signInAsGuest:', error);
       return { success: false, error: authError.message || 'Error de autenticación' };
     }
   },
@@ -60,6 +73,18 @@ export const authService = {
       // Validación básica del email y contraseña
       if (!email || !email.includes('@')) {
         return { success: false, error: 'Invalid email' };
+      }
+      
+      // Validación más estricta del email
+      const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+      if (!emailRegex.test(email)) {
+        return { success: false, error: 'Invalid email format' };
+      }
+      
+      // Verificar que el email tenga al menos 5 caracteres antes del @
+      const emailParts = email.split('@');
+      if (emailParts[0].length < 3) {
+        return { success: false, error: 'Email username must be at least 3 characters' };
       }
       
       if (!password || password.length < 6) {
@@ -77,7 +102,7 @@ export const authService = {
           },
           // Importante: esto permite que el usuario inicie sesión sin confirmar el email
           // Solo para desarrollo. En producción, deberías enviar un email de confirmación
-          emailRedirectTo: `${window.location.origin}/auth/callback`
+          emailRedirectTo: `${globalThis.location.origin}/auth/callback`
         }
       });
       
@@ -98,16 +123,11 @@ export const authService = {
       
       console.log('Usuario registrado en Supabase:', data.user?.id);
       
-      if (data.user) {
-        // El perfil se crea automáticamente por el trigger, pero inicializamos categorías
-        try {
-          await categoryServiceRepo.initializeDefaultCategories(data.user.id);
-          console.log('Categorías inicializadas para nuevo usuario');
-        } catch (catError) {
-          console.error('Error al inicializar categorías:', catError);
-          // No fallar el registro si las categorías no se pueden crear
-        }
-      }
+      // El trigger handle_new_user() en Supabase crea automáticamente:
+      // - Perfil de usuario
+      // - Categorías y subcategorías por defecto
+      // - Fuente de pago por defecto
+      // - Estadísticas mensuales
       
       return { success: true, user: data.user };
     } catch (error: any) {
@@ -125,24 +145,39 @@ export const authService = {
       });
       
       if (error) {
+        console.error('Error de Supabase al hacer login:', error);
+        
         // Mapear errores de Supabase a códigos similares a Firebase
-        if (error.message.includes('Invalid login credentials') || 
-            error.message.includes('Email not confirmed')) {
+        if (error.message.includes('Invalid login credentials')) {
           return { success: false, error: 'auth/invalid-credential' };
         }
+        
+        if (error.message.includes('Email not confirmed')) {
+          return { success: false, error: 'auth/email-not-confirmed' };
+        }
+        
+        if (error.message.includes('signup is disabled')) {
+          return { success: false, error: 'auth/signup-disabled' };
+        }
+        
         return { success: false, error: error.message };
       }
       
       if (data.user) {
-        // Verificar que el usuario tenga un perfil creado en nuestra base de datos
-        const userProfile = await userServiceRepo.getUserProfile(data.user.id);
+        // Verificar que el usuario tenga un registro creado por el trigger
+        const { data: userRecord, error: userError } = await supabase
+          .from('users')
+          .select('id')
+          .eq('id', data.user.id)
+          .single();
         
-        if (!userProfile) {
-          // Si el usuario fue autenticado pero no tiene perfil en nuestra DB
+        if (userError || !userRecord) {
+          console.error('Usuario no encontrado en public.users:', data.user.id);
+          // Si el usuario fue autenticado pero no tiene registro, algo falló en el trigger
           await supabase.auth.signOut();
           return { 
             success: false, 
-            error: 'auth/user-not-registered'
+            error: 'auth/user-not-registered. Por favor contacta al administrador.'
           };
         }
       }

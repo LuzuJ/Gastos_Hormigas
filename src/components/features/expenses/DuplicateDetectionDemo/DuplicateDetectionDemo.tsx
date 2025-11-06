@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useDuplicateDetection } from '../../../../hooks/expenses/useDuplicateDetection';
 import { DuplicateWarning } from '../../../forms/ExpenseForm/DuplicateWarning/DuplicateWarning';
 import type { Expense } from '../../../../types';
-import { Timestamp } from 'firebase/firestore';
+
 import styles from './DuplicateDetectionDemo.module.css';
 
 export const DuplicateDetectionDemo: React.FC = () => {
@@ -18,7 +18,7 @@ export const DuplicateDetectionDemo: React.FC = () => {
       amount: 4.50,
       categoryId: 'food',
       subCategory: 'Cafetería',
-      createdAt: Timestamp.fromDate(new Date(Date.now() - 2 * 24 * 60 * 60 * 1000)) // Hace 2 días
+      createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString() // Hace 2 días
     },
     {
       id: '2',
@@ -26,7 +26,7 @@ export const DuplicateDetectionDemo: React.FC = () => {
       amount: 50.00,
       categoryId: 'transport',
       subCategory: 'Combustible',
-      createdAt: Timestamp.fromDate(new Date(Date.now() - 3 * 24 * 60 * 60 * 1000)) // Hace 3 días
+      createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString() // Hace 3 días
     },
     {
       id: '3',
@@ -34,7 +34,7 @@ export const DuplicateDetectionDemo: React.FC = () => {
       amount: 25.00,
       categoryId: 'food',
       subCategory: 'Supermercado',
-      createdAt: Timestamp.fromDate(new Date(Date.now() - 5 * 24 * 60 * 60 * 1000)) // Hace 5 días
+      createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString() // Hace 5 días
     }
   ];
 
@@ -89,7 +89,7 @@ export const DuplicateDetectionDemo: React.FC = () => {
             <div key={expense.id} className={styles.expenseItem}>
               <span className={styles.expenseName}>{expense.description}</span>
               <span className={styles.expenseDetails}>
-                ${expense.amount.toFixed(2)} - {expense.createdAt?.toDate().toLocaleDateString() || 'Sin fecha'}
+                ${expense.amount.toFixed(2)} - {expense.createdAt ? new Date(expense.createdAt).toLocaleDateString() : 'Sin fecha'}
               </span>
             </div>
           ))}

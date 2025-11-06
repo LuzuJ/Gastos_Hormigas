@@ -1,7 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Mail, X, RefreshCw, Check } from 'lucide-react';
-import { auth } from '../../../config/firebase';
-import { sendVerificationEmail, reloadUserData } from '../../../utils/emailVerification';
+import { supabase } from '../../../config/supabase';
 import styles from './EmailVerificationBanner.module.css';
 
 interface EmailVerificationBannerProps {
@@ -16,24 +15,43 @@ export const EmailVerificationBanner: React.FC<EmailVerificationBannerProps> = (
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState<'success' | 'error' | ''>('');
+  const [userEmail, setUserEmail] = useState<string>('');
+
+  useEffect(() => {
+    // Obtener el email del usuario actual
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (user?.email) {
+        setUserEmail(user.email);
+      }
+    });
+  }, []);
 
   const handleResendEmail = async () => {
-    const user = auth.currentUser;
-    if (!user) return;
-
     setLoading(true);
     setMessage('');
     setMessageType('');
 
     try {
-      const result = await sendVerificationEmail(user);
+      const { data: { user } } = await supabase.auth.getUser();
       
-      if (result.success) {
+      if (!user?.email) {
+        setMessage('No se pudo obtener el email del usuario.');
+        setMessageType('error');
+        setLoading(false);
+        return;
+      }
+
+      const { error } = await supabase.auth.resend({
+        type: 'signup',
+        email: user.email,
+      });
+      
+      if (error) {
+        setMessage(error.message || 'Error al enviar el email.');
+        setMessageType('error');
+      } else {
         setMessage('Email de verificación enviado correctamente.');
         setMessageType('success');
-      } else {
-        setMessage(result.error || 'Error al enviar el email.');
-        setMessageType('error');
       }
     } catch (error) {
       setMessage('Error inesperado al enviar el email.');
@@ -55,9 +73,18 @@ export const EmailVerificationBanner: React.FC<EmailVerificationBannerProps> = (
     setMessageType('');
 
     try {
-      await reloadUserData();
+      // Refrescar el usuario actual para obtener el estado más reciente
+      const { data: { user }, error } = await supabase.auth.getUser();
       
-      if (auth.currentUser?.emailVerified) {
+      if (error) {
+        setMessage('Error al verificar el estado del email.');
+        setMessageType('error');
+        setLoading(false);
+        return;
+      }
+
+      // En Supabase, si el email está confirmado, user.email_confirmed_at tendrá un valor
+      if (user?.email_confirmed_at) {
         setMessage('¡Email verificado exitosamente!');
         setMessageType('success');
         
@@ -66,7 +93,7 @@ export const EmailVerificationBanner: React.FC<EmailVerificationBannerProps> = (
           window.location.reload();
         }, 2000);
       } else {
-        setMessage('El email aún no ha sido verificado. Por favor, revisa tu bandeja de entrada.');
+        setMessage('El email aún no ha sido verificado. Por favor, revisa tu bandeja de entrada y haz clic en el enlace de verificación.');
         setMessageType('error');
       }
     } catch (error) {
@@ -99,7 +126,7 @@ export const EmailVerificationBanner: React.FC<EmailVerificationBannerProps> = (
         <div className={styles.textSection}>
           <h3 className={styles.title}>Verifica tu email</h3>
           <p className={styles.description}>
-            Hemos enviado un email de verificación a <strong>{auth.currentUser?.email}</strong>. 
+            Hemos enviado un email de verificación a <strong>{userEmail}</strong>. 
             Por favor, verifica tu email para acceder a todas las funciones.
           </p>
           

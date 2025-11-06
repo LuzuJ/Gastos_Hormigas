@@ -254,6 +254,16 @@ export class SupabaseCategoryRepository extends SupabaseRepository<Category, str
    * @returns Una función para cancelar la suscripción
    */
   subscribeToCategories(userId: string, callback: (categories: Category[]) => void): () => void {
+    // Primero, cargar los datos existentes
+    this.getCategoriesWithSubcategories(userId)
+      .then(categories => {
+        callback(categories);
+      })
+      .catch(error => {
+        console.error('Error loading initial categories:', error);
+        callback([]);
+      });
+    
     // Crear un canal para las categorías
     const channel = this.client
       .channel(`${SUPABASE_TABLES.CATEGORIES}-${userId}`)

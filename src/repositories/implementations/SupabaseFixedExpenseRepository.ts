@@ -10,11 +10,16 @@ import type { RealtimeChannel } from '@supabase/supabase-js';
 interface SupabaseFixedExpense {
   id: string;
   user_id: string;
-  description: string;
+  name: string;
   amount: number;
-  category: string;
-  day_of_month: number;
-  last_posted_month?: string;
+  category_id: string | null;
+  payment_source_id: string | null;
+  frequency: 'monthly' | 'weekly' | 'yearly';
+  day_of_month: number | null;
+  is_active: boolean;
+  notes?: string;
+  created_at?: string;
+  updated_at?: string;
 }
 
 /**
@@ -24,7 +29,7 @@ export class SupabaseFixedExpenseRepository
   extends SupabaseRepository<FixedExpense, string> 
   implements IFixedExpenseRepository {
   
-  private subscriptions: Map<string, RealtimeChannel> = new Map();
+  private readonly subscriptions: Map<string, RealtimeChannel> = new Map();
   
   constructor() {
     super(SUPABASE_TABLES.FIXED_EXPENSES);
@@ -80,10 +85,13 @@ export class SupabaseFixedExpenseRepository
    * @param fixedExpenseId - ID del gasto fijo
    * @param month - Mes a registrar (formato YYYY-MM)
    * @returns Una promesa que resuelve a true si la actualización fue exitosa
+   * @deprecated Este método ya no es funcional porque 'lastPostedMonth' no existe en el esquema de BD
    */
   async updateLastPostedMonth(userId: string, fixedExpenseId: string, month: string): Promise<boolean> {
     try {
-      await this.update(userId, fixedExpenseId, { lastPostedMonth: month });
+      // Este campo no existe en la BD, por lo que no se puede actualizar
+      // Se mantiene el método por compatibilidad pero no hace nada
+      console.warn('[SupabaseFixedExpenseRepository] updateLastPostedMonth: Campo lastPostedMonth no existe en la BD');
       return true;
     } catch (error) {
       console.error('Error al actualizar el último mes registrado:', error);
@@ -129,7 +137,14 @@ export class SupabaseFixedExpenseRepository
     this.subscriptions.set(userId, channel);
     
     // También disparar una carga inicial de datos
-    this.getFixedExpenses(userId).then(callback);
+    this.getFixedExpenses(userId)
+      .then(fixedExpenses => {
+        callback(fixedExpenses);
+      })
+      .catch(error => {
+        console.error('[SupabaseFixedExpenseRepository] Error loading initial fixed expenses:', error);
+        callback([]);
+      });
     
     // Devolver función para cancelar la suscripción
     return () => {
@@ -146,11 +161,11 @@ export class SupabaseFixedExpenseRepository
   protected mapDatabaseToModel(data: SupabaseFixedExpense): FixedExpense {
     return {
       id: data.id,
-      description: data.description,
+      description: data.name, // BD usa 'name', modelo usa 'description'
       amount: data.amount,
-      category: data.category,
-      dayOfMonth: data.day_of_month,
-      lastPostedMonth: data.last_posted_month,
+      category: data.category_id || '', // BD usa category_id (UUID), modelo usa category (string)
+      dayOfMonth: data.day_of_month || 1,
+      lastPostedMonth: undefined, // Este campo no existe en la BD
     };
   }
   
@@ -163,19 +178,26 @@ export class SupabaseFixedExpenseRepository
     const databaseData: Partial<SupabaseFixedExpense> = {};
     
     if (data.description !== undefined) {
-      databaseData.description = data.description;
+      databaseData.name = data.description; // Modelo usa 'description', BD usa 'name'
     }
     if (data.amount !== undefined) {
       databaseData.amount = data.amount;
     }
     if (data.category !== undefined) {
-      databaseData.category = data.category;
+      // Modelo usa category (string), BD usa category_id (UUID)
+      databaseData.category_id = data.category || null;
     }
     if (data.dayOfMonth !== undefined) {
       databaseData.day_of_month = data.dayOfMonth;
     }
-    if (data.lastPostedMonth !== undefined) {
-      databaseData.last_posted_month = data.lastPostedMonth;
+    // lastPostedMonth no existe en la BD, lo ignoramos
+    
+    // Campos adicionales con valores por defecto si no se especifican
+    if (databaseData.frequency === undefined) {
+      databaseData.frequency = 'monthly'; // Valor por defecto
+    }
+    if (databaseData.is_active === undefined) {
+      databaseData.is_active = true; // Valor por defecto
     }
     
     return databaseData;

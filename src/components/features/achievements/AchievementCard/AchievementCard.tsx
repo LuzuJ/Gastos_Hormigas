@@ -108,7 +108,7 @@ export const AchievementCard = ({
           
           {isCompleted && achievement.unlockedAt && (
             <div className={styles.unlockedDate}>
-              Desbloqueado: {achievement.unlockedAt.toDate().toLocaleDateString()}
+              Desbloqueado: {new Date(achievement.unlockedAt).toLocaleDateString()}
             </div>
           )}
         </div>

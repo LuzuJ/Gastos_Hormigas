@@ -49,7 +49,7 @@ export const ExpenseFilter: React.FC<ExpenseFilterProps> = ({
 
     expenses.forEach(expense => {
       if (expense.createdAt) {
-        const date = expense.createdAt.toDate();
+        const date = new Date(expense.createdAt);
         const year = date.getFullYear();
         const month = date.getMonth() + 1; // 0-based to 1-based
         

@@ -1,6 +1,5 @@
-import { fixedExpenseService } from '../expenses/fixedExpenseService';
-import { expensesService } from '../expenses/expensesService';
-import { Timestamp } from 'firebase/firestore';
+import { fixedExpenseServiceRepo } from '../expenses/fixedExpenseServiceRepo';
+import { expenseServiceRepo } from '../expense/expenseServiceRepo';
 import type { Category } from '../../types';
 
 // Tipo para el callback de limpieza de notificaciones
@@ -19,43 +18,64 @@ export const automationService = {
     try {
       // Obtener gastos fijos del usuario
       const today = new Date();
-      const currentDay = today.getDate();
-      const currentMonth = today.getMonth(); // 0-11
-      const currentYear = today.getFullYear();
-      const currentMonthMarker = `${currentYear}-${currentMonth}`;
+      const fixedExpenses = await fixedExpenseServiceRepo.getFixedExpenses(userId);
 
-      const fixedExpenses = await fixedExpenseService.getFixedExpensesOnce(userId);
-
-      for (const fixed of fixedExpenses) {
-        const hasBeenPostedThisMonth = fixed.lastPostedMonth === currentMonthMarker;
-        const isDue = currentDay >= fixed.dayOfMonth;
-
-        if (!hasBeenPostedThisMonth && isDue) {
-          const category = categories.find(c => c.id === fixed.category);
-          const subCategory = category?.subcategories.find(s => s.name === 'Gasto Fijo') || category?.subcategories[0];
-
-          const expenseDate = new Date(currentYear, currentMonth, fixed.dayOfMonth);
+      for (const fixedExpense of fixedExpenses) {
+        const shouldPost = await automationService.shouldPostFixedExpense(userId, fixedExpense.id, today);
+        
+        if (shouldPost) {
+          // Encontrar la categoría correspondiente
+          const category = categories.find(cat => cat.name === fixedExpense.category);
           
-          await expensesService.addExpense(userId, {
-            description: fixed.description,
-            amount: fixed.amount,
-            categoryId: fixed.category,
-            subCategory: subCategory?.name || 'Varios',
-            createdAt: Timestamp.fromDate(expenseDate)
-          }, Timestamp.fromDate(expenseDate));
+          if (category) {
+            // Crear el gasto automáticamente
+            await expenseServiceRepo.addExpense(userId, {
+              amount: fixedExpense.amount,
+              description: `${fixedExpense.description} (Automático)`,
+              categoryId: category.id,
+              subCategory: '',
+              createdAt: new Date().toISOString(),
+              paymentSourceId: ''
+            });
 
-          await fixedExpenseService.updateFixedExpense(userId, fixed.id, {
-            lastPostedMonth: currentMonthMarker,
-          });
+            // Limpiar notificación si existe
+            if (automationService.clearNotificationCallback) {
+              automationService.clearNotificationCallback(fixedExpense.id);
+            }
 
-          // Limpiar notificaciones relacionadas con este gasto fijo
-          if (automationService.clearNotificationCallback) {
-            automationService.clearNotificationCallback(fixed.id);
+            console.log(`Gasto fijo automático creado: ${fixedExpense.description}`);
           }
         }
       }
     } catch (error) {
-      console.error("Error en la automatización de gastos fijos:", error);
+      console.error('Error al procesar gastos fijos automáticos:', error);
+    }
+  },
+
+  shouldPostFixedExpense: async (userId: string, fixedExpenseId: string, referenceDate: Date): Promise<boolean> => {
+    try {
+      // Obtener gastos del mes actual para verificar si ya se registró este gasto fijo
+      const expenses = await expenseServiceRepo.getExpenses(userId);
+      
+      // Obtener el primer y último día del mes de referencia
+      const firstDayOfMonth = new Date(referenceDate.getFullYear(), referenceDate.getMonth(), 1);
+      const lastDayOfMonth = new Date(referenceDate.getFullYear(), referenceDate.getMonth() + 1, 0);
+
+      // Buscar si ya existe un gasto automático de este gasto fijo en el mes
+      const existingExpense = expenses.find(expense => {
+        if (!expense.createdAt) return false;
+        const expenseDate = new Date(expense.createdAt);
+        return (
+          expense.description.includes('(Automático)') &&
+          expenseDate >= firstDayOfMonth &&
+          expenseDate <= lastDayOfMonth
+        );
+      });
+
+      return !existingExpense;
+    } catch (error) {
+      console.error('Error al verificar si se debe crear gasto fijo:', error);
+      return false;
     }
   }
 };

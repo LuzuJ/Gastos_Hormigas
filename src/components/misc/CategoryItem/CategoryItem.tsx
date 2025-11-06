@@ -37,7 +37,7 @@ export const CategoryItem: React.FC<CategoryItemProps> = ({
   const filteredExpenses = useMemo(() => {
     return categoryExpenses.filter(exp => {
       if (!exp.createdAt) return false;
-      const date = exp.createdAt.toDate();
+      const date = new Date(exp.createdAt);
       return date.getFullYear() === selectedYear && date.getMonth() === selectedMonth;
     });
   }, [categoryExpenses, selectedYear, selectedMonth]);
@@ -50,7 +50,7 @@ export const CategoryItem: React.FC<CategoryItemProps> = ({
     const months = new Set<number>();
     categoryExpenses.forEach(exp => {
       if (exp.createdAt) {
-        const date = exp.createdAt.toDate();
+        const date = new Date(exp.createdAt);
         years.add(date.getFullYear());
         if (date.getFullYear() === selectedYear) {
           months.add(date.getMonth());

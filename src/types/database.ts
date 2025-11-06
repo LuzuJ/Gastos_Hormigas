@@ -7,25 +7,34 @@ export interface Database {
       users: {
         Row: {
           id: string;
-          display_name: string;
           email: string | null;
+          display_name: string;
+          avatar_url: string | null;
+          theme: string | null;
           currency: 'USD' | 'EUR';
+          language: string | null;
           created_at: string;
           updated_at: string;
         };
         Insert: {
           id: string;
-          display_name: string;
           email?: string | null;
+          display_name?: string;
+          avatar_url?: string | null;
+          theme?: string | null;
           currency?: 'USD' | 'EUR';
+          language?: string | null;
           created_at?: string;
           updated_at?: string;
         };
         Update: {
           id?: string;
-          display_name?: string;
           email?: string | null;
+          display_name?: string;
+          avatar_url?: string | null;
+          theme?: string | null;
           currency?: 'USD' | 'EUR';
+          language?: string | null;
           created_at?: string;
           updated_at?: string;
         };

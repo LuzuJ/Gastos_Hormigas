@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Timestamp } from 'firebase/firestore';
 import type { Achievement, UserStats } from '../../types';
 import { DEFAULT_ACHIEVEMENTS, AchievementsService } from '../../services/achievements/achievementsService';
 import { useExpenses } from '../expenses/useExpenses';
@@ -40,12 +39,12 @@ export const useAchievements = (userId: string | null): UseAchievementsReturn =>
       if (stored) {
         const storedAchievements = JSON.parse(stored);
         
-        // Convertir fechas de string/number a Timestamp si es necesario
+        // Convertir fechas de string/number a Date si es necesario
         return storedAchievements.map((achievement: any) => {
           let unlockedAt = undefined;
           if (achievement.unlockedAt) {
             if (typeof achievement.unlockedAt === 'string' || typeof achievement.unlockedAt === 'number') {
-              unlockedAt = Timestamp.fromDate(new Date(achievement.unlockedAt));
+              unlockedAt = new Date(achievement.unlockedAt);
             } else {
               unlockedAt = achievement.unlockedAt;
             }
@@ -76,7 +75,7 @@ export const useAchievements = (userId: string | null): UseAchievementsReturn =>
       // Convertir Timestamp a string para almacenamiento
       const achievementsForStorage = achievementsToSave.map(achievement => ({
         ...achievement,
-        unlockedAt: achievement.unlockedAt ? achievement.unlockedAt.toDate().toISOString() : undefined
+        unlockedAt: achievement.unlockedAt ? achievement.unlockedAt : undefined
       }));
       localStorage.setItem(STORAGE_KEY, JSON.stringify(achievementsForStorage));
     } catch (error) {

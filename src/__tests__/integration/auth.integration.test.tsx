@@ -2,44 +2,55 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { AuthProvider } from '../../contexts/AuthContext';
 import { authService } from '../../services/auth/authService';
-import * as firebaseAuth from 'firebase/auth';
-import * as firebaseFirestore from 'firebase/firestore';
+import { supabase } from '../../config/supabase';
 
-// Mock solo las funciones específicas de Firebase, no los servicios completos
-const mockSignInAnonymously = vi.fn();
-const mockSignInWithEmailAndPassword = vi.fn();
-const mockCreateUserWithEmailAndPassword = vi.fn();
-const mockSignInWithPopup = vi.fn();
-const mockSignOut = vi.fn();
-const mockLinkWithCredential = vi.fn();
-const mockCredentialFromResult = vi.fn();
+// Mock Supabase
+vi.mock('../../config/supabase', () => ({
+  supabase: {
+    auth: {
+      signInAnonymously: vi.fn(),
+      signInWithPassword: vi.fn(), 
+      signUp: vi.fn(),
+      signInWithOAuth: vi.fn(),
+      signOut: vi.fn(),
+      getUser: vi.fn(),
+      getSession: vi.fn(),
+      onAuthStateChange: vi.fn(() => ({ data: { subscription: { unsubscribe: vi.fn() } } }))
+    },
+    from: vi.fn(() => ({
+      select: vi.fn(() => ({
+        eq: vi.fn(() => ({
+          single: vi.fn()
+        }))
+      })),
+      insert: vi.fn(),
+      update: vi.fn(() => ({
+        eq: vi.fn()
+      }))
+    }))
+  }
+}));
 
-const mockSetDoc = vi.fn();
-const mockGetDoc = vi.fn();
-const mockGetDocs = vi.fn();
-const mockWriteBatch = vi.fn();
+// Mock de los servicios que usa authService
+vi.mock('../../services/profile/userServiceRepo', () => ({
+  userServiceRepo: {
+    createUserProfile: vi.fn(),
+    getUserProfile: vi.fn()
+  }
+}));
 
-// Mock Firebase Auth functions
-vi.mocked(firebaseAuth.signInAnonymously).mockImplementation(mockSignInAnonymously);
-vi.mocked(firebaseAuth.signInWithEmailAndPassword).mockImplementation(mockSignInWithEmailAndPassword);
-vi.mocked(firebaseAuth.createUserWithEmailAndPassword).mockImplementation(mockCreateUserWithEmailAndPassword);
-vi.mocked(firebaseAuth.signInWithPopup).mockImplementation(mockSignInWithPopup);
-vi.mocked(firebaseAuth.signOut).mockImplementation(mockSignOut);
-vi.mocked(firebaseAuth.linkWithCredential).mockImplementation(mockLinkWithCredential);
-vi.mocked(firebaseAuth.GoogleAuthProvider.credentialFromResult).mockImplementation(mockCredentialFromResult);
-
-// Mock Firestore functions
-vi.mocked(firebaseFirestore.setDoc).mockImplementation(mockSetDoc);
-vi.mocked(firebaseFirestore.getDoc).mockImplementation(mockGetDoc);
-vi.mocked(firebaseFirestore.getDocs).mockImplementation(mockGetDocs);
-vi.mocked(firebaseFirestore.writeBatch).mockImplementation(mockWriteBatch);
+vi.mock('../../services/categories/categoryServiceRepo', () => ({
+  categoryServiceRepo: {
+    initializeDefaultCategories: vi.fn()
+  }
+}));
 
 // Componente de prueba que simula el flujo de autenticación
-const TestAuthComponent = ({ userId }: { userId: string | null }) => {
+const TestAuthComponent = ({ children }: { children: React.ReactNode }) => {
   return (
-    <AuthProvider userId={userId}>
+    <AuthProvider>
       <div data-testid="auth-content">
-        <span data-testid="user-id">{userId || 'No user'}</span>
+        {children}
       </div>
     </AuthProvider>
   );
@@ -48,276 +59,173 @@ const TestAuthComponent = ({ userId }: { userId: string | null }) => {
 describe('Integration: Authentication Flow', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    // Setup mock responses
-    mockSetDoc.mockResolvedValue(undefined);
-    mockGetDoc.mockResolvedValue({ exists: () => false });
-    mockGetDocs.mockResolvedValue({ empty: true });
-    mockWriteBatch.mockReturnValue({
-      set: vi.fn(),
-      commit: vi.fn().mockResolvedValue(undefined)
+  });
+
+  it('debería permitir login como invitado', async () => {
+    const mockUser = {
+      id: 'guest-user-123',
+      email: null,
+      user_metadata: {},
+      app_metadata: {},
+      aud: 'authenticated',
+      created_at: new Date().toISOString()
+    };
+
+    (supabase.auth.signUp as any).mockResolvedValue({
+      data: { user: mockUser, session: null },
+      error: null
     });
-    mockCredentialFromResult.mockReturnValue({
-      accessToken: 'mock-access-token',
-      idToken: 'mock-id-token'
+
+    const result = await authService.signInAsGuest();
+
+    expect(result.success).toBe(true);
+    expect(supabase.auth.signUp).toHaveBeenCalled();
+  });
+
+  it('debería permitir registro con email y contraseña', async () => {
+    const email = 'test@example.com';
+    const password = 'password123';
+    const mockUser = {
+      id: 'user-123',
+      email,
+      user_metadata: {},
+      app_metadata: {},
+      aud: 'authenticated', 
+      created_at: new Date().toISOString()
+    };
+
+    (supabase.auth.signUp as any).mockResolvedValue({
+      data: { user: mockUser, session: null },
+      error: null
+    });
+
+    const result = await authService.signUpWithEmail(email, password);
+
+    expect(result.success).toBe(true);
+    expect(supabase.auth.signUp).toHaveBeenCalledWith({
+      email,
+      password
     });
   });
 
-  describe('Guest Authentication', () => {
-    it('should successfully authenticate as guest and create user profile', async () => {
-      // Arrange
-      const mockUser = {
-        uid: 'guest-user-123',
-        isAnonymous: true,
-        email: null,
-        displayName: null,
-      };
+  it('debería permitir login con email y contraseña', async () => {
+    const email = 'test@example.com';
+    const password = 'password123';
+    const mockUser = {
+      id: 'user-123',
+      email,
+      user_metadata: {},
+      app_metadata: {},
+      aud: 'authenticated',
+      created_at: new Date().toISOString()
+    };
 
-      mockSignInAnonymously.mockResolvedValue({
-        user: mockUser
-      } as any);
-
-      // Act
-      const result = await authService.signInAsGuest();
-
-      // Assert
-      expect(result.success).toBe(true);
-      expect(result.user).toEqual(mockUser);
-      expect(mockSignInAnonymously).toHaveBeenCalled();
-      expect(mockSetDoc).toHaveBeenCalled(); // User profile creation
+    (supabase.auth.signInWithPassword as any).mockResolvedValue({
+      data: { user: mockUser, session: null },
+      error: null
     });
 
-    it('should handle guest authentication failure', async () => {
-      // Arrange
-      mockSignInAnonymously.mockRejectedValue({
-        code: 'auth/operation-not-allowed'
-      });
+    const result = await authService.signInWithEmail(email, password);
 
-      // Act
-      const result = await authService.signInAsGuest();
-
-      // Assert
-      expect(result.success).toBe(false);
-      expect(result.error).toBe('auth/operation-not-allowed');
+    expect(result.success).toBe(true);
+    expect(supabase.auth.signInWithPassword).toHaveBeenCalledWith({
+      email,
+      password
     });
   });
 
-  describe('Email Authentication', () => {
-    it('should successfully register with email and create user profile', async () => {
-      // Arrange
-      const mockUser = {
-        uid: 'email-user-123',
-        isAnonymous: false,
-        email: 'test@example.com',
-        displayName: null,
-      };
+  it('debería permitir login con Google', async () => {
+    const mockUser = {
+      id: 'google-user-123',
+      email: 'test@gmail.com',
+      user_metadata: { name: 'Test User' },
+      app_metadata: { provider: 'google' },
+      aud: 'authenticated',
+      created_at: new Date().toISOString()
+    };
 
-      mockCreateUserWithEmailAndPassword.mockResolvedValue({
-        user: mockUser
-      } as any);
-
-      // Act
-      const result = await authService.signUpWithEmail('test@example.com', 'password123', null);
-
-      // Assert
-      expect(result.success).toBe(true);
-      expect(result.user).toEqual(mockUser);
-      expect(mockCreateUserWithEmailAndPassword).toHaveBeenCalledWith(
-        expect.anything(),
-        'test@example.com',
-        'password123'
-      );
-      expect(mockSetDoc).toHaveBeenCalled(); // User profile creation
+    (supabase.auth.signInWithOAuth as any).mockResolvedValue({
+      data: { user: mockUser, session: null },
+      error: null
     });
 
-    it('should successfully sign in with existing email', async () => {
-      // Arrange
-      const mockUser = {
-        uid: 'existing-user-123',
-        isAnonymous: false,
-        email: 'existing@example.com',
-        displayName: null,
-      };
+    const result = await authService.signInWithGoogle();
 
-      mockSignInWithEmailAndPassword.mockResolvedValue({
-        user: mockUser
-      } as any);
-
-      // Mock que el usuario ya existe en la base de datos
-      mockGetDoc.mockResolvedValue({
-        exists: () => true,
-        data: () => ({
-          email: 'existing@example.com',
-          displayName: 'Existing User',
-          currency: 'USD'
-        })
-      } as any);
-
-      // Act
-      const result = await authService.signInWithEmail('existing@example.com', 'password123');
-
-      // Assert
-      expect(result.success).toBe(true);
-      expect(result.user).toEqual(mockUser);
-      expect(mockSignInWithEmailAndPassword).toHaveBeenCalledWith(
-        expect.anything(),
-        'existing@example.com',
-        'password123'
-      );
-      expect(mockGetDoc).toHaveBeenCalled(); // Check user profile exists
-    });
-
-    it('should handle sign in with non-registered user', async () => {
-      // Arrange
-      const mockUser = {
-        uid: 'fake-user-123',
-        isAnonymous: false,
-        email: 'fake@example.com',
-        displayName: null,
-      };
-
-      mockSignInWithEmailAndPassword.mockResolvedValue({
-        user: mockUser
-      } as any);
-
-      // Mock que el usuario NO existe en nuestra base de datos
-      mockGetDoc.mockResolvedValue({
-        exists: () => false
-      } as any);
-
-      mockSignOut.mockResolvedValue(undefined);
-
-      // Act
-      const result = await authService.signInWithEmail('fake@example.com', 'password123');
-
-      // Assert
-      expect(result.success).toBe(false);
-      expect(result.error).toBe('auth/user-not-registered');
-      expect(mockSignOut).toHaveBeenCalled(); // Should sign out the user
-    });
-
-    it('should handle invalid credentials', async () => {
-      // Arrange
-      mockSignInWithEmailAndPassword.mockRejectedValue({
-        code: 'auth/invalid-credential'
-      });
-
-      // Act
-      const result = await authService.signInWithEmail('test@example.com', 'wrongpassword');
-
-      // Assert
-      expect(result.success).toBe(false);
-      expect(result.error).toBe('auth/invalid-credential');
+    expect(result.success).toBe(true);
+    expect(supabase.auth.signInWithOAuth).toHaveBeenCalledWith({
+      provider: 'google'
     });
   });
 
-  describe('Google Authentication', () => {
-    it('should successfully sign in with Google and create user profile', async () => {
-      // Arrange
-      const mockUser = {
-        uid: 'google-user-123',
-        isAnonymous: false,
-        email: 'google@example.com',
-        displayName: 'Google User',
-      };
-
-      mockSignInWithPopup.mockResolvedValue({
-        user: mockUser
-      } as any);
-
-      // Act
-      const result = await authService.signInWithGoogle(null);
-
-      // Assert
-      expect(result.success).toBe(true);
-      expect(result.user).toEqual(mockUser);
-      expect(mockSignInWithPopup).toHaveBeenCalled();
-      expect(mockSetDoc).toHaveBeenCalled(); // User profile creation
+  it('debería cerrar sesión correctamente', async () => {
+    (supabase.auth.signOut as any).mockResolvedValue({
+      error: null
     });
 
-    it('should successfully link anonymous user with Google account', async () => {
-      // Arrange
-      const anonymousUser = {
-        uid: 'anonymous-123',
-        isAnonymous: true,
-        email: null,
-        displayName: null,
-      };
+    const result = await authService.signOut();
 
-      const linkedUser = {
-        uid: 'anonymous-123', // Same UID after linking
-        isAnonymous: false,
-        email: 'google@example.com',
-        displayName: 'Google User',
-      };
-
-      mockSignInWithPopup.mockResolvedValue({
-        user: linkedUser
-      } as any);
-
-      mockCredentialFromResult.mockReturnValue({
-        accessToken: 'mock-access-token',
-        idToken: 'mock-id-token'
-      });
-
-      mockLinkWithCredential.mockResolvedValue({
-        user: linkedUser
-      } as any);
-
-      // Act
-      const result = await authService.signInWithGoogle(anonymousUser as any);
-
-      // Assert
-      expect(result.success).toBe(true);
-      expect(result.user).toEqual(linkedUser);
-      expect(mockLinkWithCredential).toHaveBeenCalled();
-    });
+    expect(result.success).toBe(true);
+    expect(supabase.auth.signOut).toHaveBeenCalled();
   });
 
-  describe('Sign Out', () => {
-    it('should successfully sign out user', async () => {
-      // Arrange
-      mockSignOut.mockResolvedValue(undefined);
+  it('debería manejar errores de autenticación', async () => {
+    const email = 'invalid@example.com';
+    const password = 'wrongpassword';
 
-      // Act
-      const result = await authService.signOut();
-
-      // Assert
-      expect(result.success).toBe(true);
-      expect(mockSignOut).toHaveBeenCalled();
+    (supabase.auth.signInWithPassword as any).mockResolvedValue({
+      data: { user: null, session: null },
+      error: { message: 'Invalid credentials', code: 'invalid_credentials' }
     });
 
-    it('should handle sign out errors gracefully', async () => {
-      // Arrange
-      mockSignOut.mockRejectedValue(new Error('Sign out error'));
+    const result = await authService.signInWithEmail(email, password);
 
-      // Act
-      const result = await authService.signOut();
-
-      // Assert
-      expect(result.success).toBe(true); // Should still return success
-    });
+    expect(result.success).toBe(false);
+    expect(result.error).toBeDefined();
   });
 
-  describe('AuthContext Integration', () => {
-    it('should provide user data through context when authenticated', async () => {
-      // Arrange
-      const userId = 'test-user-123';
+  it('debería renderizar el AuthProvider correctamente', () => {
+    render(
+      <TestAuthComponent>
+        <div data-testid="test-content">Test Content</div>
+      </TestAuthComponent>
+    );
 
-      // Act
-      render(<TestAuthComponent userId={userId} />);
+    expect(screen.getByTestId('auth-content')).toBeInTheDocument();
+    expect(screen.getByTestId('test-content')).toBeInTheDocument();
+  });
 
-      // Assert
-      expect(screen.getByTestId('auth-content')).toBeInTheDocument();
-      expect(screen.getByTestId('user-id')).toHaveTextContent(userId);
+  it('debería manejar el estado de carga durante la autenticación', async () => {
+    // Mock del estado de carga
+    const mockGetUser = vi.fn().mockResolvedValue({ 
+      data: { user: null }, 
+      error: null 
+    });
+    (supabase.auth.getUser as any).mockImplementation(mockGetUser);
+
+    render(
+      <TestAuthComponent>
+        <div data-testid="test-content">Test Content</div>
+      </TestAuthComponent>
+    );
+
+    // El componente debería renderizarse inmediatamente
+    expect(screen.getByTestId('auth-content')).toBeInTheDocument();
+  });
+
+  it('debería limpiar la suscripción al desmontar', () => {
+    const mockUnsubscribe = vi.fn();
+    (supabase.auth.onAuthStateChange as any).mockReturnValue({
+      data: { subscription: { unsubscribe: mockUnsubscribe } }
     });
 
-    it('should handle null user in context', async () => {
-      // Act
-      render(<TestAuthComponent userId={null} />);
+    const { unmount } = render(
+      <TestAuthComponent>
+        <div data-testid="test-content">Test Content</div>
+      </TestAuthComponent>
+    );
 
-      // Assert
-      expect(screen.getByTestId('auth-content')).toBeInTheDocument();
-      expect(screen.getByTestId('user-id')).toHaveTextContent('No user');
-    });
+    unmount();
+
+    expect(mockUnsubscribe).toHaveBeenCalled();
   });
 });

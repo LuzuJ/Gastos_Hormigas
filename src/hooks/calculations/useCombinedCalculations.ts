@@ -16,7 +16,7 @@ export const useCombinedCalculations = ({ expenses, categories, totalFixedExpens
     const currentYear = new Date().getFullYear();
     const expensesThisMonth = expenses.filter(e => {
         if (!e.createdAt) return false;
-        const expenseDate = e.createdAt.toDate();
+        const expenseDate = new Date(e.createdAt);
         return expenseDate.getMonth() === currentMonth && expenseDate.getFullYear() === currentYear;
     });
     const grouped = expensesThisMonth.reduce((acc, expense) => {
@@ -59,7 +59,7 @@ export const useCombinedCalculations = ({ expenses, categories, totalFixedExpens
     const validExpenses = expenses.filter(e => e.createdAt);
     const variableExpensesMonth = validExpenses
         .filter(e => {
-            const expenseDate = e.createdAt!.toDate();
+            const expenseDate = new Date(e.createdAt!);
             return expenseDate.getMonth() === currentMonth && expenseDate.getFullYear() === currentYear;
         })
         .reduce((sum, e) => sum + e.amount, 0);
@@ -79,7 +79,7 @@ export const useCombinedCalculations = ({ expenses, categories, totalFixedExpens
     }
     const validExpenses = expenses.filter(e => e.createdAt);
     validExpenses.forEach(expense => {
-        const expenseDate = expense.createdAt!.toDate();
+        const expenseDate = new Date(expense.createdAt!);
         const sixMonthsAgo = new Date(today.getFullYear(), today.getMonth() - 5, 1);
         if (expenseDate >= sixMonthsAgo) {
             const monthName = monthNames[expenseDate.getMonth()];
@@ -104,7 +104,7 @@ export const useCombinedCalculations = ({ expenses, categories, totalFixedExpens
         dataMap.set(cat.id, { name: cat.name, actual: 0, anterior: 0 });
     });
     expenses.forEach(expense => {
-        const expenseDate = expense.createdAt?.toDate();
+        const expenseDate = expense.createdAt ? new Date(expense.createdAt) : null;
         if (!expenseDate) return;
         const expenseMonth = expenseDate.getMonth();
         const expenseYear = expenseDate.getFullYear();

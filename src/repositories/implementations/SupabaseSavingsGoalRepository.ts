@@ -6,6 +6,7 @@ import type { RealtimeChannel } from '@supabase/supabase-js';
 
 /**
  * Tipo para metas de ahorro en la base de datos de Supabase
+ * Alineado con el esquema real de la tabla savings_goals
  */
 interface SupabaseSavingsGoal {
   id: string;
@@ -13,7 +14,12 @@ interface SupabaseSavingsGoal {
   name: string;
   target_amount: number;
   current_amount: number;
+  target_date?: string;
+  icon?: string;
+  color?: string;
+  is_active?: boolean;
   created_at?: string;
+  updated_at?: string;
 }
 
 /**
@@ -23,7 +29,7 @@ export class SupabaseSavingsGoalRepository
   extends SupabaseRepository<SavingsGoal, string, SavingsGoalFormData> 
   implements ISavingsGoalRepository {
   
-  private subscriptions: Map<string, RealtimeChannel> = new Map();
+  private readonly subscriptions: Map<string, RealtimeChannel> = new Map();
   
   constructor() {
     super(SUPABASE_TABLES.SAVINGS_GOALS);
@@ -163,6 +169,10 @@ export class SupabaseSavingsGoalRepository
       name: data.name,
       targetAmount: data.target_amount,
       currentAmount: data.current_amount,
+      targetDate: data.target_date,
+      icon: data.icon,
+      color: data.color,
+      isActive: data.is_active,
     };
   }
   
@@ -182,6 +192,18 @@ export class SupabaseSavingsGoalRepository
     }
     if (data.currentAmount !== undefined) {
       databaseData.current_amount = data.currentAmount;
+    }
+    if (data.targetDate !== undefined) {
+      databaseData.target_date = data.targetDate;
+    }
+    if (data.icon !== undefined) {
+      databaseData.icon = data.icon;
+    }
+    if (data.color !== undefined) {
+      databaseData.color = data.color;
+    }
+    if (data.isActive !== undefined) {
+      databaseData.is_active = data.isActive;
     }
     
     return databaseData;

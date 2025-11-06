@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { financialsService } from '../../services/financials/financialsService';
-import { fixedExpenseService } from '../../services/expenses/fixedExpenseService';
+import { financialsServiceRepo } from '../../services/financials/financialsServiceRepo';
+import { fixedExpenseServiceRepo } from '../../services/expenses/fixedExpenseServiceRepo';
 import { useLoadingState, handleAsyncOperation } from '../context/useLoadingState';
 import { usePaymentSources } from '../expenses/usePaymentSources';
 import type { Financials, FixedExpense } from '../../types';
@@ -49,13 +49,13 @@ export const useFinancials = (userId: string | null) => {
         setFixedExpensesError(null);
 
         // Suscripción a datos financieros
-        const unsubFinancials = financialsService.onFinancialsUpdate(userId, (data) => {
+        const unsubFinancials = financialsServiceRepo.onFinancialsUpdate(userId, (data: Financials | null) => {
             setFinancials(data);
             stopLoading();
         });
 
         // Suscripción a gastos fijos
-        const unsubFixed = fixedExpenseService.onFixedExpensesUpdate(userId, (data) => {
+        const unsubFixed = fixedExpenseServiceRepo.onFixedExpensesUpdate(userId, (data: FixedExpense[]) => {
             setFixedExpenses(data);
             setLoadingFixedExpenses(false);
         });
@@ -72,8 +72,8 @@ export const useFinancials = (userId: string | null) => {
         }
 
         return await handleAsyncOperation(
-            () => financialsService.setMonthlyIncome(userId, income),
-            'Error al actualizar el ingreso mensual'
+            () => financialsServiceRepo.setMonthlyIncome(userId, income),
+            'Error al establecer el ingreso mensual'
         );
     }, [userId]);
 
@@ -83,7 +83,7 @@ export const useFinancials = (userId: string | null) => {
         }
 
         return await handleAsyncOperation(
-            () => fixedExpenseService.addFixedExpense(userId, data),
+            () => fixedExpenseServiceRepo.addFixedExpense(userId, data),
             'Error al agregar el gasto fijo'
         );
     }, [userId]);
@@ -94,7 +94,7 @@ export const useFinancials = (userId: string | null) => {
         }
 
         return await handleAsyncOperation(
-            () => fixedExpenseService.deleteFixedExpense(userId, id),
+            () => fixedExpenseServiceRepo.deleteFixedExpense(userId, id),
             'Error al eliminar el gasto fijo'
         );
     }, [userId]);

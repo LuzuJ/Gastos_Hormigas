@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { authService } from '../services/auth/authService';
 import { ThemeToggler } from '../components/ui/ThemeToggler/ThemeToggler';
 import { PasswordInput } from '../components/ui/PasswordInput/PasswordInput';
@@ -8,7 +8,7 @@ import styles from './LoginPage.module.css';
 
 export const LoginPage: React.FC = () => {
   const navigate = useNavigate();
-  const { user, isLoading: authLoading } = useAuth();
+  const { user } = useAuth();
   
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -33,14 +33,13 @@ export const LoginPage: React.FC = () => {
       
       if (!result.success && result.error) {
         setError(getFriendlyErrorMessage(result.error));
-      } else if (result.redirect) {
-        // Para OAuth con Supabase, se redirige al proveedor
-        window.location.href = result.redirect;
+        setLoading(false);
       }
+      // Si es exitoso, Supabase redirige automáticamente al proveedor OAuth
+      // No necesitamos hacer nada más aquí, el loading se mantiene hasta el redirect
     } catch (error) {
       console.error('Error en autenticación con Google:', error);
       setError('Error al conectar con Google. Por favor, inténtalo de nuevo.');
-    } finally {
       setLoading(false);
     }
   };
@@ -67,6 +66,10 @@ export const LoginPage: React.FC = () => {
     switch (errorCode) {
       case 'auth/invalid-credential':
         return 'El correo electrónico o la contraseña son incorrectos.';
+      case 'auth/email-not-confirmed':
+        return 'Debes confirmar tu email antes de iniciar sesión. Revisa tu bandeja de entrada o contacta al administrador.';
+      case 'auth/signup-disabled':
+        return 'El registro está deshabilitado. Contacta al administrador.';
       case 'auth/user-not-found':
         return 'No se encontró ninguna cuenta con este correo electrónico.';
       case 'auth/user-not-registered':
@@ -79,13 +82,20 @@ export const LoginPage: React.FC = () => {
         return 'La contraseña es demasiado débil. Debe tener al menos 6 caracteres.';
       case 'auth/invalid-email':
       case 'Invalid email':
-        return 'El formato del correo electrónico no es válido.';
+      case 'Invalid email format':
+        return 'El formato del correo electrónico no es válido. Debe ser como: usuario@ejemplo.com';
+      case 'Email username must be at least 3 characters':
+        return 'El nombre de usuario del email debe tener al menos 3 caracteres antes del @';
       case 'auth/too-many-requests':
         return 'Demasiados intentos fallidos. Intenta de nuevo más tarde.';
       case 'auth/network-request-failed':
       case 'Network error':
         return 'Error de conexión. Verifica tu conexión a internet.';
       default:
+        // Si el error contiene información específica de Supabase, mostrarla
+        if (errorCode.includes('Email address') && errorCode.includes('invalid')) {
+          return 'El formato del email no es válido. Prueba con un email más largo como: usuario@ejemplo.com';
+        }
         return 'Ocurrió un error inesperado. Por favor, inténtalo de nuevo.';
     }
   };
@@ -112,8 +122,15 @@ export const LoginPage: React.FC = () => {
       } else if (isSigningUp) {
         // Mostrar mensaje de confirmación para nuevo registro
         setError('');
-        alert('Cuenta creada exitosamente. Ahora puedes iniciar sesión.');
-        setIsSigningUp(false);
+        
+        // Verificar si Supabase requiere confirmación de email
+        if (result.user && !result.user.email_confirmed_at) {
+          alert('¡Cuenta creada exitosamente! Verifica tu email para completar el registro, o contacta al administrador si no recibes el correo.');
+          setIsSigningUp(false);
+        } else {
+          // Usuario registrado y confirmado, redirigir automáticamente
+          console.log('Usuario registrado y confirmado, redirigiendo...');
+        }
       } else {
         // Éxito al iniciar sesión, la redirección la maneja el useEffect
         console.log('Usuario autenticado correctamente');
@@ -147,7 +164,7 @@ export const LoginPage: React.FC = () => {
         <form onSubmit={handleSubmit} className={styles.form}>
           <input
             type="email"
-            placeholder="Correo electrónico"
+            placeholder="tu.email@ejemplo.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required

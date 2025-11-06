@@ -1,5 +1,4 @@
 import type { Achievement, UserStats, Expense, Category, SavingsGoal, Liability } from '../../types';
-import { Timestamp } from 'firebase/firestore';
 
 // Definición de logros disponibles
 export const DEFAULT_ACHIEVEMENTS: Omit<Achievement, 'isUnlocked' | 'unlockedAt' | 'progress'>[] = [
@@ -219,7 +218,7 @@ export class AchievementsService {
         ...achievement,
         progress: progressPercentage,
         isUnlocked: isUnlocked || achievement.isUnlocked,
-        unlockedAt: isUnlocked && !achievement.isUnlocked ? Timestamp.now() : achievement.unlockedAt
+        unlockedAt: isUnlocked && !achievement.isUnlocked ? new Date().toISOString() : achievement.unlockedAt
       };
     });
   }
@@ -231,7 +230,7 @@ export class AchievementsService {
     const currentMonth = new Date().toISOString().slice(0, 7);
     
     const monthlyExpenses = expenses.reduce((acc, expense) => {
-      const expenseMonth = expense.createdAt?.toDate().toISOString().slice(0, 7) || currentMonth;
+      const expenseMonth = expense.createdAt ? new Date(expense.createdAt).toISOString().slice(0, 7) : currentMonth;
       if (!acc[expenseMonth]) acc[expenseMonth] = {};
       if (!acc[expenseMonth][expense.categoryId]) acc[expenseMonth][expense.categoryId] = 0;
       acc[expenseMonth][expense.categoryId] += expense.amount;

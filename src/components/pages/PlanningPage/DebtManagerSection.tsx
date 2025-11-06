@@ -3,7 +3,7 @@ import DebtManager from '../../features/financials/DebtManager/DebtManager';
 import { ErrorBoundaryWrapper } from './ErrorBoundaryWrapper';
 import { useExpensesContext, useCategoriesContext } from '../../../contexts/AppContext';
 import { useNotificationsContext } from '../../../contexts/NotificationsContext';
-import { Timestamp } from 'firebase/firestore';
+
 import toast from 'react-hot-toast';
 import type { Liability } from '../../../types';
 
@@ -87,7 +87,7 @@ export const DebtManagerSection: React.FC<DebtManagerSectionProps> = ({
         // Si la deuda está completamente pagada, archivarla
         if (newAmount === 0) {
           updateData.isArchived = true;
-          updateData.archivedAt = Timestamp.now();
+          updateData.archivedAt = new Date().toISOString();
           console.log('📦 Archivando deuda completamente pagada');
         }
 
@@ -143,7 +143,7 @@ export const DebtManagerSection: React.FC<DebtManagerSectionProps> = ({
         description: paymentDescription,
         categoryId: debtCategoryId,
         subCategory: paymentType === 'regular' ? 'Pago Mínimo' : 'Pago Extra',
-        createdAt: Timestamp.now(),
+        createdAt: new Date().toISOString(),
       });
 
       console.log('✅ Pago registrado exitosamente');

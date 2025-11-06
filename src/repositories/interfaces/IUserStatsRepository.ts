@@ -2,18 +2,16 @@ import { IRepository } from './IRepository';
 
 /**
  * Tipo para las estadísticas del usuario
+ * Alineado con el esquema de la base de datos user_stats
  */
 export interface UserStats {
   id: string;
   userId: string;
-  // Agregar aquí los campos específicos para las estadísticas
-  // Por ejemplo:
   totalExpenses?: number;
+  totalIncome?: number;
   totalSavings?: number;
-  lastActivityDate?: string;
-  streakDays?: number;
-  categoriesUsed?: number;
-  // ... otros campos relevantes
+  budgetStreak?: number;
+  achievementsPoints?: number;
 }
 
 /**

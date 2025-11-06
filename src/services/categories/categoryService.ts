@@ -1,4 +1,6 @@
 import { supabase } from '../../config/supabase';
+// Temporary fix for Supabase type inference issues
+const typedSupabase = supabase as any;
 import type { Category, SubCategory } from '../../types';
 import { defaultCategoriesStructure } from '../../constants';
 import type { RealtimeChannel } from '@supabase/supabase-js';
@@ -12,7 +14,7 @@ export const categoryService = {
     initializeDefaultCategories: async (userId: string): Promise<boolean> => {
         try {
             // Verificar si ya existen categorías para este usuario
-            const { data: existingCategories, error: checkError } = await supabase
+            const { data: existingCategories, error: checkError } = await typedSupabase
                 .from('categories')
                 .select('id')
                 .eq('user_id', userId)
@@ -25,8 +27,8 @@ export const categoryService = {
             if (!existingCategories || existingCategories.length === 0) {
                 // Insertar categorías por defecto
                 for (const category of defaultCategoriesStructure) {
-                    const { data: categoryData, error: categoryError } = await supabase
-                        .from('categories')
+                    const { data: categoryData, error: categoryError } = await (supabase
+                        .from('categories') as any)
                         .insert({
                             user_id: userId,
                             name: category.name,
@@ -48,7 +50,7 @@ export const categoryService = {
                             name: subName
                         }));
 
-                        const { error: subError } = await supabase
+                        const { error: subError } = await typedSupabase
                             .from('subcategories')
                             .insert(subcategoryData);
 
@@ -71,7 +73,7 @@ export const categoryService = {
      */
     getCategories: async (userId: string): Promise<Category[]> => {
         try {
-            const { data, error } = await supabase
+            const { data, error } = await typedSupabase
                 .from('categories')
                 .select(`
                     id,
@@ -92,7 +94,7 @@ export const categoryService = {
                 throw error;
             }
 
-            return data?.map(category => ({
+            return data?.map((category: any) => ({
                 id: category.id,
                 name: category.name,
                 icon: category.icon,
@@ -119,7 +121,7 @@ export const categoryService = {
             callback(initialData);
 
             // Configurar suscripción en tiempo real
-            channel = supabase
+            channel = typedSupabase
                 .channel(`categories_${userId}`)
                 .on(
                     'postgres_changes',
@@ -156,7 +158,7 @@ export const categoryService = {
         // Retornar función para desuscribirse
         return () => {
             if (channel) {
-                supabase.removeChannel(channel);
+                typedSupabase.removeChannel(channel);
             }
         };
     },
@@ -166,7 +168,7 @@ export const categoryService = {
      */
     addCategory: async (userId: string, categoryName: string, icon: string = 'Tag', color: string = '#607D8B') => {
         try {
-            const { data, error } = await supabase
+            const { data, error } = await typedSupabase
                 .from('categories')
                 .insert({
                     user_id: userId,
@@ -195,7 +197,7 @@ export const categoryService = {
     deleteCategory: async (userId: string, categoryId: string) => {
         try {
             // Primero eliminar las subcategorías (cascade debería manejarlas automáticamente)
-            const { error } = await supabase
+            const { error } = await typedSupabase
                 .from('categories')
                 .delete()
                 .eq('id', categoryId)
@@ -216,7 +218,7 @@ export const categoryService = {
     addSubCategory: async (userId: string, categoryId: string, subCategoryName: string) => {
         try {
             // Verificar que la categoría pertenece al usuario
-            const { data: category, error: checkError } = await supabase
+            const { data: category, error: checkError } = await typedSupabase
                 .from('categories')
                 .select('id')
                 .eq('id', categoryId)
@@ -227,7 +229,7 @@ export const categoryService = {
                 throw new Error('Categoría no encontrada o no pertenece al usuario');
             }
 
-            const { data, error } = await supabase
+            const { data, error } = await typedSupabase
                 .from('subcategories')
                 .insert({
                     category_id: categoryId,
@@ -253,7 +255,7 @@ export const categoryService = {
     deleteSubCategory: async (userId: string, categoryId: string, subCategoryId: string) => {
         try {
             // Verificar que la categoría pertenece al usuario
-            const { data: category, error: checkError } = await supabase
+            const { data: category, error: checkError } = await typedSupabase
                 .from('categories')
                 .select('id')
                 .eq('id', categoryId)
@@ -264,7 +266,7 @@ export const categoryService = {
                 throw new Error('Categoría no encontrada o no pertenece al usuario');
             }
 
-            const { error } = await supabase
+            const { error } = await typedSupabase
                 .from('subcategories')
                 .delete()
                 .eq('id', subCategoryId)
@@ -284,7 +286,7 @@ export const categoryService = {
      */
     updateCategoryBudget: async (userId: string, categoryId: string, budget: number) => {
         try {
-            const { error } = await supabase
+            const { error } = await typedSupabase
                 .from('categories')
                 .update({ budget })
                 .eq('id', categoryId)
@@ -304,7 +306,7 @@ export const categoryService = {
      */
     updateCategoryStyle: async (userId: string, categoryId: string, style: { icon: string; color: string }) => {
         try {
-            const { error } = await supabase
+            const { error } = await typedSupabase
                 .from('categories')
                 .update({
                     icon: style.icon,
@@ -327,7 +329,7 @@ export const categoryService = {
      */
     getCategory: async (userId: string, categoryId: string): Promise<Category | null> => {
         try {
-            const { data, error } = await supabase
+            const { data, error } = await typedSupabase
                 .from('categories')
                 .select(`
                     id,

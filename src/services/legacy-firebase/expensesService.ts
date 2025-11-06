@@ -20,7 +20,10 @@ export const expensesService = {
         const q = query(getExpensesCollectionRef(userId));
         return onSnapshot(q, (snapshot: QuerySnapshot<DocumentData>) => {
             const expenses = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as Expense));
-            expenses.sort((a, b) => (b.createdAt?.seconds ?? 0) - (a.createdAt?.seconds ?? 0));
+            expenses.sort((a, b) => {
+                if (!a.createdAt || !b.createdAt) return 0;
+                return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+            });
             callback(expenses);
         }, (error) => {
             console.error("Error fetching expenses:", error);

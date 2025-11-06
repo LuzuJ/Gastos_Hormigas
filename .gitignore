@@ -7,17 +7,38 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Dependencies
 node_modules
+package-lock.json.bak
+
+# Build outputs
 dist
 dist-ssr
-*.local
-.env
-docs
+build
 *.tsbuildinfo
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+.env.example
+*.local
+
+# Coverage reports
+coverage/
+*.lcov
+.nyc_output
+
+# Cache directories
+.cache
+.vite
+.turbo
+.eslintcache
 
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
+!.vscode/settings.json
 .idea
 .DS_Store
 *.suo
@@ -25,3 +46,41 @@ docs
 *.njsproj
 *.sln
 *.sw?
+
+# OS files
+Thumbs.db
+Desktop.ini
+
+# Firebase (solo Hosting, Auth/DB migrado a Supabase)
+.firebase/
+firebase-debug.log*
+.firebaserc.bak
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*~
+
+# Database files temporales
+*.sql.bak
+*.db
+*.sqlite
+
+# Scripts de migración obsoletos (ya ejecutados)
+scripts/migrate-firebase-to-supabase.js
+scripts/migrate-firebase-to-supabase.ts
+scripts/apply-database-functions.js
+
+# Ejemplos y demos (solo para desarrollo)
+src/examples/**
+src/components/demos/**
+src/debug/**
+
+# Documentation (mantenida en repositorio separado si es necesario)
+docs/
+database/
+src/examples/
+
+# GitHub Actions artifacts (se generan automáticamente)
+.github/workflows/*.log

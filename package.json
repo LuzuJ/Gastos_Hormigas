@@ -51,7 +51,12 @@
     "firebase:targets": "firebase target:apply hosting production gastos-hormigas && firebase target:apply hosting staging gastos-hormigas-staging",
     "github:secrets": "gh secret list",
     "github:workflows": "gh workflow list",
-    "github:run": "gh run list --limit 5"
+    "github:run": "gh run list --limit 5",
+    "supabase:verify": "node scripts/verify-supabase-setup.js",
+    "supabase:check": "npm run supabase:verify",
+    "supabase:verify-db": "node scripts/verify-database-structure.js",
+    "db:verify": "powershell -ExecutionPolicy Bypass -File scripts/verify-db.ps1",
+    "db:check": "npm run db:verify"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.58.0",

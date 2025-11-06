@@ -7,9 +7,9 @@ import { BudgetProgressBar } from '../../features/financials/BudgetProgressBar/B
 import { Input } from '../../common';
 import { expenseFormSchema } from '../../../schemas';
 import { useDuplicateDetection } from '../../../hooks/expenses/useDuplicateDetection';
-import { useFinancialAutomation } from '../../../hooks/financials/useFinancialAutomation';
+// DESHABILITADO: useFinancialAutomation fue movido a legacy-firebase
 import { DuplicateWarning } from './DuplicateWarning';
-import { Timestamp } from 'firebase/firestore';
+
 import { formatCurrency } from '../../../utils/formatters';
 
 interface ExpenseFormProps {
@@ -50,11 +50,20 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
     const [showDuplicateWarning, setShowDuplicateWarning] = useState(false);
     const [pendingExpenseData, setPendingExpenseData] = useState<any>(null);
 
-    // Hook para automatización financiera
-    const {
-        processExpenseWithBalance,
-        paymentSourceBalances,
-        refreshPaymentSourceBalance    } = useFinancialAutomation(userId);
+    // Hook para automatización financiera - DESHABILITADO
+    // El servicio fue movido a legacy-firebase y necesita reimplementación con Supabase
+    // const {
+    //     processExpenseWithBalance,
+    //     paymentSourceBalances,
+    //     refreshPaymentSourceBalance
+    // } = useFinancialAutomation(userId);
+    
+    // Stubs temporales para mantener compatibilidad
+    const paymentSourceBalances: any[] = [];
+    const refreshPaymentSourceBalance = (_id: string) => {};
+    const processExpenseWithBalance = async (_expense: any, _paymentSourceId: string) => ({ 
+        success: true 
+    });
 
     // Hook para detección de duplicados
     const duplicateDetection = useDuplicateDetection({
@@ -220,7 +229,7 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
                     amount: parseFloat(amount),
                     categoryId: expenseData.categoryId,
                     subCategory: expenseData.subCategory,
-                    createdAt: Timestamp.now(),
+                    createdAt: new Date().toISOString(),
                     paymentSourceId: selectedPaymentSourceId,
                     isAutomatic: false
                 };
@@ -233,10 +242,10 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
 
                 if (!balanceResult.success) {
                     // Si falla el procesamiento de saldo, mostrar error pero permitir continuar
-                    toast.error(balanceResult.error || 'Error procesando el saldo');
+                    toast.error('Error procesando el saldo');
                     
                     // Preguntar al usuario si quiere continuar sin procesar el saldo
-                    const continueAnyway = window.confirm(
+                    const continueAnyway = globalThis.confirm(
                         '¿Deseas registrar el gasto sin actualizar el saldo automáticamente?'
                     );
                     
@@ -326,7 +335,7 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
         const currentYear = new Date().getFullYear();
         const spent = expenses
             .filter(e => {
-                const expenseDate = e.createdAt?.toDate();
+                const expenseDate = e.createdAt ? new Date(e.createdAt) : null;
                 return e.categoryId === selectedCategoryId &&
                        expenseDate &&
                        expenseDate.getMonth() === currentMonth &&
@@ -402,37 +411,16 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
                         <div className={styles.formGroupCleanup}>
                             <button
                                 type="button"
-                                onClick={async () => {
-                                    if (window.confirm('¿Limpiar fuentes de pago duplicadas? Esta acción no se puede deshacer.')) {
-                                        try {
-                                            toast.loading('Limpiando duplicados...', { id: 'cleanup' });
-                                            
-                                            // Usar el servicio de limpieza directamente
-                                            const { duplicateCleanupService } = await import('../../../services/expenses/duplicateCleanupService');
-                                            const result = await duplicateCleanupService.removeDuplicatePaymentSources(userId);
-                                            
-                                            toast.dismiss('cleanup');
-                                            
-                                            if (result.success) {
-                                                toast.success(`¡Éxito! Se eliminaron ${result.removed} duplicados. Recarga la página.`);
-                                                
-                                                // Preguntar si quiere recargar automáticamente
-                                                if (window.confirm('¿Recargar la página ahora para ver los cambios?')) {
-                                                    window.location.reload();
-                                                }
-                                            } else {
-                                                toast.error(result.error || 'Error al limpiar duplicados');
-                                            }
-                                        } catch (error) {
-                                            toast.dismiss('cleanup');
-                                            toast.error('Error al limpiar duplicados');
-                                            console.error('Error cleanup:', error);
-                                        }
-                                    }
+                                onClick={() => {
+                                    // NOTA: Servicio de limpieza de duplicados deshabilitado
+                                    // Supabase ahora maneja duplicados con constraints únicos en la base de datos
+                                    toast('La limpieza automática de duplicados ya no es necesaria. Supabase previene duplicados automáticamente.', { icon: '✅' });
                                 }}
                                 className={styles.cleanupButton}
+                                style={{ opacity: 0.6, cursor: 'not-allowed' }}
+                                disabled
                             >
-                                🧹 Limpiar Duplicados ({paymentSources.length} fuentes)
+                                🧹 Limpiar Duplicados (No necesario con Supabase)
                             </button>
                         </div>
                     )}

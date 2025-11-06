@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
-import { categoryService } from '../../services/categories/categoryService';
-import { useLoadingState, handleAsyncOperation } from '../context/useLoadingState';
+import { categoryServiceRepo } from '../../services/categories/categoryServiceRepo';
+import { handleAsyncOperation } from '../context/useLoadingState';
 import type { Category, SubCategory } from '../../types';
 
 /**
@@ -9,29 +9,54 @@ import type { Category, SubCategory } from '../../types';
  */
 export const useCategories = (userId: string | null) => {
     const [categories, setCategories] = useState<Category[]>([]);
-    const { loading, error, startLoading, stopLoading, setErrorState, clearError } = useLoadingState(true);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         if (!userId) {
             setCategories([]);
-            stopLoading();
+            setLoading(false);
             return;
         }
 
-        startLoading();
-        clearError();
+        setLoading(true);
+        setError(null);
 
-        // Se suscribe a las actualizaciones de categorías en tiempo real.
-        const unsubscribe = categoryService.onCategoriesUpdate(userId, (data) => {
-            setCategories(data || []);
-            stopLoading();
+        // Función para inicializar categorías por defecto si es necesario
+        const initializeAndSubscribe = async () => {
+            try {
+                // Primero, intentar inicializar categorías por defecto
+                await categoryServiceRepo.initializeDefaultCategories(userId);
+            } catch (error) {
+                console.error('Error al inicializar categorías por defecto:', error);
+                // Continuar aunque falle la inicialización
+            }
+
+            // Se suscribe a las actualizaciones de categorías en tiempo real.
+            const unsubscribe = categoryServiceRepo.onCategoriesUpdate(userId, (data: Category[]) => {
+                setCategories(data || []);
+                setLoading(false);
+            });
+
+            return unsubscribe;
+        };
+
+        let unsubscribeRef: (() => void) | null = null;
+        
+        initializeAndSubscribe().then(unsubscribe => {
+            unsubscribeRef = unsubscribe;
+        }).catch(error => {
+            console.error('Error al configurar suscripción de categorías:', error);
+            setLoading(false);
         });
 
         // Se desuscribe al desmontar para evitar fugas de memoria.
         return () => {
-            unsubscribe();
+            if (unsubscribeRef) {
+                unsubscribeRef();
+            }
         };
-    }, [userId, startLoading, stopLoading, setErrorState, clearError]);
+    }, [userId]);
 
     const addCategory = useCallback(async (categoryName: string) => {
         if (!userId || !categoryName.trim()) {
@@ -39,7 +64,7 @@ export const useCategories = (userId: string | null) => {
         }
 
         return await handleAsyncOperation(
-            () => categoryService.addCategory(userId, categoryName.trim()),
+            () => categoryServiceRepo.addCategory(userId, categoryName.trim()),
             'Error al agregar la categoría'
         );
     }, [userId]);
@@ -50,7 +75,7 @@ export const useCategories = (userId: string | null) => {
         }
 
         return await handleAsyncOperation(
-            () => categoryService.deleteCategory(userId, categoryId),
+            () => categoryServiceRepo.deleteCategory(userId, categoryId),
             'Error al eliminar la categoría'
         );
     }, [userId]);
@@ -72,7 +97,7 @@ export const useCategories = (userId: string | null) => {
         }
 
         return await handleAsyncOperation(
-            () => categoryService.addSubCategory(userId, categoryId, subCategoryName.trim()),
+            () => categoryServiceRepo.addSubCategory(userId, categoryId, subCategoryName.trim()),
             'Error al agregar la subcategoría'
         );
     }, [userId, categories]);
@@ -92,7 +117,7 @@ export const useCategories = (userId: string | null) => {
         };
 
         return await handleAsyncOperation(
-            () => categoryService.deleteSubCategory(userId, categoryId, subCategoryToDelete),
+            () => categoryServiceRepo.deleteSubCategory(userId, categoryId, subCategoryToDelete.id),
             'Error al eliminar la subcategoría'
         );
     }, [userId]);
@@ -103,7 +128,7 @@ export const useCategories = (userId: string | null) => {
         }
 
         return await handleAsyncOperation(
-            () => categoryService.updateCategoryBudget(userId, categoryId, budget),
+            () => categoryServiceRepo.updateCategoryBudget(userId, categoryId, budget),
             'Error al actualizar el presupuesto'
         );
     }, [userId]);
@@ -114,16 +139,20 @@ export const useCategories = (userId: string | null) => {
         }
 
         return await handleAsyncOperation(
-            () => categoryService.updateCategoryStyle(userId, categoryId, style),
+            () => categoryServiceRepo.updateCategoryStyle(userId, categoryId, style),
             'Error al actualizar el estilo'
         );
     }, [userId]);
+
+    const clearCategoriesError = useCallback(() => {
+        setError(null);
+    }, []);
 
     return {
         categories,
         loadingCategories: loading,
         categoriesError: error,
-        clearCategoriesError: clearError,
+        clearCategoriesError,
         addCategory,
         deleteCategory,
         addSubCategory,

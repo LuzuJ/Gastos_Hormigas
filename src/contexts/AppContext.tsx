@@ -31,6 +31,8 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
   const { user } = useAuth();
   const userId = user?.id || null;
   
+  console.log('[AppProvider] User state:', { userId, userExists: !!user });
+  
   return (
     <NotificationsProvider>
       <FinancialsProvider userId={userId}>

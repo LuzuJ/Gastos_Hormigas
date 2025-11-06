@@ -308,7 +308,7 @@ export class FinancialAutomationService {
       type: paymentSource.type,
       currentBalance,
       projectedBalance,
-      lastUpdated: paymentSource.lastUpdated || Timestamp.now(),
+      lastUpdated: typeof paymentSource.lastUpdated === 'string' ? paymentSource.lastUpdated : new Date().toISOString(),
       pendingTransactions: {
         income: pendingIncome,
         expenses: pendingExpenses
@@ -318,8 +318,8 @@ export class FinancialAutomationService {
 
   // === UTILITY METHODS ===
 
-  private calculateNextDate(currentDate: Timestamp, frequency: RecurringIncome['frequency']): Timestamp {
-    const date = currentDate.toDate();
+  private calculateNextDate(currentDate: string, frequency: RecurringIncome['frequency']): string {
+    const date = new Date(currentDate);
     
     switch (frequency) {
       case 'weekly':
@@ -339,7 +339,7 @@ export class FinancialAutomationService {
         break;
     }
     
-    return Timestamp.fromDate(date);
+    return date.toISOString();
   }
 
   private async getPendingIncome(paymentSourceId: string, endDate: Timestamp): Promise<number> {

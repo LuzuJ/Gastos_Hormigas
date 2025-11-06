@@ -31,7 +31,7 @@ export const useExpensesController = (userId: string | null) => {
         // 2. FILTRO DE SEGURIDAD
         const expensesThisMonth = expenses.filter(e => {
             if (!e.createdAt) return false; // Ignora gastos sin fecha
-            const expenseDate = e.createdAt.toDate();
+            const expenseDate = new Date(e.createdAt);
             return expenseDate.getMonth() === currentMonth && expenseDate.getFullYear() === currentYear;
         });
 
@@ -86,7 +86,7 @@ export const useExpensesController = (userId: string | null) => {
 
         const variableExpensesMonth = validExpenses
             .filter(e => {
-                const expenseDate = e.createdAt!.toDate(); // Usamos '!' porque ya filtramos los nulos
+                const expenseDate = new Date(e.createdAt!); // Usamos '!' porque ya filtramos los nulos
                 return expenseDate.getMonth() === currentMonth && expenseDate.getFullYear() === currentYear;
             })
             .reduce((sum, e) => sum + e.amount, 0);
@@ -111,7 +111,7 @@ export const useExpensesController = (userId: string | null) => {
         const validExpenses = expenses.filter(e => e.createdAt);
 
         validExpenses.forEach(expense => {
-            const expenseDate = expense.createdAt!.toDate();
+            const expenseDate = new Date(expense.createdAt!);
             const sixMonthsAgo = new Date(today.getFullYear(), today.getMonth() - 5, 1);
             if (expenseDate >= sixMonthsAgo) {
                 const monthName = monthNames[expenseDate.getMonth()];
@@ -141,7 +141,7 @@ export const useExpensesController = (userId: string | null) => {
         });
 
         expenses.forEach(expense => {
-            const expenseDate = expense.createdAt?.toDate();
+            const expenseDate = expense.createdAt ? new Date(expense.createdAt) : null;
             if (!expenseDate) return;
             const expenseMonth = expenseDate.getMonth();
             const expenseYear = expenseDate.getFullYear();

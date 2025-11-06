@@ -41,9 +41,9 @@ export const ExportManager: React.FC = () => {
     const totalAmount = expenses.reduce((sum, expense) => sum + expense.amount, 0);
 
     expenses
-      .sort((a, b) => a.createdAt!.toDate().getTime() - b.createdAt!.toDate().getTime())
+      .sort((a, b) => new Date(a.createdAt!).getTime() - new Date(b.createdAt!).getTime())
       .forEach(expense => {
-        const expenseDate = expense.createdAt!.toDate();
+        const expenseDate = new Date(expense.createdAt!);
         const date = expenseDate.toLocaleDateString('es-ES', {
           day: '2-digit',
           month: '2-digit', 
@@ -167,7 +167,7 @@ export const ExportManager: React.FC = () => {
       data: {
         expenses: expenses.map(expense => ({
           ...expense,
-          createdAt: expense.createdAt?.toDate().toISOString()
+          createdAt: expense.createdAt
         })),
         categories: categories,
         assets: assets,

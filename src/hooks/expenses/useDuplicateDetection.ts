@@ -49,7 +49,7 @@ export const useDuplicateDetection = ({
     // Filtrar gastos dentro de la ventana de tiempo
     const recentExpenses = expenses.filter(expense => {
       if (!expense.createdAt) return false;
-      const expenseDate = expense.createdAt.toDate();
+      const expenseDate = new Date(expense.createdAt);
       const timeDifference = now.getTime() - expenseDate.getTime();
       return timeDifference <= timeWindow && timeDifference >= 0;
     });
@@ -61,7 +61,7 @@ export const useDuplicateDetection = ({
       
       if (similarity > 0.6) { // Umbral de similitud
         const daysDifference = Math.floor(
-          (now.getTime() - expense.createdAt!.toDate().getTime()) / (24 * 60 * 60 * 1000)
+          (now.getTime() - new Date(expense.createdAt!).getTime()) / (24 * 60 * 60 * 1000)
         );
         
         potentialDuplicates.push({

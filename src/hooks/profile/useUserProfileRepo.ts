@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { userServiceRepo } from '../../services/profile/userServiceRepo';
-import { auth } from '../../config/firebase';
+import { supabase } from '../../config/supabase';
 import { useLoadingState, handleAsyncOperation } from '../context/useLoadingState';
 import type { UserProfile } from '../../types';
 
@@ -28,17 +28,21 @@ export const useUserProfileRepo = (userId: string | null) => {
             let userProfile = await userServiceRepo.getUserProfile(id);
             
             // Si el perfil no existe, crearlo automáticamente
-            if (!userProfile && auth.currentUser) {
-                // Adaptar el usuario de Firebase al formato que espera Supabase
-                const supabaseUserFormat = {
-                    id: auth.currentUser.uid,
-                    email: auth.currentUser.email || '',
-                    user_metadata: {
-                        display_name: auth.currentUser.displayName || auth.currentUser.email?.split('@')[0] || 'Usuario'
+            if (!userProfile) {
+                // Obtener el usuario actual de Supabase
+                const { data: { user } } = await supabase.auth.getUser();
+                
+                if (user) {
+                    // El trigger handle_new_user ya debería haber creado el perfil
+                    // Si no existe, intentar obtenerlo nuevamente
+                    await new Promise(resolve => setTimeout(resolve, 1000)); // Esperar un momento
+                    userProfile = await userServiceRepo.getUserProfile(id);
+                    
+                    // Si aún no existe después de esperar, hay un problema
+                    if (!userProfile) {
+                        console.error('El perfil no se creó automáticamente. El trigger handle_new_user podría no estar funcionando.');
                     }
-                };
-                await userServiceRepo.createUserProfile(supabaseUserFormat as any);
-                userProfile = await userServiceRepo.getUserProfile(id);
+                }
             }
             
             setProfile(userProfile);

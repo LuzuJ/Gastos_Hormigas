@@ -83,43 +83,8 @@ export class MockRepositoryFactory implements IRepositoryFactory {
   getPaymentSourceRepository(): any {
     throw new Error('Método no implementado para pruebas');
   }
-}
-  }
-  
-  // Métodos para obtener los repositorios
-  getUserRepository(): IUserRepository {
-    return this.userRepository;
-  }
-  
-  getCategoryRepository(): ICategoryRepository {
-    return this.categoryRepository;
-  }
-  
-  getExpenseRepository(): any {
-    throw new Error('Método no implementado para pruebas');
-  }
-  
-  getFixedExpenseRepository(): any {
-    throw new Error('Método no implementado para pruebas');
-  }
-  
-  getFinancialsRepository(): any {
-    throw new Error('Método no implementado para pruebas');
-  }
-  
-  getSavingsGoalRepository(): any {
-    throw new Error('Método no implementado para pruebas');
-  }
-  
-  getAssetRepository(): any {
-    throw new Error('Método no implementado para pruebas');
-  }
-  
-  getLiabilityRepository(): any {
-    throw new Error('Método no implementado para pruebas');
-  }
-  
-  getPaymentSourceRepository(): any {
+
+  getUserStatsRepository(): any {
     throw new Error('Método no implementado para pruebas');
   }
 }

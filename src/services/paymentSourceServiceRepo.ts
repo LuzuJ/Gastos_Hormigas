@@ -6,6 +6,77 @@ import type { PaymentSource } from '../types';
  */
 export class PaymentSourceServiceRepo {
   /**
+   * Inicializa fuentes de pago por defecto para un nuevo usuario
+   * @param userId - ID del usuario
+   */
+  async initializeDefaultPaymentSources(userId: string): Promise<void> {
+    try {
+      const paymentSourceRepository = repositoryFactory.getPaymentSourceRepository();
+      
+      // Verificar si ya existen fuentes de pago
+      const existingSources = await paymentSourceRepository.getPaymentSources(userId);
+      if (existingSources.length > 0) {
+        console.log('Payment sources already exist, skipping default creation');
+        return;
+      }
+
+      const defaultSources: Omit<PaymentSource, 'id'>[] = [
+        {
+          name: 'Efectivo',
+          type: 'cash',
+          description: 'Dinero en efectivo',
+          isActive: true,
+          icon: '💵',
+          color: '#10B981',
+          balance: 0,
+          autoUpdate: false,
+          lastUpdated: new Date().toISOString()
+        },
+        {
+          name: 'Cuenta Corriente',
+          type: 'checking',
+          description: 'Cuenta bancaria principal',
+          isActive: false,
+          icon: '🏦',
+          color: '#3B82F6',
+          balance: 0,
+          autoUpdate: false,
+          lastUpdated: new Date().toISOString()
+        },
+        {
+          name: 'Tarjeta de Crédito',
+          type: 'credit_card',
+          description: 'Tarjeta de crédito principal',
+          isActive: false,
+          icon: '💳',
+          color: '#F59E0B',
+          balance: 0,
+          autoUpdate: false,
+          lastUpdated: new Date().toISOString()
+        }
+      ];
+
+      // Crear fuentes por defecto una por una, continuando si alguna falla
+      for (const source of defaultSources) {
+        try {
+          await paymentSourceRepository.addPaymentSource(userId, source);
+          console.log(`Created default payment source: ${source.name}`);
+        } catch (sourceError: any) {
+          // Si es error de duplicado (violación de restricción única), continuar
+          if (sourceError?.code === '23505' || sourceError?.message?.includes('duplicate') || sourceError?.message?.includes('unique')) {
+            console.log(`Payment source ${source.name} already exists, skipping`);
+            continue;
+          }
+          console.error(`Error creating payment source ${source.name}:`, sourceError);
+        }
+      }
+    } catch (error) {
+      console.error('Error creating default payment sources:', error);
+      // No lanzar el error para no interrumpir la aplicación
+    }
+  }
+
+  /**
    * Obtiene todas las fuentes de pago de un usuario
    * @param userId - ID del usuario
    * @returns Promise con la lista de fuentes de pago

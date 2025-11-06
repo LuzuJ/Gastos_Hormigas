@@ -112,7 +112,7 @@ export const useReportsFilter = ({
     let filtered = expenses.filter(expense => {
       if (!expense.createdAt) return false;
       
-      const expenseDate = expense.createdAt.toDate();
+      const expenseDate = new Date(expense.createdAt);
       return expenseDate >= start && expenseDate <= end;
     });
     

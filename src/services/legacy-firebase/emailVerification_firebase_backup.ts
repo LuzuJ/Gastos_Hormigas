@@ -1,8 +1,8 @@
-import { supabase } from '../config/supabase';
-import type { User } from '@supabase/supabase-js';
+import { sendEmailVerification, User } from 'firebase/auth';
+import { auth } from '../config/firebase';
 
 /**
- * Utilidades para la verificación de email en Supabase
+ * Utilidades para la verificación de email en Firebase
  */
 
 export interface EmailVerificationResult {
@@ -15,33 +15,26 @@ export interface EmailVerificationResult {
  */
 export const sendVerificationEmail = async (user: User): Promise<EmailVerificationResult> => {
   try {
-    const { error } = await supabase.auth.resend({
-      type: 'signup',
-      email: user.email!,
-      options: {
-        emailRedirectTo: `${globalThis.location.origin}/dashboard`
-      }
+    await sendEmailVerification(user, {
+      url: window.location.origin + '/dashboard', // URL de redirección después de verificar
+      handleCodeInApp: false
     });
-    
-    if (error) {
-      throw error;
-    }
     
     return { success: true };
   } catch (error: any) {
     console.error('Error enviando email de verificación:', error);
     
-    // Mapear errores comunes de Supabase
+    // Mapear errores comunes de Firebase
     let errorMessage: string;
     
-    switch (error.message) {
-      case 'Email rate limit exceeded':
+    switch (error.code) {
+      case 'auth/too-many-requests':
         errorMessage = 'Demasiados emails enviados. Espera unos minutos antes de intentar de nuevo.';
         break;
-      case 'Invalid email':
+      case 'auth/invalid-email':
         errorMessage = 'El email no es válido.';
         break;
-      case 'User not found':
+      case 'auth/user-not-found':
         errorMessage = 'Usuario no encontrado.';
         break;
       default:
@@ -55,8 +48,9 @@ export const sendVerificationEmail = async (user: User): Promise<EmailVerificati
 /**
  * Verifica si el usuario actual tiene su email verificado
  */
-export const isEmailVerified = (user: User | null): boolean => {
-  return user?.email_confirmed_at != null;
+export const isEmailVerified = (): boolean => {
+  const currentUser = auth.currentUser;
+  return currentUser?.emailVerified ?? false;
 };
 
 /**
@@ -64,16 +58,12 @@ export const isEmailVerified = (user: User | null): boolean => {
  */
 export const reloadUserData = async (): Promise<EmailVerificationResult> => {
   try {
-    const { data: { user }, error } = await supabase.auth.getUser();
-    
-    if (error) {
-      return { success: false, error: 'Error al verificar el estado del email.' };
-    }
-    
-    if (!user) {
+    const currentUser = auth.currentUser;
+    if (!currentUser) {
       return { success: false, error: 'No hay usuario autenticado.' };
     }
     
+    await currentUser.reload();
     return { success: true };
   } catch (error: any) {
     console.error('Error recargando datos del usuario:', error);
@@ -87,19 +77,24 @@ export const reloadUserData = async (): Promise<EmailVerificationResult> => {
 export const shouldRequireEmailVerification = (user: User | null): boolean => {
   if (!user) return false;
   
+  // No requerir verificación para usuarios anónimos
+  if (user.isAnonymous) return false;
+  
   // No requerir verificación para usuarios de Google (ya están verificados)
-  const hasGoogleProvider = user.app_metadata?.provider === 'google';
+  const hasGoogleProvider = user.providerData.some(
+    provider => provider.providerId === 'google.com'
+  );
   if (hasGoogleProvider) return false;
   
-  // Requerir verificación para usuarios de email/password que no han verificado
-  return !isEmailVerified(user);
+  // Requerir verificación para usuarios de email/password
+  return !user.emailVerified;
 };
 
 /**
  * Obtiene un mensaje amigable sobre el estado de verificación del email
  */
 export const getEmailVerificationMessage = (user: User | null): string | null => {
-  if (!user) return null;
+  if (!user || user.isAnonymous) return null;
   
   if (shouldRequireEmailVerification(user)) {
     return `Hemos enviado un email de verificación a ${user.email}. Por favor, verifica tu email para acceder a todas las funciones.`;

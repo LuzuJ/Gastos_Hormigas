@@ -30,6 +30,8 @@ export interface Expense {
 
 export interface Financials {
   monthlyIncome: number;
+  emergencyFund?: number;
+  totalDebt?: number;
 }
 
 export interface LayoutProps {
@@ -212,6 +214,10 @@ export interface SavingsGoal {
   name: string;
   targetAmount: number;
   currentAmount: number;
+  targetDate?: string;
+  icon?: string;
+  color?: string;
+  isActive?: boolean;
 }
 
 export type SavingsGoalFormData = Omit<SavingsGoal, 'id' | 'createdAt' | 'currentAmount'>;
@@ -220,6 +226,9 @@ export interface UserProfile {
   displayName: string;
   email: string;
   currency: 'USD' | 'EUR' ; // Puedes añadir más monedas en el futuro
+  avatarUrl?: string;
+  theme?: string;
+  language?: string;
 }
 
 export interface Asset {

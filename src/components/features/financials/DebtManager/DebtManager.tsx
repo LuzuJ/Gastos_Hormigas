@@ -554,7 +554,7 @@ const DebtManager: React.FC<DebtManagerProps> = ({
                       <div className={styles.archivedDate}>
                         {liability.archivedAt && (
                           <span className={styles.completedDate}>
-                            Pagada: {new Date(liability.archivedAt.toDate()).toLocaleDateString()}
+                            Pagada: {new Date(liability.archivedAt).toLocaleDateString()}
                           </span>
                         )}
                       </div>

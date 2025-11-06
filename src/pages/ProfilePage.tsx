@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { auth } from '../config/firebase';
 import { authService } from '../services/auth/authService';
 import { LoadingStateWrapper } from '../components/LoadingState/LoadingState';
 import { ExportManager } from '../components/features/reports/ExportManager/ExportManager';
@@ -133,7 +132,7 @@ const GuestProfile: React.FC<{ setCurrentPage: (page: Page) => void }> = ({ setC
     const handleGoogleSignUp = async () => {
         setLoading(true);
         setError('');
-        const result = await authService.signInWithGoogle(auth.currentUser);
+        const result = await authService.signInWithGoogle();
         if (!result.success) {
             setError(getFriendlyErrorMessage(result.error as string));
             setLoading(false);
@@ -154,7 +153,7 @@ const GuestProfile: React.FC<{ setCurrentPage: (page: Page) => void }> = ({ setC
             return;
         }
 
-        const result = await authService.signUpWithEmail(email, password, auth.currentUser);
+        const result = await authService.signUpWithEmail(email, password);
         if (!result.success) {
             setError(getFriendlyErrorMessage(result.error as string));
             setLoading(false);

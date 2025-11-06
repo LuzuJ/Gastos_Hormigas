@@ -41,7 +41,7 @@ export const GastosHormigaAnalysis = ({
     
     const monthlyExpenses = expenses.filter(expense => {
       if (!expense.createdAt) return false;
-      const expenseDate = expense.createdAt.toDate();
+      const expenseDate = new Date(expense.createdAt);
       return expenseDate.getMonth() === currentMonth && 
              expenseDate.getFullYear() === currentYear;
     });

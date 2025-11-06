@@ -95,7 +95,7 @@ export const RegistroPage: React.FC<RegistroPageProps> = () => {
       if (!expense.createdAt) {
         return false;
       }
-      const expenseDate = expense.createdAt.toDate();
+      const expenseDate = new Date(expense.createdAt);
       const searchMatch = searchTerm === '' || expense.description.toLowerCase().includes(searchTerm.toLowerCase());
       
       // Filtro de fecha: comparación directa sin manipulación UTC

@@ -3,19 +3,20 @@ import type { IAssetRepository } from '../interfaces';
 import type { Asset, AssetFormData } from '../../types';
 import { SUPABASE_TABLES } from '../../constants';
 import type { RealtimeChannel } from '@supabase/supabase-js';
-import { toDate } from '../../utils/dateUtils';
 
 /**
  * Tipo para activos en la base de datos de Supabase
+ * Alineado con el esquema real de la tabla assets
  */
 interface SupabaseAsset {
   id: string;
   user_id: string;
   name: string;
+  type: string;
   value: number;
-  type: 'cash' | 'investment' | 'property';
   description?: string;
-  last_updated?: string;
+  created_at?: string;
+  updated_at?: string;
 }
 
 /**
@@ -47,12 +48,8 @@ export class SupabaseAssetRepository
    * @returns Una promesa que resuelve al activo creado
    */
   async addAsset(userId: string, assetData: AssetFormData): Promise<Asset> {
-    const assetWithTimestamp = {
-      ...assetData,
-      lastUpdated: toDate(new Date()).toISOString()
-    };
-    
-    return this.create(userId, assetWithTimestamp as AssetFormData);
+    // No agregamos lastUpdated porque updated_at se crea automáticamente en BD
+    return this.create(userId, assetData);
   }
   
   /**
@@ -63,13 +60,8 @@ export class SupabaseAssetRepository
    * @returns Una promesa que resuelve al activo actualizado
    */
   async updateAsset(userId: string, assetId: string, partialData: Partial<Asset>): Promise<Asset> {
-    // Agregar la fecha de actualización
-    const dataWithTimestamp = {
-      ...partialData,
-      lastUpdated: toDate(partialData.lastUpdated || new Date()).toISOString()
-    };
-    
-    return this.update(userId, assetId, dataWithTimestamp);
+    // No manipulamos lastUpdated porque updated_at se actualiza automáticamente en BD
+    return this.update(userId, assetId, partialData);
   }
   
   /**
@@ -150,9 +142,9 @@ export class SupabaseAssetRepository
       id: data.id,
       name: data.name,
       value: data.value,
-      type: data.type,
+      type: data.type as 'cash' | 'investment' | 'property',
       description: data.description,
-      lastUpdated: data.last_updated, // Ya está en formato string ISO de Supabase
+      lastUpdated: data.updated_at, // BD usa updated_at (automático)
     };
   }
   
@@ -176,9 +168,7 @@ export class SupabaseAssetRepository
     if (data.description !== undefined) {
       databaseData.description = data.description;
     }
-    if (data.lastUpdated !== undefined) {
-      databaseData.last_updated = data.lastUpdated;
-    }
+    // No mapeamos lastUpdated porque updated_at se actualiza automáticamente en BD
     
     return databaseData;
   }

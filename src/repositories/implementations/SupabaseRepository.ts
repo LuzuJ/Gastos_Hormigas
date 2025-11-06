@@ -50,16 +50,23 @@ export abstract class SupabaseRepository<T, ID, CreateDTO = Omit<T, 'id'>, Updat
    */
   async getAll(userId: string): Promise<T[]> {
     try {
+      console.log(`[SupabaseRepository] Obteniendo datos de ${this.tableName} para usuario:`, userId);
+      
       const { data, error } = await this.client
         .from(this.tableName)
         .select('*')
         .eq('user_id', userId);
       
-      if (error) throw error;
+      if (error) {
+        console.error(`[SupabaseRepository] Error de Supabase en ${this.tableName}:`, error);
+        throw error;
+      }
+      
+      console.log(`[SupabaseRepository] Datos obtenidos de ${this.tableName}:`, data?.length || 0, 'registros');
       
       return data.map(this.mapDatabaseToModel.bind(this));
     } catch (error) {
-      console.error(`Error al obtener todos los ${this.tableName}:`, error);
+      console.error(`[SupabaseRepository] Error al obtener todos los ${this.tableName}:`, error);
       return [];
     }
   }

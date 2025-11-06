@@ -3,26 +3,23 @@ import type { ILiabilityRepository } from '../interfaces';
 import type { Liability, LiabilityFormData } from '../../types';
 import { SUPABASE_TABLES } from '../../constants';
 import type { RealtimeChannel } from '@supabase/supabase-js';
-import { toDate, toSupabaseTimestamp } from '../../utils/dateUtils';
 
 /**
  * Tipo para pasivos en la base de datos de Supabase
+ * Alineado con el esquema real de la tabla liabilities
  */
 interface SupabaseLiability {
   id: string;
   user_id: string;
   name: string;
-  amount: number;
-  original_amount?: number;
   type: 'credit_card' | 'loan' | 'mortgage' | 'student_loan' | 'other';
+  amount: number;
   interest_rate?: number;
   monthly_payment?: number;
-  duration?: number;
   due_date?: string;
   description?: string;
-  last_updated?: string;
-  is_archived?: boolean;
-  archived_at?: string;
+  created_at?: string;
+  updated_at?: string;
 }
 
 /**
@@ -54,12 +51,8 @@ export class SupabaseLiabilityRepository
    * @returns Una promesa que resuelve al pasivo creado
    */
   async addLiability(userId: string, liabilityData: LiabilityFormData): Promise<Liability> {
-    const liabilityWithTimestamp = {
-      ...liabilityData,
-      lastUpdated: toDate(new Date()).toISOString()
-    };
-    
-    return this.create(userId, liabilityWithTimestamp as LiabilityFormData);
+    // No agregamos lastUpdated porque updated_at se crea automáticamente en BD
+    return this.create(userId, liabilityData);
   }
   
   /**
@@ -74,18 +67,9 @@ export class SupabaseLiabilityRepository
     liabilityId: string, 
     partialData: Partial<Liability>
   ): Promise<Liability> {
-    // Agregar la fecha de actualización
-    const dataWithTimestamp = {
-      ...partialData,
-      lastUpdated: toDate(partialData.lastUpdated || new Date()).toISOString()
-    };
-    
-    // Si hay campo archivedAt y es un timestamp de Firebase, lo convertimos
-    if (dataWithTimestamp.archivedAt) {
-      dataWithTimestamp.archivedAt = toDate(dataWithTimestamp.archivedAt).toISOString();
-    }
-    
-    return this.update(userId, liabilityId, dataWithTimestamp);
+    // No manipulamos lastUpdated porque updated_at se actualiza automáticamente en BD
+    // Tampoco procesamos archivedAt porque no existe en el esquema
+    return this.update(userId, liabilityId, partialData);
   }
   
   /**
@@ -133,12 +117,17 @@ export class SupabaseLiabilityRepository
    * @param userId - ID del usuario
    * @param liabilityId - ID del pasivo
    * @returns Una promesa que resuelve al pasivo archivado
+   * @deprecated Los campos isArchived y archivedAt no existen en el esquema de BD
    */
   async archiveLiability(userId: string, liabilityId: string): Promise<Liability> {
-    return this.updateLiability(userId, liabilityId, { 
-      isArchived: true, 
-      archivedAt: toDate(new Date()).toISOString()
-    });
+    // Los campos isArchived y archivedAt no existen en la BD
+    // Por compatibilidad, se mantiene el método pero solo devuelve el pasivo sin cambios
+    console.warn('[SupabaseLiabilityRepository] archiveLiability: Campos isArchived/archivedAt no existen en la BD');
+    const liability = await this.getById(liabilityId);
+    if (!liability) {
+      throw new Error(`Pasivo con ID ${liabilityId} no encontrado`);
+    }
+    return liability;
   }
   
   /**
@@ -198,16 +187,17 @@ export class SupabaseLiabilityRepository
       id: data.id,
       name: data.name,
       amount: data.amount,
-      originalAmount: data.original_amount,
       type: data.type,
       interestRate: data.interest_rate,
       monthlyPayment: data.monthly_payment,
-      duration: data.duration,
       dueDate: data.due_date,
       description: data.description,
-      lastUpdated: data.last_updated,
-      isArchived: data.is_archived,
-      archivedAt: data.archived_at,
+      lastUpdated: data.updated_at, // BD usa updated_at (automático)
+      // Campos que no existen en BD pero el modelo los espera:
+      originalAmount: undefined,
+      duration: undefined,
+      isArchived: undefined,
+      archivedAt: undefined,
     };
   }
   
@@ -225,9 +215,6 @@ export class SupabaseLiabilityRepository
     if (data.amount !== undefined) {
       databaseData.amount = data.amount;
     }
-    if (data.originalAmount !== undefined) {
-      databaseData.original_amount = data.originalAmount;
-    }
     if (data.type !== undefined) {
       databaseData.type = data.type;
     }
@@ -237,24 +224,14 @@ export class SupabaseLiabilityRepository
     if (data.monthlyPayment !== undefined) {
       databaseData.monthly_payment = data.monthlyPayment;
     }
-    if (data.duration !== undefined) {
-      databaseData.duration = data.duration;
-    }
     if (data.dueDate !== undefined) {
       databaseData.due_date = data.dueDate;
     }
     if (data.description !== undefined) {
       databaseData.description = data.description;
     }
-    if (data.lastUpdated !== undefined) {
-      databaseData.last_updated = data.lastUpdated;
-    }
-    if (data.isArchived !== undefined) {
-      databaseData.is_archived = data.isArchived;
-    }
-    if (data.archivedAt !== undefined) {
-      databaseData.archived_at = data.archivedAt;
-    }
+    // Ignorar campos que no existen en BD:
+    // - originalAmount, duration, lastUpdated, isArchived, archivedAt
     
     return databaseData;
   }

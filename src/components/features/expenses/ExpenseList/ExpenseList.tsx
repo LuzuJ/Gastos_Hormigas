@@ -60,7 +60,7 @@ export const ExpenseList: React.FC<ExpenseListProps> = ({ expenses, categories, 
                         {/* --- COLUMNA DERECHA --- */}
                         <div className={styles.sideInfo}>
                             <span className={styles.date}>
-                                {expense.createdAt ? new Date(expense.createdAt.seconds * 1000).toLocaleDateString() : ''}
+                                {expense.createdAt ? new Date(expense.createdAt).toLocaleDateString() : ''}
                             </span>
                             <div className={styles.actions}>
                                 <button onClick={() => onEdit(expense)} className={styles.actionButton} aria-label="Editar gasto"><Edit size={18} /></button>

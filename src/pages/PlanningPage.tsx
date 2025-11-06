@@ -42,8 +42,8 @@ export const PlanningPage: React.FC<PlanningPageProps> = ({ isGuest }) => {
         savingsGoals, 
         addSavingsGoal, 
         deleteSavingsGoal, 
-        addToSavingsGoal,
-        removeFromSavingsGoal,
+        addAmountToGoal,
+        subtractAmountFromGoal,
         loadingSavingsGoals,
         savingsGoalsError,
         clearSavingsGoalsError
@@ -153,8 +153,8 @@ export const PlanningPage: React.FC<PlanningPageProps> = ({ isGuest }) => {
                                 savingsGoals={savingsGoals}
                                 onAdd={addSavingsGoal}
                                 onDelete={deleteSavingsGoal}
-                                onAddFunds={addToSavingsGoal}
-                                onRemoveFunds={removeFromSavingsGoal}
+                                onAddFunds={addAmountToGoal}
+                                onRemoveFunds={subtractAmountFromGoal}
                                 loading={loadingSavingsGoals}
                                 error={savingsGoalsError}
                                 onDismissError={clearSavingsGoalsError}

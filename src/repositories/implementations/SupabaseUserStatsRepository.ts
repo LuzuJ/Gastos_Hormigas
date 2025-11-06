@@ -9,11 +9,12 @@ interface SupabaseUserStats {
   id: string;
   user_id: string;
   total_expenses?: number;
+  total_income?: number;
   total_savings?: number;
-  last_activity_date?: string;
-  streak_days?: number;
-  categories_used?: number;
-  // ... otros campos
+  budget_streak?: number;
+  achievements_points?: number;
+  created_at?: string;
+  updated_at?: string;
 }
 
 /**
@@ -104,10 +105,10 @@ export class SupabaseUserStatsRepository extends SupabaseRepository<UserStats, s
       id: data.id,
       userId: data.user_id,
       totalExpenses: data.total_expenses,
+      totalIncome: data.total_income,
       totalSavings: data.total_savings,
-      lastActivityDate: data.last_activity_date,
-      streakDays: data.streak_days,
-      categoriesUsed: data.categories_used,
+      budgetStreak: data.budget_streak,
+      achievementsPoints: data.achievements_points,
     };
   }
   
@@ -125,17 +126,17 @@ export class SupabaseUserStatsRepository extends SupabaseRepository<UserStats, s
     if (data.totalExpenses !== undefined) {
       databaseData.total_expenses = data.totalExpenses;
     }
+    if (data.totalIncome !== undefined) {
+      databaseData.total_income = data.totalIncome;
+    }
     if (data.totalSavings !== undefined) {
       databaseData.total_savings = data.totalSavings;
     }
-    if (data.lastActivityDate !== undefined) {
-      databaseData.last_activity_date = data.lastActivityDate;
+    if (data.budgetStreak !== undefined) {
+      databaseData.budget_streak = data.budgetStreak;
     }
-    if (data.streakDays !== undefined) {
-      databaseData.streak_days = data.streakDays;
-    }
-    if (data.categoriesUsed !== undefined) {
-      databaseData.categories_used = data.categoriesUsed;
+    if (data.achievementsPoints !== undefined) {
+      databaseData.achievements_points = data.achievementsPoints;
     }
     
     return databaseData;
@@ -149,10 +150,10 @@ export class SupabaseUserStatsRepository extends SupabaseRepository<UserStats, s
   private getDbFieldName(field: keyof UserStats): string | null {
     const fieldMap: Record<string, string> = {
       'totalExpenses': 'total_expenses',
+      'totalIncome': 'total_income',
       'totalSavings': 'total_savings',
-      'lastActivityDate': 'last_activity_date',
-      'streakDays': 'streak_days',
-      'categoriesUsed': 'categories_used',
+      'budgetStreak': 'budget_streak',
+      'achievementsPoints': 'achievements_points',
     };
     
     return fieldMap[field] || null;
