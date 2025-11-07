@@ -23,6 +23,7 @@ build
 .env.*.local
 .env.example
 *.local
+.env.production
 
 # Coverage reports
 coverage/

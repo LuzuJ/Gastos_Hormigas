@@ -84,76 +84,8 @@ export default defineConfig({
     // ===== OPTIMIZACIÓN AVANZADA DE BUNDLES =====
     rollupOptions: {
       output: {
-        // 🎯 Estrategia de Manual Chunks más granular
-        manualChunks: (id) => {
-          // Vendor chunks principales
-          if (id.includes('react') && !id.includes('react-router')) {
-            return 'vendor-react';
-          }
-          if (id.includes('react-router')) {
-            return 'vendor-router';
-          }
-          if (id.includes('firebase')) {
-            return 'vendor-firebase';
-          }
-          
-          // Chunks de librerías específicas
-          if (id.includes('recharts') || id.includes('chart')) {
-            return 'vendor-charts';
-          }
-          if (id.includes('lucide-react')) {
-            return 'vendor-icons';
-          }
-          if (id.includes('react-hot-toast')) {
-            return 'vendor-toast';
-          }
-          if (id.includes('date-fns')) {
-            return 'vendor-dates';
-          }
-          
-          // Chunks de la aplicación por feature
-          if (id.includes('/pages/')) {
-            const pageName = id.split('/pages/')[1]?.split('/')[0] || id.split('/pages/')[1]?.split('.')[0];
-            return `page-${pageName}`;
-          }
-          
-          // Services: separar por carpeta para evitar dependencias circulares
-          if (id.includes('/services/auth/') || id.includes('/services/authService')) {
-            return 'app-auth';
-          }
-          if (id.includes('/services/financials/') || id.includes('/services/categories/')) {
-            return 'app-core-services';
-          }
-          if (id.includes('/services/')) {
-            return 'app-services';
-          }
-          
-          if (id.includes('/contexts/') || id.includes('/hooks/')) {
-            return 'app-state';
-          }
-          
-          if (id.includes('/components/') && id.includes('Chart')) {
-            return 'components-charts';
-          }
-          
-          if (id.includes('/components/') && (
-            id.includes('Modal') || 
-            id.includes('Manager') || 
-            id.includes('Analysis')
-          )) {
-            return 'components-heavy';
-          }
-          
-          // Componentes comunes ligeros
-          if (id.includes('/components/common/')) {
-            return 'components-common';
-          }
-          
-          // Node modules que no están categorizados
-          if (id.includes('node_modules')) {
-            return 'vendor-misc';
-          }
-        },
+        // 🎯 Sin manual chunking - Vite automático
+        // Esto previene errores de referencia circular
         
         // Naming strategy optimizada
         chunkFileNames: (chunkInfo) => {
