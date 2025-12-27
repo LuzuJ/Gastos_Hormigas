@@ -1,16 +1,16 @@
-/* Filter Statistics */
+/* Filter Statistics - Compacto */
 .filterStats {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 16px;
-  margin: 20px 0;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 10px;
+  margin: 12px 0;
 }
 
 .statCard {
   background: var(--background-card);
   border: 1px solid var(--border-color);
   border-radius: 8px;
-  padding: 16px;
+  padding: 12px;
   text-align: center;
   transition: all 0.2s ease;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
@@ -23,15 +23,15 @@
 }
 
 .statValue {
-  font-size: 20px;
+  font-size: 16px;
   font-weight: 700;
   color: var(--primary-accent);
-  margin-bottom: 4px;
+  margin-bottom: 2px;
   line-height: 1.2;
 }
 
 .statLabel {
-  font-size: 13px;
+  font-size: 11px;
   color: var(--text-secondary);
   font-weight: 500;
 }
@@ -39,16 +39,16 @@
 .grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 2rem;
-  margin-top: 2rem;
+  gap: 1rem;
+  margin-top: 1rem;
 }
 
 @media (min-width: 1024px) {
   .grid {
-    grid-template-columns: 2fr 1fr; 
+    grid-template-columns: 2fr 1fr;
   }
 
-  .grid > *:first-child {
+  .grid>*:first-child {
     grid-column: 1 / -1;
   }
 }
@@ -57,25 +57,25 @@
 @media (max-width: 768px) {
   .filterStats {
     grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
+    gap: 8px;
   }
-  
+
   .statCard {
-    padding: 12px;
+    padding: 10px;
   }
-  
+
   .statValue {
-    font-size: 18px;
+    font-size: 14px;
   }
-  
+
   .statLabel {
-    font-size: 12px;
+    font-size: 10px;
   }
 }
 
 @media (max-width: 480px) {
   .filterStats {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 

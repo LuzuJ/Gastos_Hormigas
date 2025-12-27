@@ -77,6 +77,8 @@ const AssetForm: React.FC<AssetFormProps> = ({ onAdd, onClose, editingAsset, onU
               type="number"
               value={formData.value}
               onChange={e => setFormData({...formData, value: e.target.value})}
+              onWheel={(e) => e.preventDefault()}
+              onFocus={(e) => e.target.select()}
               placeholder="0.00"
               step="0.01"
               min="0"

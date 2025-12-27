@@ -15,6 +15,7 @@
     opacity: 0;
     transform: translateY(10px) scale(0.98);
   }
+
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
@@ -32,6 +33,62 @@
     flex-direction: row;
     align-items: flex-end;
     gap: 16px;
+  }
+}
+
+/* --- Toggle de filtros para móvil --- */
+.filtersToggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 12px 16px;
+  background: var(--background-card);
+  border: 2px solid var(--border-color);
+  border-radius: 10px;
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.filtersToggle:hover {
+  border-color: var(--primary-accent);
+  background: var(--background-hover);
+}
+
+.toggleChevron {
+  transition: transform 0.3s ease;
+}
+
+.toggleChevron.open {
+  transform: rotate(180deg);
+}
+
+/* Ocultar toggle en desktop */
+@media (min-width: 768px) {
+  .filtersToggle {
+    display: none;
+  }
+}
+
+/* --- Contenedor de filtros colapsable --- */
+.filtersContent {
+  display: none;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.filtersContent.filtersOpen {
+  display: flex;
+}
+
+/* Siempre visible en desktop */
+@media (min-width: 768px) {
+  .filtersContent {
+    display: flex;
   }
 }
 
@@ -152,6 +209,7 @@
     gap: 16px;
   }
 }
+
 .quickFilters {
   display: flex;
   gap: 10px;
@@ -233,6 +291,7 @@
   border-color: var(--primary-accent);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
+
 .dateInputGroup {
   display: flex;
   flex-direction: column;
@@ -315,9 +374,12 @@
     flex-direction: row;
     align-items: center;
   }
+
   .filterGroup {
-    grid-column: auto; /* Restaura el comportamiento en escritorio */
-    min-width: 200px; /* Ancho mínimo para que no se comprima */
+    grid-column: auto;
+    /* Restaura el comportamiento en escritorio */
+    min-width: 200px;
+    /* Ancho mínimo para que no se comprima */
   }
 }
 
@@ -380,17 +442,32 @@ html[data-theme='dark'] .specificFilterContainer:hover {
    ================================================ */
 
 /* Animaciones escalonadas para botones */
-.quickFilters button:nth-child(1) { animation-delay: 0.1s; }
-.quickFilters button:nth-child(2) { animation-delay: 0.2s; }
-.quickFilters button:nth-child(3) { animation-delay: 0.3s; }
-.quickFilters button:nth-child(4) { animation-delay: 0.4s; }
-.quickFilters button:nth-child(5) { animation-delay: 0.5s; }
+.quickFilters button:nth-child(1) {
+  animation-delay: 0.1s;
+}
+
+.quickFilters button:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.quickFilters button:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+.quickFilters button:nth-child(4) {
+  animation-delay: 0.4s;
+}
+
+.quickFilters button:nth-child(5) {
+  animation-delay: 0.5s;
+}
 
 @keyframes slideInLeft {
   from {
     opacity: 0;
     transform: translateX(-20px) scale(0.95);
   }
+
   to {
     opacity: 1;
     transform: translateX(0) scale(1);
@@ -403,9 +480,19 @@ html[data-theme='dark'] .specificFilterContainer:hover {
 }
 
 @keyframes typing {
-  0%, 50% { opacity: 0.6; }
-  25% { opacity: 0.3; }
-  75% { opacity: 0.9; }
+
+  0%,
+  50% {
+    opacity: 0.6;
+  }
+
+  25% {
+    opacity: 0.3;
+  }
+
+  75% {
+    opacity: 0.9;
+  }
 }
 
 /* Estados de loading para inputs */
@@ -416,6 +503,7 @@ html[data-theme='dark'] .specificFilterContainer:hover {
 
 /* Mejoras de accesibilidad */
 @media (prefers-reduced-motion: reduce) {
+
   .container,
   .quickFilters button,
   .input,
@@ -425,7 +513,7 @@ html[data-theme='dark'] .specificFilterContainer:hover {
     animation: none;
     transition: none;
   }
-  
+
   .quickFilters button::before {
     display: none;
   }
@@ -433,6 +521,7 @@ html[data-theme='dark'] .specificFilterContainer:hover {
 
 /* Estados de hover para móviles */
 @media (hover: none) {
+
   .quickFilters button:hover,
   .toggleButton:hover,
   .input:hover,
@@ -524,7 +613,7 @@ html[data-theme='dark'] .specificFilterContainer:hover {
   transform: translateY(-50%) rotate(180deg);
 }
 
-.customSelect:focus + .selectIcon {
+.customSelect:focus+.selectIcon {
   color: var(--primary-accent);
   transform: translateY(-50%) rotate(180deg);
 }
@@ -535,6 +624,7 @@ html[data-theme='dark'] .specificFilterContainer:hover {
     opacity: 0;
     transform: translateY(10px) scale(0.95);
   }
+
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
@@ -563,9 +653,10 @@ html[data-theme='dark'] .specificFilterContainer:hover {
 @media (max-width: 768px) {
   .customSelect {
     padding: 14px 40px 14px 16px;
-    font-size: 16px; /* Evita zoom en iOS */
+    font-size: 16px;
+    /* Evita zoom en iOS */
   }
-  
+
   .selectWrapper {
     width: 100%;
   }

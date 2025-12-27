@@ -9,11 +9,11 @@ import { SUPABASE_TABLES } from '../../constants';
  * Implementación del repositorio de usuarios para Supabase
  */
 export class SupabaseUserRepository extends SupabaseRepository<UserProfile, string> implements IUserRepository {
-  
+
   constructor() {
     super(SUPABASE_TABLES.USERS);
   }
-  
+
   /**
    * Obtiene el perfil de un usuario por su ID
    * @param userId - ID del usuario
@@ -26,14 +26,14 @@ export class SupabaseUserRepository extends SupabaseRepository<UserProfile, stri
         .select('display_name, email, currency, avatar_url, theme, language')
         .eq('id', userId)
         .single();
-      
+
       if (error) {
         if (error.code === 'PGRST116') { // No rows returned
           return null;
         }
         throw error;
       }
-      
+
       if (data) {
         return {
           displayName: data.display_name || 'Usuario',
@@ -44,14 +44,14 @@ export class SupabaseUserRepository extends SupabaseRepository<UserProfile, stri
           language: data.language,
         };
       }
-      
+
       return null;
     } catch (error) {
       console.error('Error al obtener el perfil de usuario:', error);
       return null;
     }
   }
-  
+
   /**
    * Crea o actualiza el perfil de un usuario basado en la información de autenticación
    * @param user - Usuario autenticado
@@ -65,11 +65,11 @@ export class SupabaseUserRepository extends SupabaseRepository<UserProfile, stri
         .select('id')
         .eq('id', user.id)
         .single();
-      
+
       if (checkError && checkError.code !== 'PGRST116') { // PGRST116 = no rows returned
         throw checkError;
       }
-      
+
       // Si no existe, crear el perfil
       if (!existingUser) {
         const profileData = {
@@ -78,23 +78,23 @@ export class SupabaseUserRepository extends SupabaseRepository<UserProfile, stri
           email: user.email || '',
           currency: 'USD' as const,
         };
-        
+
         const { error } = await this.client
           .from(SUPABASE_TABLES.USERS)
           .insert([profileData]);
-        
+
         if (error) {
           throw error;
         }
       }
-      
+
       return true;
     } catch (error) {
       console.error('Error al crear el perfil de usuario:', error);
       return false;
     }
   }
-  
+
   /**
    * Convierte un objeto de la base de datos al modelo de dominio
    * @param data - Datos de la base de datos (SupabaseUser)
@@ -110,7 +110,7 @@ export class SupabaseUserRepository extends SupabaseRepository<UserProfile, stri
       language: data.language || undefined,
     };
   }
-  
+
   /**
    * Convierte un objeto del modelo de dominio al formato de la base de datos
    * @param data - Datos del modelo de dominio (UserProfile)
@@ -118,7 +118,7 @@ export class SupabaseUserRepository extends SupabaseRepository<UserProfile, stri
    */
   protected mapModelToDatabase(data: Partial<UserProfile>): Partial<SupabaseUser> {
     const databaseData: Partial<SupabaseUser> = {};
-    
+
     if (data.displayName !== undefined) {
       databaseData.display_name = data.displayName;
     }
@@ -137,7 +137,41 @@ export class SupabaseUserRepository extends SupabaseRepository<UserProfile, stri
     if (data.language !== undefined) {
       databaseData.language = data.language;
     }
-    
+
     return databaseData;
+  }
+
+  /**
+   * Actualiza el perfil de usuario
+   * Override del método base porque la tabla users no tiene columna user_id separada
+   * @param _userId - ID del usuario (no usado, mantenido por compatibilidad)
+   * @param id - ID de la fila a actualizar (que es el user_id)
+   * @param data - Datos a actualizar
+   */
+  async update(_userId: string, id: string, data: Partial<UserProfile>): Promise<UserProfile> {
+    try {
+      const databaseData = this.mapModelToDatabase(data);
+
+      console.log('[SupabaseUserRepository] Updating user profile:', id, databaseData);
+
+      const { data: updatedData, error } = await this.client
+        .from(this.tableName)
+        .update(databaseData)
+        .eq('id', id)  // Solo usamos id, no user_id
+        .select()
+        .single();
+
+      if (error) {
+        console.error('[SupabaseUserRepository] Update error:', error);
+        throw error;
+      }
+
+      console.log('[SupabaseUserRepository] Update success:', updatedData);
+
+      return this.mapDatabaseToModel(updatedData);
+    } catch (error) {
+      console.error('Error al actualizar perfil de usuario:', error);
+      throw error;
+    }
   }
 }

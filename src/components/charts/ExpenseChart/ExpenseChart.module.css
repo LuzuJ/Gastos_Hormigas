@@ -1,20 +1,23 @@
 .chartContainer {
   background-color: var(--background-card);
-  padding: 1.5rem;
-  border-radius: 1rem;
-  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05);
-  margin-top: 2rem;
+  padding: 1rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+  margin-top: 1rem;
 }
 
 .title {
   margin-top: 0;
+  margin-bottom: 0.75rem;
   text-align: center;
   font-weight: 600;
+  font-size: 0.9rem;
   color: var(--text-headings);
 }
 
 .emptyMessage {
   text-align: center;
   color: var(--text-secondary);
-  padding: 3rem 0;
+  padding: 1.5rem 0;
+  font-size: 0.85rem;
 }

@@ -8,8 +8,8 @@ export interface Category {
   isDefault?: boolean; // Indica si es una categoría por defecto
   budget?: number;
   subcategories: SubCategory[];
-  icon?: string; 
-  color?: string; 
+  icon?: string;
+  color?: string;
 }
 
 export interface SubCategory {
@@ -26,18 +26,37 @@ export interface Expense {
   subCategory: string;
   createdAt: SupabaseTimestamp | null;
   paymentSourceId?: string;  // Nueva propiedad opcional
+  assetId?: string;  // Asset del cual se descuenta (para sistema de transacciones)
+  assetName?: string;  // Nombre del asset (histórico)
+}
+
+// Interfaz para ingresos
+export interface Income {
+  id: string;
+  amount: number;
+  description: string;
+  category: 'salary' | 'freelance' | 'investment' | 'gift' | 'other';
+  assetId?: string;  // Asset donde se deposita
+  assetName?: string;  // Nombre del asset (histórico)
+  date: SupabaseTimestamp;
+  isRecurring: boolean;
+  recurrenceFrequency?: 'weekly' | 'biweekly' | 'monthly' | 'yearly';
+  recurrenceDay?: number;  // Día del mes o semana
+  nextRecurrenceDate?: SupabaseTimestamp;
+  createdAt?: SupabaseTimestamp;
+  updatedAt?: SupabaseTimestamp;
 }
 
 export interface Financials {
-  monthlyIncome: number;
+  monthlyIncome: number;  // DEPRECATED: Usar tabla incomes
   emergencyFund?: number;
   totalDebt?: number;
 }
 
 export interface LayoutProps {
-    children: React.ReactNode;
-    currentPage: 'dashboard' | 'categories';
-    setCurrentPage: React.Dispatch<React.SetStateAction<'dashboard' | 'categories'>>;
+  children: React.ReactNode;
+  currentPage: 'dashboard' | 'categories';
+  setCurrentPage: React.Dispatch<React.SetStateAction<'dashboard' | 'categories'>>;
 }
 
 export interface FixedExpense {
@@ -45,12 +64,12 @@ export interface FixedExpense {
   description: string;
   amount: number;
   category: string;
-  dayOfMonth: number; 
-  lastPostedMonth?: string; 
+  dayOfMonth: number;
+  lastPostedMonth?: string;
 }
 
 // Tipos de fuentes de pago
-export type PaymentSourceType = 
+export type PaymentSourceType =
   | 'cash'           // Efectivo
   | 'checking'       // Cuenta corriente
   | 'savings'        // Cuenta de ahorros
@@ -113,7 +132,7 @@ export interface AutomaticTransaction {
 
 // === FINANCIAL ALERTS TYPES ===
 
-export type AlertType = 
+export type AlertType =
   | 'low_balance'          // Saldo bajo
   | 'upcoming_payment'     // Pago próximo
   | 'debt_reminder'        // Recordatorio de deuda
@@ -225,7 +244,7 @@ export type SavingsGoalFormData = Omit<SavingsGoal, 'id' | 'createdAt' | 'curren
 export interface UserProfile {
   displayName: string;
   email: string;
-  currency: 'USD' | 'EUR' ; // Puedes añadir más monedas en el futuro
+  currency: 'USD' | 'EUR' | 'MXN' | 'COP' | 'ARS' | 'CLP' | 'PEN'; // Monedas de América y Europa
   avatarUrl?: string;
   theme?: string;
   language?: string;

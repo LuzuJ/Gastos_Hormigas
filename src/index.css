@@ -11,19 +11,30 @@
   --primary-accent-hover: #4338ca;
 
   /* === Paleta de Colores Semánticos (No cambian con el tema) === */
-  --success-color: #22c55e; /* Verde para éxito, barras de progreso */
-  --success-color-strong: #16a34a; /* Verde más oscuro para botones */
-  --warning-color: #f59e0b;  /* Amarillo para advertencias */
-  --danger-color: #ef4444;   /* Rojo para peligro, errores, eliminar */
-  --info-color: #3b82f6;     /* Azul para información, metas de ahorro */
+  --success-color: #22c55e;
+  /* Verde para éxito, barras de progreso */
+  --success-color-strong: #16a34a;
+  /* Verde más oscuro para botones */
+  --warning-color: #f59e0b;
+  /* Amarillo para advertencias */
+  --danger-color: #ef4444;
+  /* Rojo para peligro, errores, eliminar */
+  --info-color: #3b82f6;
+  /* Azul para información, metas de ahorro */
 
-  --background-hover: #f9fafb; /* Color para hover en elementos de lista */
-  --primary-accent-light: #eef2ff; /* Fondo para etiquetas y badges */
-  --danger-color-light: #fee2e2;  /* Fondo para hover en botones de eliminar */
-  --background-secondary: #f3f4f6; /* Para botones inactivos, etc. */
+  --background-hover: #f9fafb;
+  /* Color para hover en elementos de lista */
+  --primary-accent-light: #eef2ff;
+  /* Fondo para etiquetas y badges */
+  --danger-color-light: #fee2e2;
+  /* Fondo para hover en botones de eliminar */
+  --background-secondary: #f3f4f6;
+  /* Para botones inactivos, etc. */
 
-  --primary-accent-disabled: #a5b4fc; /* Color para botones primarios deshabilitados */
-  --primary-accent-focus-ring: rgba(79, 70, 229, 0.3); /* Sombra de focus */
+  --primary-accent-disabled: #a5b4fc;
+  /* Color para botones primarios deshabilitados */
+  --primary-accent-focus-ring: rgba(79, 70, 229, 0.3);
+  /* Sombra de focus */
 
   /* === Colores para Etiquetas de Categoría === */
   --tag-alimento-bg: #dbeafe;
@@ -40,24 +51,32 @@
   --tag-otro-text: #374151;
   --overlay-background: rgba(0, 0, 0, 0.6);
 
-  --primary-accent-text: #e0e7ff; /* Texto claro para usar sobre fondos de acento */
+  --primary-accent-text: #e0e7ff;
+  /* Texto claro para usar sobre fondos de acento */
 
   /* En la sección de Paleta de Colores Semánticos */
-  --warning-color-strong: #d97706; /* Naranja/amarillo para texto de advertencia */
-  --danger-color-strong: #dc2626;  /* Rojo para texto de peligro */
+  --warning-color-strong: #d97706;
+  /* Naranja/amarillo para texto de advertencia */
+  --danger-color-strong: #dc2626;
+  /* Rojo para texto de peligro */
 
-  --background-secondary-hover: #d1d5db; /* Hover para botones secundarios */
-  --text-disabled: #d1d5db;            /* Texto para elementos deshabilitados */
+  --background-secondary-hover: #d1d5db;
+  /* Hover para botones secundarios */
+  --text-disabled: #d1d5db;
+  /* Texto para elementos deshabilitados */
 
   /* En la sección de Paleta de Colores Semánticos */
-  --success-color-medium: #059669; /* Verde intermedio para texto de balance positivo */
-  --secondary-accent: #6366f1;     /* Morado/Índigo para la tarjeta "Gastado Hoy" */
+  --success-color-medium: #059669;
+  /* Verde intermedio para texto de balance positivo */
+  --secondary-accent: #6366f1;
+  /* Morado/Índigo para la tarjeta "Gastado Hoy" */
 
   /* En la sección de Paleta de Colores Semánticos */
   --danger-text: #b91c1c;
   --danger-border-color: #fecaca;
 
-  --background-hover: #f3f4f6; /* Color para hover en elementos de lista y gráficos */
+  --background-hover: #f3f4f6;
+  /* Color para hover en elementos de lista y gráficos */
 
   /* Configuración base de la fuente... (sin cambios) */
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
@@ -103,16 +122,18 @@ html[data-theme='dark'] {
   --tag-otro-text: #e5e7eb;
   --overlay-background: rgba(10, 10, 10, 0.7);
 
-  --primary-accent-text: #1e1b4b; /* Texto oscuro para usar sobre fondos de acento claros */
-  
+  --primary-accent-text: #1e1b4b;
+  /* Texto oscuro para usar sobre fondos de acento claros */
+
   --background-secondary-hover: #4b5563;
   --text-disabled: #4b5563;
 
   --danger-text: #fca5a5;
   --danger-border-color: #450a0a;
 
-  --background-hover: #374151; /* Un gris oscuro para el hover en modo oscuro */
-  
+  --background-hover: #374151;
+  /* Un gris oscuro para el hover en modo oscuro */
+
   color-scheme: dark;
 }
 
@@ -122,14 +143,14 @@ body {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
-  
+
   /* Se indica que la app soporta ambos temas */
-  color-scheme: light dark; 
-  
+  color-scheme: light dark;
+
   /* Se usan las variables para que los colores cambien con el tema */
   color: var(--text-primary);
   background-color: var(--background-primary);
-  
+
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -173,11 +194,66 @@ html[data-theme='dark'] input[type="datetime-local"] {
   background-color: var(--success-color-strong);
   color: white;
   border: none;
-  padding: 0.5rem 1rem; 
+  padding: 0.5rem 1rem;
   border-radius: 0.5rem;
   font-weight: 600;
   cursor: pointer;
   display: flex;
   align-items: center;
   gap: 0.5rem;
+}
+
+/* === Estilos globales para inputs y selects === */
+input,
+select,
+textarea {
+  background-color: var(--background-card);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+}
+
+/* Asegurar que en modo oscuro los inputs tengan fondo oscuro */
+html[data-theme='dark'] input,
+html[data-theme='dark'] select,
+html[data-theme='dark'] textarea {
+  background-color: var(--background-card);
+  color: var(--text-primary);
+  border-color: var(--border-color);
+}
+
+/* Opciones de select en modo oscuro */
+html[data-theme='dark'] select option {
+  background-color: var(--background-card);
+  color: var(--text-primary);
+}
+
+/* === FORZAR colores en TODOS los elementos en modo oscuro === */
+/* Dropdowns y submenus */
+html[data-theme='dark'] [class*="submenu"],
+html[data-theme='dark'] [class*="dropdown"],
+html[data-theme='dark'] [class*="Submenu"],
+html[data-theme='dark'] [class*="Dropdown"] {
+  background-color: var(--background-card) !important;
+  border-color: var(--border-color) !important;
+}
+
+/* Formularios y contenedores de formulario */
+html[data-theme='dark'] [class*="formContainer"],
+html[data-theme='dark'] [class*="FormContainer"],
+html[data-theme='dark'] [class*="formCard"],
+html[data-theme='dark'] [class*="card"] {
+  background-color: var(--background-card) !important;
+  border-color: var(--border-color) !important;
+}
+
+/* Botones dentro de submenus */
+html[data-theme='dark'] [class*="submenu"] button,
+html[data-theme='dark'] [class*="Submenu"] button {
+  background-color: transparent !important;
+  color: var(--text-primary) !important;
+}
+
+html[data-theme='dark'] [class*="submenu"] button:hover,
+html[data-theme='dark'] [class*="Submenu"] button:hover {
+  background-color: var(--background-hover) !important;
 }

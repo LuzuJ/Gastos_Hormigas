@@ -1,0 +1,1 @@
+export { IncomeManager } from './IncomeManager';

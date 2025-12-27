@@ -11,7 +11,7 @@ export interface Database {
           display_name: string;
           avatar_url: string | null;
           theme: string | null;
-          currency: 'USD' | 'EUR';
+          currency: 'USD' | 'EUR' | 'MXN' | 'COP' | 'ARS' | 'CLP' | 'PEN';
           language: string | null;
           created_at: string;
           updated_at: string;
@@ -22,7 +22,7 @@ export interface Database {
           display_name?: string;
           avatar_url?: string | null;
           theme?: string | null;
-          currency?: 'USD' | 'EUR';
+          currency?: 'USD' | 'EUR' | 'MXN' | 'COP' | 'ARS' | 'CLP' | 'PEN';
           language?: string | null;
           created_at?: string;
           updated_at?: string;
@@ -33,7 +33,7 @@ export interface Database {
           display_name?: string;
           avatar_url?: string | null;
           theme?: string | null;
-          currency?: 'USD' | 'EUR';
+          currency?: 'USD' | 'EUR' | 'MXN' | 'COP' | 'ARS' | 'CLP' | 'PEN';
           language?: string | null;
           created_at?: string;
           updated_at?: string;
@@ -391,6 +391,56 @@ export interface Database {
           payment_date?: string;
           description?: string | null;
           payment_type?: 'regular' | 'extra' | 'interest_only';
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
+      incomes: {
+        Row: {
+          id: string;
+          user_id: string;
+          amount: number;
+          description: string;
+          category: 'salary' | 'freelance' | 'investment' | 'gift' | 'other';
+          asset_id: string | null;
+          asset_name: string | null;
+          date: string;
+          is_recurring: boolean;
+          recurrence_frequency: 'weekly' | 'biweekly' | 'monthly' | 'yearly' | null;
+          recurrence_day: number | null;
+          next_recurrence_date: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          amount: number;
+          description: string;
+          category: 'salary' | 'freelance' | 'investment' | 'gift' | 'other';
+          asset_id?: string | null;
+          asset_name?: string | null;
+          date: string;
+          is_recurring?: boolean;
+          recurrence_frequency?: 'weekly' | 'biweekly' | 'monthly' | 'yearly' | null;
+          recurrence_day?: number | null;
+          next_recurrence_date?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          amount?: number;
+          description?: string;
+          category?: 'salary' | 'freelance' | 'investment' | 'gift' | 'other';
+          asset_id?: string | null;
+          asset_name?: string | null;
+          date?: string;
+          is_recurring?: boolean;
+          recurrence_frequency?: 'weekly' | 'biweekly' | 'monthly' | 'yearly' | null;
+          recurrence_day?: number | null;
+          next_recurrence_date?: string | null;
           created_at?: string;
           updated_at?: string;
         };

@@ -1,5 +1,5 @@
-import React from 'react';
-import { ExpenseForm } from '../components/forms/ExpenseForm/ExpenseForm';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Summary } from '../components/features/reports/Summary/Summary';
 import { SavingsGoalSummary } from '../components/features/savings/SavingsGoals/SavingsGoalSummary';
 import { BudgetSummary } from '../components/features/financials/BudgetSummary/BudgetSummary';
@@ -7,239 +7,210 @@ import { GuestBlockedFeature } from '../components/misc/GuestBlockedFeature/Gues
 import { LoadingStateWrapper } from '../components/LoadingState/LoadingState';
 import { FixedExpenseNotifications } from '../components/features/fixed-expenses/FixedExpenseNotifications';
 import { useFixedExpenseReminders } from '../hooks/expenses/useFixedExpenseReminders';
+import { QuickAddButton } from '../components/ui/QuickAddButton';
+import { HealthIndicator, calculateHealthStatus, calculateBalanceHealth } from '../components/ui/HealthIndicator';
+import { QuickExpenseModal } from '../components/modals/QuickExpenseModal';
 import styles from './DashboardPage.module.css';
 import { formatCurrency } from '../utils/formatters';
+import { PAGE_ROUTES } from '../constants';
 
-// 1. Importamos los nuevos hooks de contexto
-import { 
-  useCategoriesContext, 
-  useExpensesContext, 
-  useFinancialsContext, 
+import {
+  useCategoriesContext,
+  useExpensesContext,
+  useFinancialsContext,
   useSavingsGoalsContext,
-  useCombinedCalculationsContext 
+  useCombinedCalculationsContext
 } from '../contexts/AppContext';
 
 interface DashboardPageProps {
   isGuest: boolean;
   userId?: string | null;
+  setCurrentPage?: (page: string) => void;
 }
 
-export const DashboardPage: React.FC<DashboardPageProps> = ({ isGuest, userId }) => {
-    // 2. Consumimos los datos y estados de loading/error de los contextos
-    const { 
-      categories, 
-      addSubCategory, 
-      loadingCategories, 
-      categoriesError, 
-      clearCategoriesError 
-    } = useCategoriesContext();
-    
-    const { 
-      expenses, 
-      addExpense, 
-      totalExpensesToday, 
-      loadingExpenses, 
-      expensesError, 
-      clearExpensesError 
-    } = useExpensesContext();
-    
-    const { 
-      financials, 
-      totalFixedExpenses, 
-      loadingFinancials, 
-      financialsError, 
-      clearFinancialsError,
-      getActivePaymentSources
-    } = useFinancialsContext();
-    
-    const { savingsGoals } = useSavingsGoalsContext();
-    const { monthlyExpensesByCategory, totalExpensesMonth } = useCombinedCalculationsContext();
+export const DashboardPage: React.FC<DashboardPageProps> = ({ isGuest, userId, setCurrentPage }) => {
+  const {
+    categories,
+    loadingCategories,
+    categoriesError,
+    clearCategoriesError
+  } = useCategoriesContext();
 
-    // Hook para notificaciones de gastos fijos (solo para usuarios registrados)
-    const {
-      notifications: fixedExpenseNotifications,
-      isLoading: loadingNotifications,
-      clearNotificationsForFixedExpense
-    } = useFixedExpenseReminders(!isGuest ? (userId || null) : null);
+  const {
+    expenses,
+    totalExpensesToday,
+    loadingExpenses,
+    expensesError,
+    clearExpensesError
+  } = useExpensesContext();
 
-    // Verificar si hay datos críticos cargando o con error
-    const isLoadingCriticalData = loadingCategories || loadingExpenses;
-    const criticalError = categoriesError || expensesError;
+  const {
+    financials,
+    totalFixedExpenses,
+    loadingFinancials,
+    financialsError,
+    clearFinancialsError
+  } = useFinancialsContext();
 
-    // Calcular métricas para el dashboard
-    const monthlyIncome = financials?.monthlyIncome || 0;
-    const balance = monthlyIncome - totalExpensesMonth;
-    const monthlySpendingPercentage = monthlyIncome > 0 ? (totalExpensesMonth / monthlyIncome) * 100 : 0;
+  const { savingsGoals } = useSavingsGoalsContext();
+  const { monthlyExpensesByCategory, totalExpensesMonth } = useCombinedCalculationsContext();
 
-    // Obtener saludo basado en la hora
-    const getGreeting = () => {
-      const hour = new Date().getHours();
-      if (hour < 12) return '¡Buenos días!';
-      if (hour < 18) return '¡Buenas tardes!';
-      return '¡Buenas noches!';
-    };
+  const {
+    notifications: fixedExpenseNotifications,
+    isLoading: loadingNotifications,
+    clearNotificationsForFixedExpense
+  } = useFixedExpenseReminders(!isGuest ? (userId || null) : null);
 
-    // Obtener fecha formateada
-    const getFormattedDate = () => {
-      return new Date().toLocaleDateString('es-ES', {
-        weekday: 'long',
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-      });
-    };
+  const isLoadingCriticalData = loadingCategories || loadingExpenses;
+  const criticalError = categoriesError || expensesError;
 
-    const handleRetryLoadData = () => {
-      clearCategoriesError();
-      clearExpensesError();
-      // En una implementación real, aquí podrías forzar una recarga de datos
-    };
+  const monthlyIncome = financials?.monthlyIncome || 0;
+  const balance = monthlyIncome - totalExpensesMonth - totalFixedExpenses;
+  const monthlySpendingPercentage = monthlyIncome > 0
+    ? ((totalExpensesMonth + totalFixedExpenses) / monthlyIncome) * 100
+    : 0;
 
-    // Crear wrapper para addSubCategory que maneje el AsyncOperationResult
-    const handleAddSubCategory = async (categoryId: string, subCategoryName: string) => {
-      const result = await addSubCategory(categoryId, subCategoryName);
-      if (!result.success && result.error) {
-        // Podrías mostrar una notificación de error aquí
-        console.error('Error al agregar subcategoría:', result.error);
-      }
-    };
+  const handleRetryLoadData = () => {
+    clearCategoriesError();
+    clearExpensesError();
+  };
 
-    return (
-        <div className={styles.dashboard}>
-            {/* Header del Dashboard */}
-            <header className={styles.dashboardHeader}>
-              <div className={styles.greetingSection}>
-                <h1 className={styles.greeting}>{getGreeting()}</h1>
-                <p className={styles.date}>{getFormattedDate()}</p>
-              </div>
-              
-              <div className={styles.quickStats}>
-                <div className={styles.quickStat}>
-                  <div className={styles.statIcon}>💰</div>
-                  <div className={styles.statInfo}>
-                    <span className={styles.statValue}>{formatCurrency(totalExpensesToday)}</span>
-                    <span className={styles.statLabel}>Gastado Hoy</span>
-                  </div>
-                </div>
-                
-                <div className={styles.quickStat}>
-                  <div className={styles.statIcon}>📊</div>
-                  <div className={styles.statInfo}>
-                    <span className={styles.statValue}>{monthlySpendingPercentage.toFixed(1)}%</span>
-                    <span className={styles.statLabel}>Del Presupuesto</span>
-                  </div>
-                </div>
-                
-                <div className={styles.quickStat}>
-                  <div className={styles.statIcon}>💳</div>
-                  <div className={styles.statInfo}>
-                    <span className={`${styles.statValue} ${balance >= 0 ? styles.positive : styles.negative}`}>
-                      {formatCurrency(Math.abs(balance))}
-                    </span>
-                    <span className={styles.statLabel}>{balance >= 0 ? 'Disponible' : 'Sobregiro'}</span>
-                  </div>
-                </div>
-              </div>
-            </header>
+  // Modal de gasto rápido
+  const [showExpenseModal, setShowExpenseModal] = useState(false);
 
-            {/* Grid Principal del Dashboard */}
-            <div className={styles.dashboardGrid}>
-                <main className={styles.mainColumn}>
-                    <LoadingStateWrapper
-                      loading={isLoadingCriticalData}
-                      error={criticalError}
-                      onRetry={handleRetryLoadData}
-                      onDismissError={() => {
-                        clearCategoriesError();
-                        clearExpensesError();
-                      }}
-                      loadingMessage="Cargando datos del dashboard..."
-                    >
-                      <div className={styles.expenseFormSection}>
-                        <h2 className={styles.sectionTitle}>
-                          <span className={styles.sectionIcon}>➕</span>{' '}
-                          Registrar Gasto
-                        </h2>
-                        <ExpenseForm 
-                            onAdd={async (data) => {
-                                const expenseWithDate = { ...data, createdAt: new Date() as any };
-                                return addExpense(expenseWithDate);
-                            }} 
-                            onAddSubCategory={handleAddSubCategory}
-                            categories={categories}
-                            isSubmitting={false}
-                            expenses={expenses}
-                            paymentSources={getActivePaymentSources()}
-                        />
-                      </div>
-                    </LoadingStateWrapper>
+  // Abrir modal de gasto rápido al hacer clic en el botón +
+  const handleAddExpense = () => {
+    setShowExpenseModal(true);
+  };
 
-                    {/* Secciones de Presupuestos y Metas movidas a la izquierda */}
-                    {isGuest ? (
-                      <div className={styles.guestSection}>
-                        <GuestBlockedFeature message="Crea una cuenta para dar seguimiento a tus presupuestos y metas de ahorro." />
-                      </div>
-                    ) : (
-                      <>
-                        {!isLoadingCriticalData && !criticalError && (
-                          <>
-                            <div className={styles.budgetSection}>
-                              <h2 className={styles.sectionTitle}>
-                                <span className={styles.sectionIcon}>🎯</span>{' '}
-                                Presupuestos
-                              </h2>
-                              <BudgetSummary 
-                                categories={categories} 
-                                monthlyExpensesByCategory={monthlyExpensesByCategory} 
-                              />
-                            </div>
-                            
-                            <div className={styles.savingsSection}>
-                              <h2 className={styles.sectionTitle}>
-                                <span className={styles.sectionIcon}>🎁</span>{' '}
-                                Metas de Ahorro
-                              </h2>
-                              <SavingsGoalSummary savingsGoals={savingsGoals} />
-                            </div>
-                          </>
-                        )}
-                      </>
-                    )}
-                </main>
+  // Últimos 5 gastos
+  const recentExpenses = expenses.slice(0, 5);
 
-                <aside className={styles.sidebarColumn}>
-                    {/* Notificaciones de gastos fijos - Solo para usuarios registrados */}
-                    {!isGuest && !loadingNotifications && fixedExpenseNotifications.length > 0 && (
-                      <div className={styles.notificationsSection}>
-                        <FixedExpenseNotifications
-                          notifications={fixedExpenseNotifications.slice(0, 5)} // Mostrar máximo 5
-                          onDismiss={clearNotificationsForFixedExpense}
-                          className={styles.fixedExpenseNotifications}
-                        />
-                      </div>
-                    )}
-
-                    <LoadingStateWrapper
-                      loading={loadingFinancials}
-                      error={financialsError}
-                      onDismissError={clearFinancialsError}
-                      loadingMessage="Cargando datos financieros..."
-                    >
-                      <div className={styles.summarySection}>
-                        <h2 className={styles.sectionTitle}>
-                          <span className={styles.sectionIcon}>📋</span>{' '}
-                          Resumen Financiero
-                        </h2>
-                        <Summary 
-                            totalToday={totalExpensesToday} 
-                            totalMonth={totalExpensesMonth}
-                            monthlyIncome={financials?.monthlyIncome || 0}
-                            fixedExpensesTotal={totalFixedExpenses}
-                        />
-                      </div>
-                    </LoadingStateWrapper>
-                </aside>
-            </div>
+  return (
+    <div className={styles.dashboard}>
+      {/* Resumen Compacto */}
+      <div className={styles.summaryCards}>
+        <div className={styles.summaryCard}>
+          <span className={styles.cardLabel}>💰 Hoy</span>
+          <span className={styles.cardValue}>{formatCurrency(totalExpensesToday)}</span>
         </div>
-    );
+        <div className={styles.summaryCard}>
+          <span className={styles.cardLabel}>📅 Este mes</span>
+          <div className={styles.cardValueRow}>
+            <span className={styles.cardValue}>{formatCurrency(totalExpensesMonth)}</span>
+            <HealthIndicator
+              status={calculateHealthStatus(monthlySpendingPercentage)}
+              size="small"
+            />
+          </div>
+        </div>
+        <div className={`${styles.summaryCard} ${balance < 0 ? styles.danger : ''}`}>
+          <span className={styles.cardLabel}>{balance >= 0 ? '✅ Disponible' : '⚠️ Sobregiro'}</span>
+          <div className={styles.cardValueRow}>
+            <span className={styles.cardValue}>{formatCurrency(Math.abs(balance))}</span>
+            <HealthIndicator
+              status={calculateBalanceHealth(balance, monthlyIncome)}
+              size="small"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Notificaciones de gastos fijos */}
+      {!isGuest && !loadingNotifications && fixedExpenseNotifications.length > 0 && (
+        <div className={styles.notificationsSection}>
+          <FixedExpenseNotifications
+            notifications={fixedExpenseNotifications.slice(0, 3)}
+            onDismiss={clearNotificationsForFixedExpense}
+          />
+        </div>
+      )}
+
+      {/* Grid de contenido */}
+      <div className={styles.contentGrid}>
+        {/* Últimas transacciones */}
+        <LoadingStateWrapper
+          loading={isLoadingCriticalData}
+          error={criticalError}
+          onRetry={handleRetryLoadData}
+          onDismissError={() => {
+            clearCategoriesError();
+            clearExpensesError();
+          }}
+          loadingMessage="Cargando..."
+        >
+          <section className={styles.section}>
+            <h2 className={styles.sectionTitle}>Últimos gastos</h2>
+            {recentExpenses.length > 0 ? (
+              <ul className={styles.transactionList}>
+                {recentExpenses.map((expense) => (
+                  <li key={expense.id} className={styles.transactionItem}>
+                    <div className={styles.transactionInfo}>
+                      <span className={styles.transactionCategory}>
+                        {(() => {
+                          const cat = categories.find(c => c.id === expense.categoryId);
+                          return cat ? `${cat.icon || '📦'} ${cat.name}` : expense.categoryId;
+                        })()}
+                      </span>
+                      {expense.description && (
+                        <span className={styles.transactionDesc}>{expense.description}</span>
+                      )}
+                    </div>
+                    <span className={styles.transactionAmount}>
+                      -{formatCurrency(expense.amount)}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className={styles.emptyMessage}>Sin gastos registrados</p>
+            )}
+          </section>
+        </LoadingStateWrapper>
+
+        {/* Sección lateral */}
+        <aside className={styles.sidebar}>
+          {isGuest ? (
+            <div className={styles.guestSection}>
+              <GuestBlockedFeature message="Crea una cuenta para ver presupuestos y metas." />
+            </div>
+          ) : (
+            <>
+              <LoadingStateWrapper
+                loading={loadingFinancials}
+                error={financialsError}
+                onDismissError={clearFinancialsError}
+                loadingMessage="Cargando..."
+              >
+                <section className={styles.section}>
+                  <h2 className={styles.sectionTitle}>Presupuestos</h2>
+                  <BudgetSummary
+                    categories={categories}
+                    monthlyExpensesByCategory={monthlyExpensesByCategory}
+                  />
+                </section>
+              </LoadingStateWrapper>
+
+              <section className={styles.section}>
+                <h2 className={styles.sectionTitle}>Metas de ahorro</h2>
+                <SavingsGoalSummary savingsGoals={savingsGoals} />
+              </section>
+            </>
+          )}
+        </aside>
+      </div>
+
+      {/* Botón flotante para añadir */}
+      <QuickAddButton
+        onAddExpense={handleAddExpense}
+        onNavigate={setCurrentPage}
+      />
+
+      {/* Modal de gasto rápido */}
+      <QuickExpenseModal
+        isOpen={showExpenseModal}
+        onClose={() => setShowExpenseModal(false)}
+      />
+    </div>
+  );
 };

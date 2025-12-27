@@ -181,9 +181,12 @@ export class SupabaseSavingsGoalRepository
    * @param data - Datos del modelo de dominio (SavingsGoal)
    * @returns El objeto formateado para la base de datos
    */
-  protected mapModelToDatabase(data: Partial<SavingsGoal>): Partial<SupabaseSavingsGoal> {
+  protected mapModelToDatabase(data: Partial<SavingsGoal> & { user_id?: string }): Partial<SupabaseSavingsGoal> {
     const databaseData: Partial<SupabaseSavingsGoal> = {};
     
+    if ((data as any).user_id !== undefined) {
+      databaseData.user_id = (data as any).user_id;
+    }
     if (data.name !== undefined) {
       databaseData.name = data.name;
     }

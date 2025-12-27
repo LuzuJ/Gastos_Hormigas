@@ -136,11 +136,18 @@ export const createPaymentStrategy = (
 
 /**
  * Calcula el plan completo de pago de deudas
+ * CORREGIDO: Ahora asigna correctamente el presupuesto extra solo a la primera deuda
  */
 export const calculateDebtPaymentPlan = (
   liabilities: Liability[],
   strategy: DebtPaymentStrategy
 ): DebtPaymentPlan => {
+  console.log('[calculateDebtPaymentPlan] 🎯 Starting calculation:', {
+    liabilitiesCount: liabilities.length,
+    strategyType: strategy.type,
+    monthlyExtraBudget: strategy.monthlyExtraBudget
+  });
+  
   if (liabilities.length === 0) {
     return {
       strategy,
@@ -152,21 +159,31 @@ export const calculateDebtPaymentPlan = (
     };
   }
   
-  // Analizar todas las deudas con pago mínimo
+  // 1. Analizar todas las deudas con pago mínimo
   const debtAnalyses = liabilities.map(liability => analyzeDebt(liability, 0));
   
-  // Ordenar según la estrategia
+  // 2. Ordenar según la estrategia
   const sortedDebts = strategy.type === 'snowball' 
     ? sortBySnowball(debtAnalyses)
     : sortByAvalanche(debtAnalyses);
   
-  // Asignar prioridades
-  const prioritizedDebts = sortedDebts.map((debt, index) => ({
-    ...debt,
-    priority: index + 1
-  }));
+  console.log('[calculateDebtPaymentPlan] Debt order:', 
+    sortedDebts.map((d, i) => `${i+1}. ${d.liability.name} ($${d.liability.amount})`)  );
   
-  // Calcular distribución del presupuesto
+  // 3. Asignar prioridades y suggested payments
+  const prioritizedDebts = sortedDebts.map((debt, index) => {
+    // Solo la PRIMERA deuda recibe el presupuesto extra
+    const extraPayment = index === 0 ? strategy.monthlyExtraBudget : 0;
+    const suggestedPayment = debt.minimumPayment + extraPayment;
+    
+    return {
+      ...debt,
+      priority: index + 1,
+      suggestedPayment
+    };
+  });
+  
+  // 4. Calcular distribución del presupuesto
   const monthlyBudgetDistribution = prioritizedDebts.map((debt, index) => {
     const extraAmount = index === 0 ? strategy.monthlyExtraBudget : 0;
     return {
@@ -176,16 +193,22 @@ export const calculateDebtPaymentPlan = (
     };
   });
   
-  // Simular el pago con la estrategia para calcular el tiempo total
+  // 5. Simular el pago con la estrategia
   const totalMonthsToPayOff = simulatePaymentStrategy(prioritizedDebts, strategy);
   
-  // Calcular interés ahorrado comparando con solo pagos mínimos
+  // 6. Calcular interés ahorrado
   const interestWithMinimumOnly = prioritizedDebts.reduce(
     (total, debt) => total + debt.totalInterestPaid, 0
   );
   
   const interestWithStrategy = calculateInterestWithStrategy(prioritizedDebts, strategy);
   const totalInterestSaved = Math.max(0, interestWithMinimumOnly - interestWithStrategy);
+  
+  console.log('[calculateDebtPaymentPlan] ✅ Plan complete:', {
+    totalMonthsToPayOff,
+    totalInterestSaved,
+    nextDebtToFocus: prioritizedDebts[0]?.liability.name
+  });
   
   return {
     strategy,
@@ -199,6 +222,7 @@ export const calculateDebtPaymentPlan = (
 
 /**
  * Simula la estrategia de pago para calcular el tiempo total
+ * CORREGIDO: Ahora acumula meses secuencialmente y recicla presupuesto correctamente
  */
 const simulatePaymentStrategy = (
   debts: DebtAnalysis[],
@@ -206,29 +230,70 @@ const simulatePaymentStrategy = (
 ): number => {
   if (debts.length === 0) return 0;
   
-  // Simular el pago debt-by-debt con el extra budget reciclado
+  console.log('[simulatePaymentStrategy] 🎯 Starting simulation:', {
+    strategyType: strategy.type,
+    monthlyExtraBudget: strategy.monthlyExtraBudget,
+    debtsCount: debts.length,
+    debts: debts.map(d => ({
+      name: d.liability.name,
+      amount: d.liability.amount,
+      minimumPayment: d.minimumPayment,
+      interestRate: d.liability.interestRate
+    }))
+  });
+  
   let availableExtraBudget = strategy.monthlyExtraBudget;
   let totalMonths = 0;
   
-  for (const debt of debts) {
-    const totalPayment = debt.minimumPayment + availableExtraBudget;
+  for (let i = 0; i < debts.length; i++) {
+    const debt = debts[i];
+    const minimumPayment = debt.minimumPayment;
+    
+    // Aplicar presupuesto extra SOLO a la deuda enfocada (la primera)
+    const extraForThisDebt = (i === 0) ? availableExtraBudget : 0;
+    const totalPayment = minimumPayment + extraForThisDebt;
+    
     const monthsForThisDebt = calculateMonthsToPayOff(
       debt.liability.amount,
       totalPayment,
       debt.liability.interestRate || 0
     );
     
-    totalMonths = Math.max(totalMonths, monthsForThisDebt);
+    console.log(`[simulatePaymentStrategy] 📊 Debt #${i+1}: ${debt.liability.name}`, {
+      amount: debt.liability.amount,
+      minimumPayment,
+      extraApplied: extraForThisDebt,
+      totalPayment,
+      monthsForThisDebt,
+      isInfinity: monthsForThisDebt === Infinity
+    });
     
-    // Una vez pagada esta deuda, el pago mínimo se convierte en extra budget
-    availableExtraBudget += debt.minimumPayment;
+    if (monthsForThisDebt === Infinity || monthsForThisDebt < 0) {
+      console.warn(`[⚠️ simulatePaymentStrategy] Cannot pay ${debt.liability.name} with current budget`);
+      return Infinity;
+    }
+    
+    // ACUMULAR meses (pagar deudas secuencialmente)
+    totalMonths += monthsForThisDebt;
+    
+    // Una vez pagada esta deuda, liberar su pago mínimo como extra budget
+    // IMPORTANTE: Esto solo afecta a la SIGUIENTE deuda enfocada
+    availableExtraBudget += minimumPayment;
+    
+    console.log(`[simulatePaymentStrategy] After paying ${debt.liability.name}:`, {
+      monthsPaidSoFar: totalMonths,
+      newExtraBudget: availableExtraBudget
+    });
   }
+  
+  console.log('[simulatePaymentStrategy] ✅ Total months to pay all debts:', totalMonths);
   
   return totalMonths;
 };
 
 /**
  * Calcula el interés total con la estrategia aplicada
+ * CORREGIDO: Aplica presupuesto extra solo a la primera deuda
  */
 const calculateInterestWithStrategy = (
   debts: DebtAnalysis[],
@@ -237,8 +302,13 @@ const calculateInterestWithStrategy = (
   let availableExtraBudget = strategy.monthlyExtraBudget;
   let totalInterest = 0;
   
-  for (const debt of debts) {
-    const totalPayment = debt.minimumPayment + availableExtraBudget;
+  for (let i = 0; i < debts.length; i++) {
+    const debt = debts[i];
+    
+    // Solo la primera deuda recibe extra budget
+    const extraForThisDebt = (i === 0) ? availableExtraBudget : 0;
+    const totalPayment = debt.minimumPayment + extraForThisDebt;
+    
     const interest = calculateTotalInterest(
       debt.liability.amount,
       totalPayment,
@@ -246,6 +316,8 @@ const calculateInterestWithStrategy = (
     );
     
     totalInterest += interest;
+    
+    // Liberar pago mínimo como extra budget para la siguiente
     availableExtraBudget += debt.minimumPayment;
   }
   

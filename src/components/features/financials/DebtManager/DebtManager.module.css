@@ -472,14 +472,15 @@
 }
 
 .paymentActions {
-  display: flex;
-  gap: 1rem;
-  margin-top: 0.5rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
 }
 
 .paymentButton,
-.extraPaymentButton {
-  flex: 1;
+.extraPaymentButton,
+.manualPaymentButton {
   padding: 0.75rem 1rem;
   border: none;
   border-radius: 8px;
@@ -487,6 +488,10 @@
   cursor: pointer;
   transition: all 0.2s ease;
   font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
 }
 
 .paymentButton {
@@ -509,6 +514,18 @@
   background: var(--success-color);
   transform: translateY(-1px);
   box-shadow: 0 4px 8px rgba(22, 163, 74, 0.3);
+}
+
+.manualPaymentButton {
+  grid-column: 1 / -1;  /* Ocupa ambas columnas */
+  background: #10b981;
+  color: white;
+}
+
+.manualPaymentButton:hover {
+  background: #059669;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(16, 185, 129, 0.3);
 }
 
 /* ==============================================

@@ -11,41 +11,40 @@ interface ManageCategoriesPageProps {
 }
 
 export const ManageCategoriesPage: React.FC<ManageCategoriesPageProps> = ({ isGuest }) => {
-    const { 
-      categories, 
-      addSubCategory, 
-      deleteSubCategory, 
-      deleteCategory, 
-      addCategory, 
-      updateCategoryBudget, 
-      updateCategoryStyle,
-      loadingCategories,
-      categoriesError,
-      clearCategoriesError
+    const {
+        categories,
+        addSubCategory,
+        deleteSubCategory,
+        deleteCategory,
+        addCategory,
+        updateCategoryBudget,
+        updateCategoryStyle,
+        loadingCategories,
+        categoriesError,
+        clearCategoriesError
     } = useCategoriesContext();
-    const { 
-        expenses, 
-        loadingExpenses, 
-        expensesError, 
-        clearExpensesError 
+    const {
+        expenses,
+        loadingExpenses,
+        expensesError,
+        clearExpensesError
     } = useExpensesContext();
-    
+
     const [newCategoryName, setNewCategoryName] = useState('');
     const [isStyleModalOpen, setIsStyleModalOpen] = useState(false);
     const [editingCategory, setEditingCategory] = useState<Category | null>(null);
 
-    // Estados críticos para la funcionalidad principal
     const isLoadingCritical = loadingCategories || loadingExpenses;
     const criticalError = categoriesError || expensesError;
 
     const handleAddCategory = (e: React.FormEvent) => {
-      e.preventDefault();
-      if(newCategoryName.trim()) {
-        addCategory(newCategoryName);
-        setNewCategoryName('');
-      }
+        e.preventDefault();
+        if (newCategoryName.trim()) {
+            addCategory(newCategoryName);
+            setNewCategoryName('');
+        }
     };
-    
+
     const handleOpenStyleModal = (category: Category) => {
         setEditingCategory(category);
         setIsStyleModalOpen(true);
@@ -71,31 +70,48 @@ export const ManageCategoriesPage: React.FC<ManageCategoriesPageProps> = ({ isGu
                     clearCategoriesError();
                     clearExpensesError();
                 }}
-                loadingMessage="Cargando categorías y gastos..."
+                loadingMessage="Cargando categorías..."
             >
                 <>
                     <div className={styles.pageHeader}>
-                      <h2 className="section-title">Análisis y Gestión de Categorías</h2>
-                      <form onSubmit={handleAddCategory} className={styles.addCategoryForm}>
-                        <input type="text" value={newCategoryName} onChange={e => setNewCategoryName(e.target.value)} placeholder="Añadir nueva categoría"/>
-                        <button type="submit">Añadir</button>
-                      </form>
-                    </div>
-                    <div className={styles.container}>
-                        {categories.map(cat => (
-                            <CategoryItem
-                                key={cat.id}
-                                category={cat}
-                                expenses={expenses}
-                                onAddSubCategory={addSubCategory}
-                                onDeleteSubCategory={(categoryId, subCategory) =>
-                                    deleteSubCategory(categoryId, subCategory.id, subCategory.name)
-                                }
-                                onDeleteCategory={deleteCategory}
-                                onUpdateBudget={updateCategoryBudget}
-                                onEditStyle={() => handleOpenStyleModal(cat)}
+                        <h2 className="section-title">Gestión de Categorías</h2>
+                        <p className={styles.subtitle}>Administra tus categorías y subcategorías de gastos</p>
+                        <form onSubmit={handleAddCategory} className={styles.addCategoryForm}>
+                            <input
+                                type="text"
+                                value={newCategoryName}
+                                onChange={e => setNewCategoryName(e.target.value)}
+                                placeholder="Nueva categoría..."
                             />
-                        ))}
+                            <button type="submit">Añadir</button>
+                        </form>
+                    </div>
+
+                    {/* Lista de Categorías */}
+                    <div className={styles.categoriesSection}>
+                        <div className={styles.container}>
+                            {categories.length === 0 ? (
+                                <div className={styles.emptyState}>
+                                    <p>No tienes categorías creadas.</p>
+                                    <p>Añade tu primera categoría usando el campo de arriba.</p>
+                                </div>
+                            ) : (
+                                categories.map(cat => (
+                                    <CategoryItem
+                                        key={cat.id}
+                                        category={cat}
+                                        expenses={expenses}
+                                        onAddSubCategory={addSubCategory}
+                                        onDeleteSubCategory={(categoryId, subCategory) =>
+                                            deleteSubCategory(categoryId, subCategory.id, subCategory.name)
+                                        }
+                                        onDeleteCategory={deleteCategory}
+                                        onUpdateBudget={updateCategoryBudget}
+                                        onEditStyle={() => handleOpenStyleModal(cat)}
+                                    />
+                                ))
+                            )}
+                        </div>
                     </div>
                 </>
             </LoadingStateWrapper>

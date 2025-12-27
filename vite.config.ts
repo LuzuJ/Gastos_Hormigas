@@ -2,10 +2,16 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { visualizer } from 'rollup-plugin-visualizer'
+import path from 'path'
 
 // https://vite.dev/config/
 export default defineConfig({
   base: '/', 
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, './src'),
+    },
+  },
   plugins: [
     react(),
     // Plugin personalizado para PWA
@@ -193,9 +199,7 @@ export default defineConfig({
     include: [
       'react',
       'react-dom',
-      'firebase/app',
-      'firebase/auth',
-      'firebase/firestore',
+      '@supabase/supabase-js',
       'lucide-react',
       'react-hot-toast'
     ]

@@ -1,296 +1,131 @@
 /* Contenedor principal */
 .registroPage {
-  max-width: 1200px;
+  max-width: 1000px;
   margin: 0 auto;
   padding: 16px;
-  background: var(--background-primary);
-  /* Animaciones suaves para el contenedor principal */
-  animation: fadeInUp 0.5s ease-out;
 }
 
-/* Header compacto */
+/* Header Compacto */
 .pageHeader {
-  background: var(--primary-accent);
-  border-radius: 12px;
-  padding: 20px;
-  margin-bottom: 20px;
-  color: white;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  position: relative;
-  overflow: hidden;
-}
-
-/* Agregar un gradiente sutil que funcione en ambos temas */
-.pageHeader::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(135deg, transparent 0%, rgba(255, 255, 255, 0.1) 100%);
-  pointer-events: none;
+  margin-bottom: 16px;
 }
 
 .headerContent {
   display: flex;
-  flex-direction: column;
-  gap: 16px;
+  justify-content: space-between;
   align-items: center;
-  position: relative;
-  z-index: 1;
+  flex-wrap: wrap;
+  gap: 12px;
 }
 
 .titleSection {
-  text-align: center;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .pageTitle {
-  font-size: 1.8rem;
+  font-size: 1.25rem;
   font-weight: 700;
   margin: 0;
   display: flex;
   align-items: center;
-  justify-content: center;
   gap: 8px;
+  color: var(--text-headings);
 }
 
 .titleIcon {
-  font-size: 1.6rem;
+  color: var(--primary-accent);
 }
 
 .headerStats {
   display: flex;
-  flex-direction: column;
-  gap: 12px;
+  gap: 16px;
   align-items: center;
-  width: 100%;
 }
 
 .stat {
-  color: rgba(255, 255, 255, 0.95);
-  font-size: 0.95rem;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
   font-weight: 500;
   display: flex;
   align-items: center;
   gap: 6px;
-}
-
-.exportButton {
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  color: white;
-  padding: 10px 18px;
+  background: var(--background-card);
+  padding: 8px 12px;
   border-radius: 8px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-size: 0.9rem;
-  backdrop-filter: blur(10px);
+  border: 1px solid var(--border-color);
 }
 
-.exportButton:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.2);
-  border-color: rgba(255, 255, 255, 0.4);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+.stat strong {
+  color: var(--text-headings);
 }
 
-.exportButton:active:not(:disabled) {
-  transform: translateY(0);
-  transition: transform 0.1s ease;
-}
-
-.exportButton:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-  transform: none;
-}
-
-/* Contenedores compactos */
+/* Contenedores */
 .filtersContainer {
   background: var(--background-card);
   border: 1px solid var(--border-color);
-  border-radius: 12px;
-  padding: 16px;
-  margin-bottom: 16px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  transition: box-shadow 0.3s ease, border-color 0.3s ease;
-}
-
-.filtersContainer:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  border-color: var(--primary-accent);
+  border-radius: 10px;
+  padding: 14px;
+  margin-bottom: 14px;
 }
 
 .resultsContainer {
   background: var(--background-card);
   border: 1px solid var(--border-color);
-  border-radius: 12px;
+  border-radius: 10px;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  transition: box-shadow 0.3s ease;
-}
-
-.resultsContainer:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .resultsInfo {
   background: var(--background-hover);
-  padding: 14px 18px;
+  padding: 12px 16px;
   border-bottom: 1px solid var(--border-color);
-  transition: background-color 0.3s ease;
 }
 
 .resultsCount {
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   font-weight: 600;
-  color: var(--text-primary);
-  opacity: 0.8;
+  color: var(--text-secondary);
 }
 
-/* Responsive Design */
-@media (min-width: 640px) {
+/* Responsive */
+@media (max-width: 640px) {
   .headerContent {
-    flex-direction: row;
-    justify-content: space-between;
-  }
-
-  .titleSection {
-    text-align: left;
-  }
-
-  .pageTitle {
-    justify-content: flex-start;
+    flex-direction: column;
+    align-items: flex-start;
   }
 
   .headerStats {
-    flex-direction: row;
-    gap: 20px;
-    width: auto;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .stat {
+    font-size: 0.8rem;
+    padding: 6px 10px;
   }
 }
 
-@media (min-width: 768px) {
-  .registroPage {
-    padding: 24px;
-  }
-
-  .pageHeader {
-    padding: 24px;
-  }
-
-  .pageTitle {
-    font-size: 2rem;
-  }
-
-  .titleIcon {
-    font-size: 1.8rem;
-  }
-
-  .filtersContainer {
-    padding: 20px;
-  }
+/* Animación de entrada */
+.registroPage {
+  animation: fadeIn 0.3s ease-out;
 }
 
-@media (min-width: 1024px) {
-  .registroPage {
-    padding: 32px;
-  }
-}
-
-/* ================================================
-   ADAPTACIONES ESPECÍFICAS PARA MODO OSCURO
-   ================================================ */
-
-/* Mejoras para el header en modo oscuro */
-html[data-theme='dark'] .pageHeader {
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
-}
-
-html[data-theme='dark'] .pageHeader::before {
-  background: linear-gradient(135deg, transparent 0%, rgba(255, 255, 255, 0.05) 100%);
-}
-
-/* Mejoras para contenedores en modo oscuro */
-html[data-theme='dark'] .filtersContainer,
-html[data-theme='dark'] .resultsContainer {
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
-  border-color: var(--border-color);
-  /* Efecto glassmorphism sutil para modo oscuro */
-  backdrop-filter: blur(10px);
-  background: rgba(31, 41, 55, 0.8);
-}
-
-html[data-theme='dark'] .filtersContainer:hover,
-html[data-theme='dark'] .resultsContainer:hover {
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-}
-
-html[data-theme='dark'] .filtersContainer:hover {
-  border-color: var(--primary-accent);
-}
-
-/* Mejora de la información de resultados en modo oscuro */
-html[data-theme='dark'] .resultsInfo {
-  background: rgba(55, 65, 81, 0.6);
-  backdrop-filter: blur(5px);
-}
-
-/* ================================================
-   MEJORAS GENERALES DE UX
-   ================================================ */
-
-/* Animaciones suaves para el contenedor principal */
-@keyframes fadeInUp {
+@keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(8px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
 
-/* Efecto de carga suave para los contenedores */
-.filtersContainer,
-.resultsContainer {
-  animation: slideInScale 0.4s ease-out;
-}
-
-@keyframes slideInScale {
-  from {
-    opacity: 0;
-    transform: translateY(10px) scale(0.98);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-/* Estados de focus mejorados */
-.filtersContainer:focus-within {
-  border-color: var(--primary-accent);
-  box-shadow: 0 0 0 3px var(--primary-accent-focus-ring);
-}
-
-/* Mejoras de accesibilidad */
 @media (prefers-reduced-motion: reduce) {
-  .registroPage,
-  .filtersContainer,
-  .resultsContainer {
+  .registroPage {
     animation: none;
-  }
-  
-  .exportButton,
-  .filtersContainer,
-  .resultsContainer {
-    transition: none;
   }
 }

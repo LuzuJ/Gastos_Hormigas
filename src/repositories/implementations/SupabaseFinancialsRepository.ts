@@ -42,13 +42,14 @@ export class SupabaseFinancialsRepository
         .from(SUPABASE_TABLES.FINANCIALS)
         .select('*')
         .eq('user_id', userId)
-        .single();
+        .maybeSingle();
       
       if (error) {
-        if (error.code === 'PGRST116') { // No rows returned
-          return null;
-        }
         throw error;
+      }
+      
+      if (!data) {
+        return null;
       }
       
       return this.mapDatabaseToModel(data);
@@ -67,19 +68,49 @@ export class SupabaseFinancialsRepository
   async updateFinancials(userId: string, financialsData: Partial<Financials>): Promise<Financials> {
     try {
       // Verificar si ya existe información financiera para este usuario
-      const existing = await this.getFinancials(userId);
+      const { data: existing, error: fetchError } = await this.client
+        .from(SUPABASE_TABLES.FINANCIALS)
+        .select('*')
+        .eq('user_id', userId)
+        .maybeSingle();
       
+      if (fetchError) {
+        console.error('Error al verificar financials existentes:', fetchError);
+        throw fetchError;
+      }
+      
+      const databaseData = this.mapModelToDatabase(financialsData);
+
       if (existing) {
-        // Si existe, actualizar
-        return await this.update(userId, userId, financialsData);
+        // Si existe, actualizar usando el ID de la fila
+        const { data: updatedData, error: updateError } = await this.client
+          .from(SUPABASE_TABLES.FINANCIALS)
+          .update(databaseData)
+          .eq('id', existing.id)
+          .select()
+          .single();
+        
+        if (updateError) throw updateError;
+        
+        return this.mapDatabaseToModel(updatedData);
       } else {
         // Si no existe, crear
-        // Asegurarnos de que tenga al menos el campo monthlyIncome
-        const completeData: Financials = {
-          monthlyIncome: financialsData.monthlyIncome || 0
+        const completeData: Partial<SupabaseFinancials> = {
+          user_id: userId,
+          monthly_income: financialsData.monthlyIncome || 0,
+          emergency_fund: financialsData.emergencyFund || 0,
+          total_debt: financialsData.totalDebt || 0
         };
         
-        return await this.create(userId, completeData);
+        const { data: newData, error: createError } = await this.client
+          .from(SUPABASE_TABLES.FINANCIALS)
+          .insert(completeData)
+          .select()
+          .single();
+        
+        if (createError) throw createError;
+        
+        return this.mapDatabaseToModel(newData);
       }
     } catch (error) {
       console.error('Error al actualizar información financiera:', error);

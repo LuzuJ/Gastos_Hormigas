@@ -19,7 +19,7 @@ export const useExpenses = (userId: string | null) => {
         setLoadingExpenses(true);
         setExpensesError(null);
 
-        const unsubscribe = expenseServiceRepo.onExpensesUpdate(userId, (data: Expense[], error?: Error) => {            
+        const unsubscribe = expenseServiceRepo.onExpensesUpdate(userId, (data: Expense[], error?: Error) => {
             if (error) {
                 setExpensesError('Error al cargar los gastos. Intenta recargar la página.');
                 setLoadingExpenses(false);
@@ -38,11 +38,26 @@ export const useExpenses = (userId: string | null) => {
         if (!userId) {
             return { success: false, error: 'Usuario no autenticado.' };
         }
-        
-        return await handleAsyncOperation(
+
+        const result = await handleAsyncOperation(
             () => expenseServiceRepo.addExpense(userId, data),
             'Error al agregar el gasto'
         );
+
+        // Si fue exitoso, recargar los gastos manualmente (fallback por si falla realtime)
+        if (result.success) {
+            console.log('[useExpenses] Gasto agregado, recargando lista...');
+            try {
+                // Pequeña espera para asegurar que los datos fueron escritos en la BD
+                await new Promise(resolve => setTimeout(resolve, 300));
+                const updatedExpenses = await expenseServiceRepo.getExpenses(userId);
+                setExpenses(updatedExpenses);
+            } catch (error) {
+                console.error('[useExpenses] Error recargando gastos:', error);
+            }
+        }
+
+        return result;
     }, [userId]);
 
     const updateExpense = useCallback(async (expenseId: string, data: Partial<ExpenseFormData>) => {
@@ -50,10 +65,25 @@ export const useExpenses = (userId: string | null) => {
             return { success: false, error: 'Usuario no autenticado.' };
         }
 
-        return await handleAsyncOperation(
+        const result = await handleAsyncOperation(
             () => expenseServiceRepo.updateExpense(userId, expenseId, data),
             'Error al actualizar el gasto'
         );
+
+        // Si fue exitoso, recargar los gastos manualmente (fallback por si falla realtime)
+        if (result.success) {
+            console.log('[useExpenses] Gasto actualizado, recargando lista...');
+            try {
+                // Pequeña espera para asegurar que los datos fueron actualizados en la BD
+                await new Promise(resolve => setTimeout(resolve, 300));
+                const updatedExpenses = await expenseServiceRepo.getExpenses(userId);
+                setExpenses(updatedExpenses);
+            } catch (error) {
+                console.error('[useExpenses] Error recargando gastos:', error);
+            }
+        }
+
+        return result;
     }, [userId]);
 
     const deleteExpense = useCallback(async (expenseId: string) => {
@@ -61,10 +91,25 @@ export const useExpenses = (userId: string | null) => {
             return { success: false, error: 'Usuario no autenticado.' };
         }
 
-        return await handleAsyncOperation(
+        const result = await handleAsyncOperation(
             () => expenseServiceRepo.deleteExpense(userId, expenseId),
             'Error al eliminar el gasto'
         );
+
+        // Si fue exitoso, recargar los gastos manualmente (fallback por si falla realtime)
+        if (result.success) {
+            console.log('[useExpenses] Gasto eliminado, recargando lista...');
+            try {
+                // Pequeña espera para asegurar que los datos fueron eliminados de la BD
+                await new Promise(resolve => setTimeout(resolve, 300));
+                const updatedExpenses = await expenseServiceRepo.getExpenses(userId);
+                setExpenses(updatedExpenses);
+            } catch (error) {
+                console.error('[useExpenses] Error recargando gastos:', error);
+            }
+        }
+
+        return result;
     }, [userId]);
 
     const totalExpensesToday = useMemo(() => {

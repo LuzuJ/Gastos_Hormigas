@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 import { useUserProfile } from '../hooks/profile/useUserProfile';
 import { supabase } from '../config/supabase';
+import { setDefaultCurrency } from '../utils/formatters';
 import type { User, Session } from '@supabase/supabase-js';
 
 // Contexto para autenticación y perfil de usuario
@@ -18,14 +19,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  
+
   // Obtener el usuario actual al cargar el componente
   useEffect(() => {
     // Función para obtener la sesión actual
     const getInitialSession = async () => {
       try {
         setIsLoading(true);
-        
+
         // Obtener la sesión actual
         const { data: { session: currentSession } } = await supabase.auth.getSession();
         setSession(currentSession);
@@ -36,10 +37,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setIsLoading(false);
       }
     };
-    
+
     // Obtener la sesión inicial
     getInitialSession();
-    
+
     // Suscribirse a cambios de autenticación
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, newSession) => {
@@ -48,15 +49,23 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setUser(newSession?.user || null);
       }
     );
-    
+
     // Limpiar suscripción al desmontar
     return () => {
       subscription.unsubscribe();
     };
   }, []);
-  
+
   // Usar el hook de perfil de usuario con el ID del usuario actual
   const profileData = useUserProfile(user?.id || null);
+
+  // Sincronizar moneda global cuando el perfil carga
+  useEffect(() => {
+    if (profileData.profile?.currency) {
+      setDefaultCurrency(profileData.profile.currency);
+      console.log('[AUTH] Currency set to:', profileData.profile.currency);
+    }
+  }, [profileData.profile?.currency]);
 
   return (
     <AuthContext.Provider value={{ ...profileData, user, session, isLoading }}>

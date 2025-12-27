@@ -1,5 +1,5 @@
 // Service Worker para PWA - Gastos Hormigas
-const CACHE_NAME = 'gastos-hormigas-v1.0.0';
+const CACHE_NAME = 'gastos-hormigas-v1.0.1'; // Incrementada versión para forzar actualización
 const OFFLINE_URL = '/offline.html';
 
 // Recursos críticos para cachear
@@ -79,6 +79,12 @@ self.addEventListener('fetch', (event) => {
 
   // Solo manejar requests HTTP/HTTPS
   if (!url.protocol.startsWith('http')) {
+    return;
+  }
+
+  // NO cachear métodos POST, PUT, PATCH, DELETE - solo GET
+  if (request.method !== 'GET') {
+    event.respondWith(fetch(request));
     return;
   }
 

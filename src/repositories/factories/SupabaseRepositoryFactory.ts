@@ -3,6 +3,7 @@ import type {
   IUserRepository, 
   ICategoryRepository,
   IExpenseRepository,
+  IIncomeRepository,
   IFixedExpenseRepository,
   IFinancialsRepository,
   ISavingsGoalRepository,
@@ -16,6 +17,7 @@ import {
   SupabaseUserRepository, 
   SupabaseCategoryRepositoryV2,
   SupabaseExpenseRepository,
+  SupabaseIncomeRepository,
   SupabaseUserStatsRepository,
   SupabaseFixedExpenseRepository,
   SupabaseSavingsGoalRepository,
@@ -33,6 +35,7 @@ export class SupabaseRepositoryFactory implements IRepositoryFactory {
   private userRepository: IUserRepository | null = null;
   private categoryRepository: ICategoryRepository | null = null;
   private expenseRepository: IExpenseRepository | null = null;
+  private incomeRepository: IIncomeRepository | null = null;
   private fixedExpenseRepository: IFixedExpenseRepository | null = null;
   private financialsRepository: IFinancialsRepository | null = null;
   private savingsGoalRepository: ISavingsGoalRepository | null = null;
@@ -72,6 +75,17 @@ export class SupabaseRepositoryFactory implements IRepositoryFactory {
       this.expenseRepository = new SupabaseExpenseRepository();
     }
     return this.expenseRepository;
+  }
+  
+  /**
+   * Obtiene el repositorio de ingresos
+   * @returns Instancia del repositorio de ingresos
+   */
+  getIncomeRepository(): IIncomeRepository {
+    if (!this.incomeRepository) {
+      this.incomeRepository = new SupabaseIncomeRepository();
+    }
+    return this.incomeRepository;
   }
   
   /**

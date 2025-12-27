@@ -27,7 +27,7 @@ export const ExpenseChart: React.FC<ExpenseChartProps> = ({ data }) => {
   return (
     <div className={styles.chartContainer}>
       <h3 className={styles.title}>Distribución de Gastos del Mes</h3>
-      <ResponsiveContainer width="100%" height={300}>
+      <ResponsiveContainer width="100%" height={200}>
         <PieChart>
           <Pie
             data={data}
@@ -44,9 +44,9 @@ export const ExpenseChart: React.FC<ExpenseChartProps> = ({ data }) => {
               <Cell key={entry.name} fill={COLORS[index % COLORS.length]} />
             ))}
           </Pie>
-          <Tooltip 
-            formatter={(value: number) => `$${value.toFixed(2)}`} 
-            labelFormatter={() => ''} 
+          <Tooltip
+            formatter={(value: number) => `$${value.toFixed(2)}`}
+            labelFormatter={() => ''}
           />
           <Legend />
         </PieChart>

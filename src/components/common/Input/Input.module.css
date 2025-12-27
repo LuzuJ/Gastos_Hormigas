@@ -36,7 +36,7 @@
   width: 100%;
   border: 1px solid var(--border-color);
   border-radius: 8px;
-  background: var(--background-primary);
+  background: var(--background-card);
   color: var(--text-primary);
   font-size: 1rem;
   transition: all 0.2s ease;
@@ -186,38 +186,39 @@
   font-weight: 500;
 }
 
-/* Dark mode adaptations */
-[data-theme="dark"] .input {
-  background: var(--background-primary);
+/* Dark mode adaptations - using :global for CSS module compatibility */
+:global(html[data-theme="dark"]) .input {
+  background: var(--background-card);
   border-color: var(--border-color);
   color: var(--text-primary);
 }
 
-[data-theme="dark"] .input:disabled {
-  background: var(--background-overlay);
+:global(html[data-theme="dark"]) .input:disabled {
+  background: var(--background-secondary);
   color: var(--text-disabled);
 }
 
-[data-theme="dark"] .leftIcon,
-[data-theme="dark"] .rightIcon,
-[data-theme="dark"] .rightText {
+:global(html[data-theme="dark"]) .leftIcon,
+:global(html[data-theme="dark"]) .rightIcon,
+:global(html[data-theme="dark"]) .rightText {
   color: var(--text-secondary);
 }
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .input {
-    font-size: 16px; /* Prevent zoom on iOS */
+    font-size: 16px;
+    /* Prevent zoom on iOS */
   }
-  
+
   .small {
     padding: 10px 12px;
   }
-  
+
   .medium {
     padding: 14px 16px;
   }
-  
+
   .large {
     padding: 18px 20px;
   }

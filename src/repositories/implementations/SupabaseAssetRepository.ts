@@ -153,9 +153,12 @@ export class SupabaseAssetRepository
    * @param data - Datos del modelo de dominio (Asset)
    * @returns El objeto formateado para la base de datos
    */
-  protected mapModelToDatabase(data: Partial<Asset>): Partial<SupabaseAsset> {
+  protected mapModelToDatabase(data: Partial<Asset> & { user_id?: string }): Partial<SupabaseAsset> {
     const databaseData: Partial<SupabaseAsset> = {};
     
+    if ((data as any).user_id !== undefined) {
+      databaseData.user_id = (data as any).user_id;
+    }
     if (data.name !== undefined) {
       databaseData.name = data.name;
     }

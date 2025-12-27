@@ -173,3 +173,34 @@
 .cleanupButton:active {
   transform: translateY(0);
 }
+/* Asset Selector Styles */
+.formGroupAsset {
+  grid-column: 1 / -1;
+  margin-top: 0.5rem;
+  padding: 1rem;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.05) 0%, rgba(5, 150, 105, 0.05) 100%);
+  border-radius: 8px;
+  border: 2px dashed rgba(16, 185, 129, 0.3);
+}
+
+.formGroupAsset .label {
+  color: var(--color-success, #10b981);
+  font-weight: 600;
+}
+
+.labelNote {
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: var(--color-text-secondary, #6b7280);
+  margin-left: 0.5rem;
+}
+
+.assetHint {
+  margin-top: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: rgba(16, 185, 129, 0.1);
+  border-left: 3px solid var(--color-success, #10b981);
+  border-radius: 4px;
+  font-size: 0.875rem;
+  color: var(--color-success-dark, #059669);
+}

@@ -2,59 +2,70 @@
   position: relative;
 }
 
-/* Indicador de conexión */
+/* Indicador de conexión - más discreto */
 .connectionStatus {
-  position: fixed;
-  top: 10px;
-  right: 10px;
-  z-index: 1000;
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
-  border-radius: 20px;
-  font-size: 0.75rem;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.7rem;
   font-weight: 500;
   transition: all 0.3s ease;
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  /* Posición relativa, no fixed */
 }
 
 .connectionStatus.online {
-  background: rgba(16, 185, 129, 0.2);
+  background: rgba(16, 185, 129, 0.15);
   color: #10b981;
-  border-color: rgba(16, 185, 129, 0.3);
+  border-color: rgba(16, 185, 129, 0.25);
 }
 
 .connectionStatus.offline {
-  background: rgba(239, 68, 68, 0.2);
+  background: rgba(239, 68, 68, 0.15);
   color: #ef4444;
-  border-color: rgba(239, 68, 68, 0.3);
+  border-color: rgba(239, 68, 68, 0.25);
   animation: pulse 2s infinite;
 }
 
-/* Prompt de instalación */
-.installPrompt {
+/* Botón de instalación pequeño y discreto */
+.installButtonSmall {
   position: fixed;
   bottom: 20px;
-  left: 20px;
   right: 20px;
-  z-index: 1000;
-  max-width: 400px;
-  margin: 0 auto;
-  animation: slideUp 0.5s ease-out;
-}
-
-.installContent {
+  z-index: 900;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--primary-accent);
+  color: white;
+  border: none;
+  cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 16px;
-  background: var(--background-card);
-  border: 1px solid var(--border-color);
-  border-radius: 16px;
-  padding: 16px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
-  backdrop-filter: blur(10px);
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  transition: all 0.3s ease;
+  animation: fadeIn 0.5s ease-out;
+}
+
+.installButtonSmall:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 .installIcon {
@@ -136,6 +147,7 @@
     opacity: 0;
     transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -143,9 +155,12 @@
 }
 
 @keyframes pulse {
-  0%, 100% {
+
+  0%,
+  100% {
     opacity: 1;
   }
+
   50% {
     opacity: 0.7;
   }
@@ -158,25 +173,25 @@
     right: 10px;
     bottom: 10px;
   }
-  
+
   .installContent {
     padding: 12px;
     gap: 12px;
   }
-  
+
   .installText h3 {
     font-size: 0.85rem;
   }
-  
+
   .installText p {
     font-size: 0.75rem;
   }
-  
+
   .installButton {
     padding: 8px 12px;
     font-size: 0.8rem;
   }
-  
+
   .connectionStatus {
     top: 8px;
     right: 8px;
@@ -191,7 +206,7 @@
     background: rgba(30, 41, 59, 0.95);
     border-color: rgba(71, 85, 105, 0.5);
   }
-  
+
   .connectionStatus {
     border-color: rgba(255, 255, 255, 0.1);
   }

@@ -1,7 +1,7 @@
 ﻿import React, { useState } from 'react';
 import type { Liability } from '../../../../types';
 import { Trash2, CreditCard, DollarSign, Calendar, Plus, Edit3, Target, TrendingDown, List, BarChart3 } from 'lucide-react';
-import { DebtPaymentPlanner } from './DebtPaymentPlanner';
+import { SimpleDebtPlanner } from './SimpleDebtPlanner';
 import styles from './DebtManager.module.css';
 import { useConfirmDialog } from '../../../../hooks/context/useConfirmDialog';
 import { useInputDialog } from '../../../../hooks/context/useInputDialog';
@@ -369,8 +369,8 @@ const DebtManager: React.FC<DebtManagerProps> = ({
       </div>
 
       {viewMode === 'planner' && liabilities.length > 0 ? (
-        <DebtPaymentPlanner 
-          debts={liabilities}
+        <SimpleDebtPlanner 
+          debts={getFilteredLiabilities()}
           onMakePayment={(debtId: string, amount: number) => 
             onMakePayment(debtId, amount, 'extra', 'Pago desde planificador')
           }
@@ -429,7 +429,13 @@ const DebtManager: React.FC<DebtManagerProps> = ({
                         min="0"
                         step="0.01"
                         value={formData.amount || ''}
-                        onChange={(e) => setFormData({...formData, amount: parseFloat(e.target.value) || 0})}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          // Mantener el valor como está, no forzar a 0
+                          setFormData({...formData, amount: val === '' ? 0 : parseFloat(val)});
+                        }}
+                        onWheel={(e) => e.preventDefault()}
+                        onFocus={(e) => e.target.select()}  // Seleccionar todo al hacer focus
                         placeholder="0.00"
                         required
                       />
@@ -461,7 +467,12 @@ const DebtManager: React.FC<DebtManagerProps> = ({
                         max="100"
                         step="0.01"
                         value={formData.interestRate || ''}
-                        onChange={(e) => setFormData({...formData, interestRate: parseFloat(e.target.value) || 0})}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setFormData({...formData, interestRate: val === '' ? 0 : parseFloat(val)});
+                        }}
+                        onWheel={(e) => e.preventDefault()}
+                        onFocus={(e) => e.target.select()}
                         placeholder="12.5"
                       />
                     </div>
@@ -474,7 +485,12 @@ const DebtManager: React.FC<DebtManagerProps> = ({
                         min="1"
                         max="600"
                         value={formData.duration || ''}
-                        onChange={(e) => setFormData({...formData, duration: parseInt(e.target.value) || 0})}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setFormData({...formData, duration: val === '' ? 0 : parseInt(val)});
+                        }}
+                        onWheel={(e) => e.preventDefault()}
+                        onFocus={(e) => e.target.select()}
                         placeholder="36"
                       />
                       <small style={{ color: '#999', fontSize: '12px', marginTop: '4px', display: 'block' }}>
@@ -492,7 +508,12 @@ const DebtManager: React.FC<DebtManagerProps> = ({
                         min="0"
                         step="0.01"
                         value={formData.monthlyPayment || ''}
-                        onChange={(e) => setFormData({...formData, monthlyPayment: parseFloat(e.target.value) || 0})}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setFormData({...formData, monthlyPayment: val === '' ? 0 : parseFloat(val)});
+                        }}
+                        onWheel={(e) => e.preventDefault()}
+                        onFocus={(e) => e.target.select()}
                         placeholder="150.00"
                       />
                     </div>
@@ -626,7 +647,7 @@ const DebtManager: React.FC<DebtManagerProps> = ({
                     </div>
 
                     <div className={styles.additionalInfo}>
-                      {liability.interestRate && (
+                      {(liability.interestRate !== null && liability.interestRate !== undefined) && (
                         <div className={styles.infoItem}>
                           <span className={styles.infoLabel}>Interés:</span>
                           <span className={styles.infoValue}>{liability.interestRate}% anual</span>
@@ -688,20 +709,9 @@ const DebtManager: React.FC<DebtManagerProps> = ({
                           Pago Extra (+50%)
                         </button>
                         
-                        {/* Botón alternativo: Pago manual simple */}
                         <button
                           onClick={() => handleManualPayment(liability)}
-                          style={{
-                            marginTop: '8px',
-                            padding: '8px 16px',
-                            backgroundColor: '#28a745',
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: '4px',
-                            cursor: 'pointer',
-                            fontSize: '14px',
-                            width: '100%'
-                          }}
+                          className={styles.manualPaymentButton}
                         >
                           💰 Pago Manual
                         </button>

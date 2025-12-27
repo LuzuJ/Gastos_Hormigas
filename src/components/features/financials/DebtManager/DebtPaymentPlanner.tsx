@@ -34,8 +34,20 @@ export const DebtPaymentPlanner: React.FC<DebtPaymentPlannerProps> = ({
 
   // Actualizar el presupuesto extra cuando cambie el input
   React.useEffect(() => {
+    console.log('[DebtPaymentPlanner] 📊 Monthly budget changed:', monthlyBudget);
+    console.log('[DebtPaymentPlanner] 📊 Setting monthly extra budget to:', monthlyBudget);
     setMonthlyExtraBudget(monthlyBudget);
   }, [monthlyBudget, setMonthlyExtraBudget]);
+  
+  // Log para diagnosticar estrategias
+  React.useEffect(() => {
+    console.log('[DebtPaymentPlanner] 🎯 Payment plan updated:', {
+      hasPaymentPlan: !!paymentPlan,
+      debtsCount: paymentPlan?.debts.length || 0,
+      totalMonthsToPayOff: paymentPlan?.totalMonthsToPayOff,
+      currentStrategy: currentStrategy.type
+    });
+  }, [paymentPlan, currentStrategy]);
 
   const comparison = useMemo(() => compareStrategies(), [compareStrategies]);
   
@@ -247,6 +259,8 @@ export const DebtPaymentPlanner: React.FC<DebtPaymentPlannerProps> = ({
                 step="0.01"
                 value={monthlyBudget || ''}
                 onChange={(e) => setMonthlyBudget(parseFloat(e.target.value) || 0)}
+                onWheel={(e) => e.preventDefault()}
+                onFocus={(e) => e.target.select()}
                 placeholder="0.00"
                 className={styles.budgetInput}
               />

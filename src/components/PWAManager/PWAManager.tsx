@@ -17,7 +17,7 @@ export const PWAManager = ({ showInstallPrompt = true }: PWAManagerProps) => {
     const isRunningStandalone = window.matchMedia('(display-mode: standalone)').matches;
     const isRunningFullscreen = window.matchMedia('(display-mode: fullscreen)').matches;
     const isRunningMinimalUI = window.matchMedia('(display-mode: minimal-ui)').matches;
-    
+
     setIsInstalled(isRunningStandalone || isRunningFullscreen || isRunningMinimalUI);
 
     // Escuchar eventos de conexión
@@ -57,16 +57,16 @@ export const PWAManager = ({ showInstallPrompt = true }: PWAManagerProps) => {
     try {
       // Mostrar el prompt de instalación
       deferredPrompt.prompt();
-      
+
       // Esperar la respuesta del usuario
       const { outcome } = await deferredPrompt.userChoice;
-      
+
       if (outcome === 'accepted') {
         console.log('✅ Usuario aceptó la instalación');
       } else {
         console.log('❌ Usuario rechazó la instalación');
       }
-      
+
       // Limpiar el prompt
       setDeferredPrompt(null);
       setCanInstall(false);
@@ -76,41 +76,18 @@ export const PWAManager = ({ showInstallPrompt = true }: PWAManagerProps) => {
   };
 
   return (
-    <div className={styles.pwaManager}>
-      {/* Indicador de conexión */}
-      <div className={`${styles.connectionStatus} ${isOnline ? styles.online : styles.offline}`}>
-        {isOnline ? <Wifi size={16} /> : <WifiOff size={16} />}
-        <span>{isOnline ? 'En línea' : 'Sin conexión'}</span>
-      </div>
-
-      {/* Botón de instalación */}
+    <>
+      {/* Botón de instalación discreto - pequeño y no invasivo */}
       {canInstall && showInstallPrompt && !isInstalled && (
-        <div className={styles.installPrompt}>
-          <div className={styles.installContent}>
-            <Smartphone className={styles.installIcon} />
-            <div className={styles.installText}>
-              <h3>¡Instala Gastos Hormigas!</h3>
-              <p>Accede más rápido y úsala sin conexión</p>
-            </div>
-            <button 
-              onClick={handleInstall}
-              className={styles.installButton}
-              aria-label="Instalar aplicación"
-            >
-              <Download size={20} />
-              Instalar
-            </button>
-          </div>
-        </div>
+        <button
+          onClick={handleInstall}
+          className={styles.installButtonSmall}
+          aria-label="Instalar aplicación"
+          title="Instalar Gastos Hormigas como app"
+        >
+          <Download size={16} />
+        </button>
       )}
-
-      {/* Mensaje para apps instaladas */}
-      {isInstalled && (
-        <div className={styles.installedMessage}>
-          <Smartphone className={styles.installedIcon} />
-          <span>Ejecutándose como app nativa</span>
-        </div>
-      )}
-    </div>
+    </>
   );
 };

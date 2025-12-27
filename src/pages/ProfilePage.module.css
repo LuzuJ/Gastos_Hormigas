@@ -1,27 +1,30 @@
-.container { max-width: 600px; margin: 0 auto; }
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+}
 
 .errorContainer {
-    background-color: var(--background-card);
-    padding: 2rem;
-    border-radius: 16px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1rem;
+  background-color: var(--background-card);
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
 }
 
 .errorContainer p {
-    color: var(--danger-color);
-    margin: 0;
+  color: var(--danger-color);
+  margin: 0;
 }
 
 .header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
 }
 
 .logoutButton {
@@ -37,105 +40,278 @@
   gap: 0.5rem;
   transition: all 0.2s;
 }
+
 .logoutButton:hover {
-    background-color: var(--danger-color);
-    color: white;
+  background-color: var(--danger-color);
+  color: white;
 }
 
-.form { 
-  background-color: var(--background-card); 
-  padding: 2rem; 
-  border-radius: 16px; 
-  box-shadow: 0 4px 12px rgba(0,0,0,0.05); 
-}
-.formGroup { margin-bottom: 1.5rem; }
-.formGroup label { 
-  display: block; 
-  font-weight: 500; 
-  margin-bottom: 0.5rem; 
-  color: var(--text-primary);
-}
-.input, .select { 
-  width: 100%; 
-  padding: 0.75rem; 
-  border: 1px solid var(--border-color); 
-  background-color: var(--background-primary);
-  color: var(--text-primary);
-  border-radius: 0.5rem; 
-  font-size: 1rem; 
-}
-.input:disabled { 
-  background-color: var(--background-secondary); 
-  cursor: not-allowed; 
-}
-.actions { display: flex; align-items: center; gap: 1rem; }
-.button { 
-  background-color: var(--primary-accent); 
-  color: white; 
-  border: none; 
-  padding: 0.75rem 1.5rem; 
-  border-radius: 0.5rem; 
-  font-weight: 600; 
-  cursor: pointer; 
-}
-.savedMessage { 
-  color: var(--success-color-strong); 
-  font-weight: 500; 
-}
-
-/* Estas clases no parecen usarse en la página de perfil, pero las refactorizo por si acaso */
-.planningGrid { 
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
+/* Contenido del perfil */
+.profileContent {
+  display: flex;
+  flex-direction: column;
   gap: 1.5rem;
 }
 
-@media (max-width: 767px) {
-  .planningGrid {
+/* Card de perfil con avatar */
+.profileCard {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  background: var(--background-card);
+  padding: 1.5rem;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary-accent), #8b5cf6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: white;
+  flex-shrink: 0;
+}
+
+.profileInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.userName {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.userEmail {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.memberSince {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin-top: 0.25rem;
+}
+
+/* Grid de estadísticas */
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+}
+
+@media (max-width: 768px) {
+  .statsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .statsGrid {
     grid-template-columns: 1fr;
   }
 }
 
+.statCard {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: var(--background-card);
+  padding: 1rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.statIcon {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.statContent {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.statValue {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.statValue.positive {
+  color: #22c55e;
+}
+
+.statValue.negative {
+  color: #ef4444;
+}
+
+.statLabel {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+/* Card de preferencias */
+.settingsCard {
+  background: var(--background-card);
+  padding: 1.5rem;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.settingsHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  color: var(--text-primary);
+}
+
+.settingsHeader h4 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+/* Formulario */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.formRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+@media (max-width: 480px) {
+  .formRow {
+    grid-template-columns: 1fr;
+  }
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.formGroup label {
+  font-weight: 500;
+  font-size: 0.875rem;
+  color: var(--text-primary);
+}
+
+.input,
+.select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid var(--border-color);
+  background-color: var(--background-primary);
+  color: var(--text-primary);
+  border-radius: 0.5rem;
+  font-size: 1rem;
+}
+
+.input:disabled {
+  background-color: var(--background-secondary);
+  cursor: not-allowed;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.button {
+  background-color: var(--primary-accent);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+
+.savedMessage {
+  color: var(--success-color-strong);
+  font-weight: 500;
+}
+
+/* Sección de Exportación */
+.exportSection {
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-color);
+}
+
+/* Guest form styles */
 .guestForm {
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: var(--background-card);
+  padding: 2rem;
+  border-radius: 16px;
 }
+
 .guestIcon {
-    color: var(--primary-accent);
-    margin-bottom: 1rem;
+  color: var(--primary-accent);
+  margin-bottom: 1rem;
 }
+
 .guestForm h3 {
-    margin: 0 0 0.5rem 0;
-    font-size: 1.5rem;
+  margin: 0 0 0.5rem 0;
+  font-size: 1.5rem;
 }
+
 .guestForm p {
-    color: var(--text-secondary);
-    max-width: 400px;
-    margin-bottom: 2rem;
+  color: var(--text-secondary);
+  max-width: 400px;
+  margin-bottom: 2rem;
 }
+
 .guestActions {
-    width: 100%;
-    max-width: 350px;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
+  width: 100%;
+  max-width: 350px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
-.passwordWrapper {
-    position: relative;
-    width: 100%;
-}
-.passwordToggleInForm {
-    position: absolute;
-    right: 0.75rem;
-    top: 50%;
-    transform: translateY(-50%);
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: var(--text-secondary);
-}
+
 .divider {
   margin: 1.5rem 0;
   color: var(--text-secondary);
@@ -145,27 +321,22 @@
   width: 100%;
   max-width: 350px;
 }
+
 .googleButton {
-    border: 1px solid var(--border-color);
-    padding: 0.75rem 1.5rem;
-    font-size: 1rem;
-    border-radius: 0.5rem;
-    cursor: pointer;
-    font-weight: 500;
-    width: 100%;
-    max-width: 350px;
-    background-color: var(--background-secondary);
-    color: var(--text-primary);
-}
-.error {
-    color: var(--danger-color);
-    font-size: 0.875rem;
-    width: 100%;
+  border: 1px solid var(--border-color);
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-weight: 500;
+  width: 100%;
+  max-width: 350px;
+  background-color: var(--background-secondary);
+  color: var(--text-primary);
 }
 
-/* Sección de Exportación */
-.exportSection {
-    margin-top: 2rem;
-    padding-top: 2rem;
-    border-top: 1px solid var(--border-color);
+.error {
+  color: var(--danger-color);
+  font-size: 0.875rem;
+  width: 100%;
 }

@@ -45,8 +45,8 @@ export class SupabaseCategoryRepository extends SupabaseRepository<Category, str
               name: categoryTemplate.name,
               icon: categoryTemplate.icon || null,
               color: categoryTemplate.color || null,
-              is_default: true,
-              budget: null
+              is_active: true,
+              budget_amount: null
             });
           
           if (categoryError) {
@@ -93,8 +93,8 @@ export class SupabaseCategoryRepository extends SupabaseRepository<Category, str
           name,
           icon,
           color,
-          is_default,
-          budget,
+          is_active,
+          budget_amount,
           ${SUPABASE_TABLES.SUBCATEGORIES} (
             id,
             name
@@ -112,8 +112,8 @@ export class SupabaseCategoryRepository extends SupabaseRepository<Category, str
         name: category.name,
         icon: category.icon || undefined,
         color: category.color || undefined,
-        isDefault: category.is_default,
-        budget: category.budget || undefined,
+        isDefault: category.is_active,
+        budget: category.budget_amount || undefined,
         subcategories: (category.subcategories || []).map(subcategory => ({
           id: subcategory.id,
           name: subcategory.name
@@ -315,15 +315,15 @@ export class SupabaseCategoryRepository extends SupabaseRepository<Category, str
    * @param data - Datos de la base de datos (SupabaseCategory)
    * @returns El modelo de dominio (Category)
    */
-  protected mapDatabaseToModel(data: SupabaseCategory & { subcategories?: SupabaseSubcategory[] }): Category {
+  protected mapDatabaseToModel(data: any): Category {
     return {
       id: data.id,
       name: data.name,
       icon: data.icon || undefined,
       color: data.color || undefined,
-      isDefault: data.is_default,
-      budget: data.budget || undefined,
-      subcategories: (data.subcategories || []).map(subcategory => ({
+      isDefault: data.is_active !== undefined ? data.is_active : true,
+      budget: data.budget_amount || undefined,
+      subcategories: (data.subcategories || []).map((subcategory: any) => ({
         id: subcategory.id,
         name: subcategory.name
       }))
@@ -335,8 +335,8 @@ export class SupabaseCategoryRepository extends SupabaseRepository<Category, str
    * @param data - Datos del modelo de dominio (Category)
    * @returns El objeto formateado para la base de datos
    */
-  protected mapModelToDatabase(data: Partial<Category>): Partial<SupabaseCategory> {
-    const databaseData: Partial<SupabaseCategory> = {};
+  protected mapModelToDatabase(data: Partial<Category>): Record<string, any> {
+    const databaseData: Record<string, any> = {};
     
     if (data.name !== undefined) {
       databaseData.name = data.name;
@@ -348,10 +348,10 @@ export class SupabaseCategoryRepository extends SupabaseRepository<Category, str
       databaseData.color = data.color;
     }
     if (data.isDefault !== undefined) {
-      databaseData.is_default = data.isDefault;
+      databaseData.is_active = data.isDefault;
     }
     if (data.budget !== undefined) {
-      databaseData.budget = data.budget;
+      databaseData.budget_amount = data.budget;
     }
     
     return databaseData;

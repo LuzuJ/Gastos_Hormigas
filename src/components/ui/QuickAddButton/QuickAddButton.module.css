@@ -1,0 +1,177 @@
+.container {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: center;
+    gap: 12px;
+}
+
+.mainButton {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary-accent), var(--secondary-accent));
+    color: white;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+    transition: all 0.3s ease;
+}
+
+.mainButton:hover {
+    transform: scale(1.1);
+    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.5);
+}
+
+.mainButton.open {
+    background: var(--text-secondary);
+    transform: rotate(45deg);
+}
+
+.options {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    animation: slideUp 0.3s ease-out;
+}
+
+.optionButton {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
+    border-radius: 25px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.optionButton.expense {
+    background: linear-gradient(135deg, #ef4444, #f87171);
+    color: white;
+}
+
+.optionButton.expense:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4);
+}
+
+.optionButton.income {
+    background: linear-gradient(135deg, #10b981, #34d399);
+    color: white;
+}
+
+.optionButton.income:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
+}
+
+.optionLabel {
+    order: 1;
+}
+
+.optionIcon {
+    order: 2;
+    font-size: 1.2rem;
+}
+
+.optionIconSvg {
+    order: 2;
+}
+
+.optionButton.install {
+    background: linear-gradient(135deg, #3b82f6, #60a5fa);
+    color: white;
+}
+
+.optionButton.install:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
+}
+
+.optionButton.goal {
+    background: linear-gradient(135deg, #a855f7, #c084fc);
+    color: white;
+}
+
+.optionButton.goal:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 16px rgba(168, 85, 247, 0.4);
+}
+
+.optionButton.reports {
+    background: linear-gradient(135deg, #f59e0b, #fbbf24);
+    color: white;
+}
+
+.optionButton.reports:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 16px rgba(245, 158, 11, 0.4);
+}
+
+.backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: -1;
+    animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Ocultar en móvil si el PWA install button está visible */
+@media (max-width: 480px) {
+    .container {
+        bottom: 16px;
+        right: 16px;
+    }
+
+    .mainButton {
+        width: 52px;
+        height: 52px;
+    }
+
+    .optionLabel {
+        display: none;
+    }
+
+    .optionButton {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        padding: 0;
+        justify-content: center;
+    }
+}

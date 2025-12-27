@@ -10,57 +10,57 @@ import { createLazyRoute } from '../components/common/LazyRoute/LazyRoute';
 
 // ===== PÁGINAS PRINCIPALES =====
 export const DashboardPage = createLazyRoute(
-  () => import('../pages/DashboardPage').then(module => ({ 
-    default: module.DashboardPage 
+  () => import('../pages/DashboardPage').then(module => ({
+    default: module.DashboardPage
   })),
   "Cargando Dashboard..."
 );
 
 export const ReportsPage = createLazyRoute(
-  () => import('../pages/ReportsPage').then(module => ({ 
-    default: module.ReportsPage 
+  () => import('../pages/ReportsPage').then(module => ({
+    default: module.ReportsPage
   })),
   "Cargando Reportes..."
 );
 
 export const PlanningPage = createLazyRoute(
-  () => import('../pages/PlanningPage').then(module => ({ 
-    default: module.PlanningPage 
+  () => import('../pages/PlanningPage').then(module => ({
+    default: module.PlanningPage
   })),
   "Cargando Planificación..."
 );
 
 export const RegistroPage = createLazyRoute(
-  () => import('../pages/RegistroPage').then(module => ({ 
-    default: module.RegistroPage 
+  () => import('../pages/RegistroPage').then(module => ({
+    default: module.RegistroPage
   })),
   "Cargando Registro..."
 );
 
 export const LoginPage = createLazyRoute(
-  () => import('../pages/LoginPage').then(module => ({ 
-    default: module.LoginPage 
+  () => import('../pages/LoginPage').then(module => ({
+    default: module.LoginPage
   })),
   "Cargando..."
 );
 
 export const AuthCallbackPage = createLazyRoute(
-  () => import('../pages/AuthCallbackPage').then(module => ({ 
-    default: module.default 
+  () => import('../pages/AuthCallbackPage').then(module => ({
+    default: module.default
   })),
   "Completando autenticación..."
 );
 
 export const ProfilePage = createLazyRoute(
-  () => import('../pages/ProfilePage').then(module => ({ 
-    default: module.ProfilePage 
+  () => import('../pages/ProfilePage').then(module => ({
+    default: module.ProfilePage
   })),
   "Cargando Perfil..."
 );
 
 export const ManageCategoriesPage = createLazyRoute(
-  () => import('../pages/ManageCategoriesPage').then(module => ({ 
-    default: module.ManageCategoriesPage 
+  () => import('../pages/ManageCategoriesPage').then(module => ({
+    default: module.ManageCategoriesPage
   })),
   "Cargando Categorías..."
 );
@@ -70,24 +70,38 @@ export const BudgetPage = createLazyRoute(
   "Cargando Presupuestos..."
 );
 
+export const IncomesPage = createLazyRoute(
+  () => import('../pages/IncomesPage').then(module => ({
+    default: module.IncomesPage
+  })),
+  "Cargando Ingresos..."
+);
+
+export const StatsPage = createLazyRoute(
+  () => import('../pages/StatsPage').then(module => ({
+    default: module.StatsPage
+  })),
+  "Cargando Estadísticas..."
+);
+
 // ===== COMPONENTES GRANDES - CODE SPLITTING =====
 export const ExpenseChart = createLazyRoute(
-  () => import('../components/charts/ExpenseChart/ExpenseChart').then(module => ({ 
-    default: module.ExpenseChart 
+  () => import('../components/charts/ExpenseChart/ExpenseChart').then(module => ({
+    default: module.ExpenseChart
   })),
   "Cargando gráfico..."
 );
 
 export const AchievementsPage = createLazyRoute(
-  () => import('../components/pages/AchievementsPage/AchievementsPage').then(module => ({ 
-    default: module.AchievementsPage 
+  () => import('../components/pages/AchievementsPage/AchievementsPage').then(module => ({
+    default: module.AchievementsPage
   })),
   "Cargando logros..."
 );
 
 export const DuplicateDetectionDemo = createLazyRoute(
-  () => import('../components/DuplicateDetectionDemo/DuplicateDetectionDemo').then(module => ({ 
-    default: module.DuplicateDetectionDemo 
+  () => import('../components/DuplicateDetectionDemo/DuplicateDetectionDemo').then(module => ({
+    default: module.DuplicateDetectionDemo
   })),
   "Cargando detector de duplicados..."
 );
@@ -119,17 +133,17 @@ export const preloadRoutes = {
   profile: () => preloadWithCache('profile', () => import('../pages/ProfilePage')),
   categories: () => preloadWithCache('categories', () => import('../pages/ManageCategoriesPage')),
   budget: () => preloadWithCache('budget', () => import('../pages/BudgetPage')),
-  
+
   // Componentes grandes
   charts: () => Promise.all([
     preloadWithCache('expense-chart', () => import('../components/charts/ExpenseChart/ExpenseChart'))
   ]),
-  
+
   // Funcionalidades avanzadas
   advanced: () => Promise.all([
     preloadWithCache('achievements', () => import('../components/pages/AchievementsPage/AchievementsPage'))
   ]),
-  
+
   // Herramientas de análisis
   analysis: () => Promise.all([
     preloadWithCache('duplicate-detection', () => import('../components/DuplicateDetectionDemo/DuplicateDetectionDemo'))
@@ -170,7 +184,7 @@ export const PRELOAD_STRATEGIES = {
  */
 export const preloadRoutesFor = (currentPage: string) => {
   const strategy = PRELOAD_STRATEGIES[currentPage as keyof typeof PRELOAD_STRATEGIES];
-  
+
   if (!strategy) return;
 
   // 1. Cargar recursos inmediatos
@@ -203,10 +217,10 @@ export const preloadRoutesFor = (currentPage: string) => {
 const setupHoverPreloading = (resources: readonly string[]) => {
   resources.forEach(resource => {
     const navElements = document.querySelectorAll(`[data-preload="${resource}"]`);
-    
+
     navElements.forEach(element => {
       let timeoutId: NodeJS.Timeout;
-      
+
       const handleMouseEnter = () => {
         timeoutId = setTimeout(() => {
           const preloadFn = preloadRoutes[resource as keyof typeof preloadRoutes];
@@ -232,7 +246,7 @@ const setupHoverPreloading = (resources: readonly string[]) => {
 export const logPreloadMetrics = () => {
   if (typeof window !== 'undefined' && 'performance' in window) {
     const navigation = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
-    
+
     console.log('📊 Code Splitting Metrics:', {
       'First Contentful Paint': navigation.loadEventEnd - navigation.fetchStart,
       'Modules in Cache': preloadCache.size,

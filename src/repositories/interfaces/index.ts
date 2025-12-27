@@ -5,6 +5,7 @@ export type { IRepository } from './IRepository';
 export type { IUserRepository } from './IUserRepository';
 export type { ICategoryRepository } from './ICategoryRepository';
 export type { IExpenseRepository } from './IExpenseRepository';
+export type { IIncomeRepository } from './IIncomeRepository';
 export type { IFixedExpenseRepository } from './IFixedExpenseRepository';
 export type { IFinancialsRepository } from './IFinancialsRepository';
 export type { ISavingsGoalRepository } from './ISavingsGoalRepository';

@@ -65,10 +65,19 @@ export const useNetWorth = (userId: string | null) => {
             return { success: false, error: 'Usuario no autenticado' };
         }
 
-        return await handleAsyncOperation(
+        const result = await handleAsyncOperation(
             () => assetServiceRepo.addAsset(userId, data),
             'Error al agregar el activo'
         );
+
+        // Forzar refresh manual después de agregar (fallback para Realtime)
+        if (result.success) {
+            console.log('[useNetWorth] 🔄 Refreshing assets after add...');
+            const updatedAssets = await assetServiceRepo.getAssets(userId);
+            setAssets(updatedAssets);
+        }
+
+        return result;
     }, [userId]);
 
     const updateAsset = useCallback(async (id: string, data: Partial<AssetFormData>) => {
@@ -76,10 +85,19 @@ export const useNetWorth = (userId: string | null) => {
             return { success: false, error: 'Usuario no autenticado' };
         }
 
-        return await handleAsyncOperation(
+        const result = await handleAsyncOperation(
             () => assetServiceRepo.updateAsset(userId, id, data),
             'Error al actualizar el activo'
         );
+
+        // Forzar refresh manual después de actualizar (fallback para Realtime)
+        if (result.success) {
+            console.log('[useNetWorth] 🔄 Refreshing assets after update...');
+            const updatedAssets = await assetServiceRepo.getAssets(userId);
+            setAssets(updatedAssets);
+        }
+
+        return result;
     }, [userId]);
 
     const deleteAsset = useCallback(async (id: string) => {
@@ -87,10 +105,19 @@ export const useNetWorth = (userId: string | null) => {
             return { success: false, error: 'Usuario no autenticado' };
         }
 
-        return await handleAsyncOperation(
+        const result = await handleAsyncOperation(
             () => assetServiceRepo.deleteAsset(userId, id),
             'Error al eliminar el activo'
         );
+
+        // Forzar refresh manual después de eliminar (fallback para Realtime)
+        if (result.success) {
+            console.log('[useNetWorth] 🔄 Refreshing assets after delete...');
+            const updatedAssets = await assetServiceRepo.getAssets(userId);
+            setAssets(updatedAssets);
+        }
+
+        return result;
     }, [userId]);
 
     const addLiability = useCallback(async (data: LiabilityFormData) => {
@@ -98,10 +125,19 @@ export const useNetWorth = (userId: string | null) => {
             return { success: false, error: 'Usuario no autenticado' };
         }
 
-        return await handleAsyncOperation(
+        const result = await handleAsyncOperation(
             () => liabilityServiceRepo.addLiability(userId, data),
             'Error al agregar el pasivo'
         );
+
+        // Forzar refresh manual después de agregar (fallback para Realtime)
+        if (result.success) {
+            console.log('[useNetWorth] 🔄 Refreshing liabilities after add...');
+            const updatedLiabilities = await liabilityServiceRepo.getLiabilities(userId);
+            setLiabilities(updatedLiabilities);
+        }
+
+        return result;
     }, [userId]);
 
     const updateLiability = useCallback(async (id: string, data: Partial<LiabilityFormData>) => {
@@ -109,10 +145,19 @@ export const useNetWorth = (userId: string | null) => {
             return { success: false, error: 'Usuario no autenticado' };
         }
 
-        return await handleAsyncOperation(
+        const result = await handleAsyncOperation(
             () => liabilityServiceRepo.updateLiability(userId, id, data),
             'Error al actualizar el pasivo'
         );
+
+        // Forzar refresh manual después de actualizar (fallback para Realtime)
+        if (result.success) {
+            console.log('[useNetWorth] 🔄 Refreshing liabilities after update...');
+            const updatedLiabilities = await liabilityServiceRepo.getLiabilities(userId);
+            setLiabilities(updatedLiabilities);
+        }
+
+        return result;
     }, [userId]);
 
     const deleteLiability = useCallback(async (id: string) => {
@@ -120,10 +165,19 @@ export const useNetWorth = (userId: string | null) => {
             return { success: false, error: 'Usuario no autenticado' };
         }
 
-        return await handleAsyncOperation(
+        const result = await handleAsyncOperation(
             () => liabilityServiceRepo.deleteLiability(userId, id),
             'Error al eliminar el pasivo'
         );
+
+        // Forzar refresh manual después de eliminar (fallback para Realtime)
+        if (result.success) {
+            console.log('[useNetWorth] 🔄 Refreshing liabilities after delete...');
+            const updatedLiabilities = await liabilityServiceRepo.getLiabilities(userId);
+            setLiabilities(updatedLiabilities);
+        }
+
+        return result;
     }, [userId]);
 
     // Funciones adicionales para análisis básico de deudas

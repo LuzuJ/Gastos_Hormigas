@@ -2,11 +2,12 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { PlusCircle, DollarSign, AlertTriangle } from 'lucide-react';
 import styles from './ExpenseForm.module.css';
 import toast from 'react-hot-toast';
-import type { Category, Expense, ExpenseFormData, SubCategory, PaymentSource, EnhancedExpense } from '../../../types';
+import type { Category, Expense, ExpenseFormData, SubCategory, PaymentSource, EnhancedExpense, Asset } from '../../../types';
 import { BudgetProgressBar } from '../../features/financials/BudgetProgressBar/BudgetProgressBar';
 import { Input } from '../../common';
 import { expenseFormSchema } from '../../../schemas';
 import { useDuplicateDetection } from '../../../hooks/expenses/useDuplicateDetection';
+import { useNetWorth } from '../../../hooks/financials/useNetWorth'; // Para obtener assets
 // DESHABILITADO: useFinancialAutomation fue movido a legacy-firebase
 import { DuplicateWarning } from './DuplicateWarning';
 
@@ -40,6 +41,7 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
     const [selectedCategoryId, setSelectedCategoryId] = useState('');
     const [selectedSubCategory, setSelectedSubCategory] = useState('');
     const [selectedPaymentSourceId, setSelectedPaymentSourceId] = useState('');
+    const [selectedAssetId, setSelectedAssetId] = useState(''); // Para el sistema de transacciones
     const [availableSubCategories, setAvailableSubCategories] = useState<SubCategory[]>([]);
     const [formError, setFormError] = useState('');
     const [showNewSubCategoryInput, setShowNewSubCategoryInput] = useState(false);
@@ -49,6 +51,9 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
     // Estados para detección de duplicados
     const [showDuplicateWarning, setShowDuplicateWarning] = useState(false);
     const [pendingExpenseData, setPendingExpenseData] = useState<any>(null);
+
+    // Hook para obtener assets (para el sistema de transacciones)
+    const { assets } = useNetWorth(userId || '');
 
     // Hook para automatización financiera - DESHABILITADO
     // El servicio fue movido a legacy-firebase y necesita reimplementación con Supabase
@@ -146,6 +151,15 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
         }
     }, [paymentSources, selectedPaymentSourceId]);
 
+    // useEffect para inicializar asset por defecto
+    useEffect(() => {
+        if (assets.length > 0 && !selectedAssetId) {
+            // Buscar cuenta corriente o el primer asset disponible
+            const preferredAsset = assets.find((a: Asset) => a.type === 'cash') || assets[0];
+            setSelectedAssetId(preferredAsset.id);
+        }
+    }, [assets, selectedAssetId]);
+
     const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const newCategoryId = e.target.value;
         setSelectedCategoryId(newCategoryId);
@@ -191,13 +205,20 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
             subCategoryToSave = selectedSubCategory;
         }
 
-        const validationResult = expenseFormSchema.safeParse({
+        // Preparar datos con assetId y assetName si hay un asset seleccionado
+        const selectedAsset = selectedAssetId ? assets.find(a => a.id === selectedAssetId) : null;
+        
+        const expenseData = {
             description,
             amount,
             categoryId: selectedCategoryId,
             subCategory: subCategoryToSave,
-            paymentSourceId: selectedPaymentSourceId || undefined
-        });
+            paymentSourceId: selectedPaymentSourceId || undefined,
+            assetId: selectedAssetId || undefined,
+            assetName: selectedAsset?.name || undefined
+        };
+
+        const validationResult = expenseFormSchema.safeParse(expenseData);
 
         if (!validationResult.success) {
             const firstError = validationResult.error.issues[0].message;
@@ -376,7 +397,9 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
                             id="amount" 
                             type="number" 
                             value={amount} 
-                            onChange={e => setAmount(e.target.value)} 
+                            onChange={e => setAmount(e.target.value)}
+                            onWheel={(e) => e.preventDefault()}  // Prevenir scroll que resetea valor
+                            onFocus={(e) => (e.target as HTMLInputElement).select()}  // Seleccionar todo al hacer focus 
                             placeholder="0.00" 
                         />
                     </div>
@@ -491,6 +514,35 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
                                 <div className={styles.balanceError}>
                                     <AlertTriangle size={16} />
                                     {balanceCheck.message}
+                                </div>
+                            )}
+                        </div>
+                    )}
+                    
+                    {/* Selector de Asset para Sistema de Transacciones */}
+                    {assets.length > 0 && userId && (
+                        <div className={styles.formGroupAsset}>
+                            <label htmlFor="assetId" className={styles.label}>
+                                <DollarSign size={16} />
+                                Activo a Descontar
+                                <span className={styles.labelNote}>(Opcional - Sistema de transacciones)</span>
+                            </label>
+                            <select 
+                                id="assetId" 
+                                value={selectedAssetId} 
+                                onChange={(e) => setSelectedAssetId(e.target.value)} 
+                                className={styles.select}
+                            >
+                                <option value="">Sin vincular a activo</option>
+                                {assets.map(asset => (
+                                    <option key={asset.id} value={asset.id}>
+                                        {asset.name} - {formatCurrency(asset.value)}
+                                    </option>
+                                ))}
+                            </select>
+                            {selectedAssetId && (
+                                <div className={styles.assetHint}>
+                                    💡 Al guardar, el activo se descontará automáticamente
                                 </div>
                             )}
                         </div>

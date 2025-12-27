@@ -206,9 +206,12 @@ export class SupabaseLiabilityRepository
    * @param data - Datos del modelo de dominio (Liability)
    * @returns El objeto formateado para la base de datos
    */
-  protected mapModelToDatabase(data: Partial<Liability>): Partial<SupabaseLiability> {
+  protected mapModelToDatabase(data: Partial<Liability> & { user_id?: string }): Partial<SupabaseLiability> {
     const databaseData: Partial<SupabaseLiability> = {};
     
+    if ((data as any).user_id !== undefined) {
+      databaseData.user_id = (data as any).user_id;
+    }
     if (data.name !== undefined) {
       databaseData.name = data.name;
     }

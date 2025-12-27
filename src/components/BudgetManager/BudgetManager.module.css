@@ -8,35 +8,31 @@
   gap: 24px;
 }
 
-/* Header */
+/* Header - Compacto */
 .header {
-  background: linear-gradient(135deg, var(--primary-accent), var(--secondary-accent));
-  border-radius: 20px;
-  padding: 32px;
-  color: white;
-  text-align: center;
+  margin-bottom: 16px;
 }
 
 .titleSection {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
 }
 
 .title {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   margin: 0;
-  font-size: 28px;
+  font-size: 1.25rem;
   font-weight: 700;
+  color: var(--text-headings);
 }
 
 .subtitle {
-  margin: 0;
-  font-size: 16px;
-  opacity: 0.9;
+  margin: 4px 0 0 0;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
   font-weight: 400;
 }
 
@@ -509,17 +505,17 @@
     padding: 16px;
     gap: 20px;
   }
-  
+
   .summaryCards {
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 16px;
   }
-  
+
   .tabs {
     padding: 6px;
     gap: 4px;
   }
-  
+
   .tab {
     padding: 12px 16px;
     font-size: 14px;
@@ -530,52 +526,52 @@
   .header {
     padding: 24px;
   }
-  
+
   .title {
     font-size: 24px;
   }
-  
+
   .subtitle {
     font-size: 14px;
   }
-  
+
   .summaryCards {
     grid-template-columns: 1fr;
   }
-  
+
   .summaryCard {
     padding: 20px;
   }
-  
+
   .cardIcon {
     width: 48px;
     height: 48px;
     font-size: 20px;
   }
-  
+
   .cardValue {
     font-size: 20px;
   }
-  
+
   .suggestionCard {
     padding: 20px;
   }
-  
+
   .suggestionHeader {
     flex-direction: column;
     align-items: flex-start;
     gap: 12px;
   }
-  
+
   .suggestionNumbers {
     flex-direction: column;
     gap: 8px;
   }
-  
+
   .tabs {
     flex-wrap: wrap;
   }
-  
+
   .tab {
     flex: none;
     min-width: calc(50% - 4px);

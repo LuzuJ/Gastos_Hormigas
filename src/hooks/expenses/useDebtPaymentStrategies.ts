@@ -49,10 +49,31 @@ export const useDebtPaymentStrategies = (
   );
   
   // Calcular plan de pago actual
-  const paymentPlan = useMemo(() => 
-    calculateDebtPaymentPlan(liabilities, currentStrategy),
-    [liabilities, currentStrategy]
-  );
+  const paymentPlan = useMemo(() => {
+    console.log('[useDebtPaymentStrategies] 🔄 Calculating payment plan:', {
+      liabilitiesCount: liabilities.length,
+      liabilities: liabilities.map(l => ({
+        id: l.id,
+        name: l.name,
+        amount: l.amount,
+        interestRate: l.interestRate,
+        monthlyPayment: l.monthlyPayment
+      })),
+      strategyType: currentStrategy.type,
+      monthlyExtraBudget: currentStrategy.monthlyExtraBudget
+    });
+    
+    const plan = calculateDebtPaymentPlan(liabilities, currentStrategy);
+    
+    console.log('[useDebtPaymentStrategies] ✅ Payment plan calculated:', {
+      totalMonthsToPayOff: plan.totalMonthsToPayOff,
+      totalInterestSaved: plan.totalInterestSaved,
+      debtsInPlan: plan.debts.length,
+      nextDebtToFocus: plan.nextDebtToFocus?.name
+    });
+    
+    return plan;
+  }, [liabilities, currentStrategy]);
   
   // Función para calcular el progreso total
   const getProgress = useCallback((): number => {

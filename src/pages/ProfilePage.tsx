@@ -4,28 +4,37 @@ import { LoadingStateWrapper } from '../components/LoadingState/LoadingState';
 import { ExportManager } from '../components/features/reports/ExportManager/ExportManager';
 import { PasswordInput } from '../components/ui/PasswordInput/PasswordInput';
 import styles from './ProfilePage.module.css';
-import { LogOut, UserPlus } from 'lucide-react';
-import { useProfileContext } from '../contexts/AppContext';
+import { LogOut, UserPlus, Settings, TrendingUp, Wallet, Calendar, DollarSign, PiggyBank } from 'lucide-react';
+import { useProfileContext, useExpensesContext, useNetWorthContext, useSavingsGoalsContext } from '../contexts/AppContext';
+import { CURRENCY_OPTIONS, formatCurrency } from '../utils/formatters';
 import type { Page } from '../components/layout/Layout/Layout';
+import type { UserProfile } from '../types';
 import { PAGE_ROUTES } from '../constants';
 
 interface ProfilePageProps {
-  userId: string | null;
-  isGuest: boolean;
-  setCurrentPage: (page: Page) => void;
+    userId: string | null;
+    isGuest: boolean;
+    setCurrentPage: (page: Page) => void;
 }
 
 // Componente para el perfil de un usuario REGISTRADO
 const RegisteredUserProfile: React.FC = () => {
-    const { 
-        profile, 
-        updateUserProfile, 
-        loadingProfile, 
-        profileError, 
-        clearProfileError 
+    const {
+        profile,
+        updateUserProfile,
+        loadingProfile,
+        profileError,
+        clearProfileError
     } = useProfileContext();
+
+    // Datos financieros para estadísticas
+    const { expenses } = useExpensesContext();
+
+    const { assets, liabilities } = useNetWorthContext();
+    const { savingsGoals } = useSavingsGoalsContext();
+
     const [displayName, setDisplayName] = useState('');
-    const [currency, setCurrency] = useState<'USD' | 'EUR'>('USD');
+    const [currency, setCurrency] = useState<UserProfile['currency']>('USD');
     const [message, setMessage] = useState('');
 
     useEffect(() => {
@@ -33,14 +42,14 @@ const RegisteredUserProfile: React.FC = () => {
             setDisplayName(profile.displayName);
             setCurrency(profile.currency);
         }
-    }, [profile]);
+    }, [profile?.displayName, profile?.currency]);
 
     const handleSave = async (e: React.FormEvent) => {
         e.preventDefault();
         setMessage('');
-        
+
         const result = await updateUserProfile({ displayName, currency });
-        
+
         if (result?.success) {
             setMessage('¡Perfil guardado con éxito!');
             setTimeout(() => setMessage(''), 3000);
@@ -48,6 +57,32 @@ const RegisteredUserProfile: React.FC = () => {
             setMessage(result?.error || 'Error al guardar. Inténtalo de nuevo.');
         }
     };
+
+    // Calcular estadísticas
+    const totalExpenses = expenses.reduce((acc, exp) => acc + exp.amount, 0);
+    const totalAssets = assets.reduce((acc, asset) => acc + asset.value, 0);
+    const totalLiabilities = liabilities.reduce((acc, liability) => acc + liability.amount, 0);
+    const netWorth = totalAssets - totalLiabilities;
+    const expenseCount = expenses.length;
+    const savingsProgress = savingsGoals.length > 0
+        ? savingsGoals.reduce((acc, goal) => acc + goal.currentAmount, 0) /
+        savingsGoals.reduce((acc, goal) => acc + goal.targetAmount, 0) * 100
+        : 0;
+
+    // Obtener iniciales del usuario
+    const getInitials = () => {
+        if (!profile?.displayName) return '?';
+        const parts = profile.displayName.split(' ');
+        return parts.map(p => p[0]).join('').toUpperCase().slice(0, 2);
+    };
+
+    // Fecha de creación aproximada (primer gasto)
+    const memberSince = expenses.length > 0 && expenses[expenses.length - 1].createdAt
+        ? new Date(expenses[expenses.length - 1].createdAt as string).toLocaleDateString('es-MX', {
+            month: 'long',
+            year: 'numeric'
+        })
+        : 'Hoy';
 
     return (
         <LoadingStateWrapper
@@ -59,15 +94,14 @@ const RegisteredUserProfile: React.FC = () => {
             <>
                 <div className={styles.header}>
                     <h2 className="section-title">Mi Perfil</h2>
-                    <button 
+                    <button
                         onClick={async () => {
                             try {
                                 await authService.signOut();
                             } catch (error) {
-                                // Error ya manejado en authService, no necesitamos hacer nada
                                 console.log('Sesión cerrada exitosamente');
                             }
-                        }} 
+                        }}
                         className={styles.logoutButton}
                     >
                         <LogOut size={16} /> Cerrar Sesión
@@ -82,33 +116,109 @@ const RegisteredUserProfile: React.FC = () => {
                         </button>
                     </div>
                 ) : (
-                    <form onSubmit={handleSave} className={styles.form}>
-                        <div className={styles.formGroup}>
-                            <label htmlFor="email">Correo Electrónico</label>
-                            <input id="email" type="email" value={profile.email} disabled className={styles.input} />
+                    <div className={styles.profileContent}>
+                        {/* Card de Perfil con Avatar */}
+                        <div className={styles.profileCard}>
+                            <div className={styles.avatar}>
+                                {getInitials()}
+                            </div>
+                            <div className={styles.profileInfo}>
+                                <h3 className={styles.userName}>{profile.displayName}</h3>
+                                <span className={styles.userEmail}>{profile.email}</span>
+                                <span className={styles.memberSince}>
+                                    <Calendar size={12} /> Miembro desde {memberSince}
+                                </span>
+                            </div>
                         </div>
-                        <div className={styles.formGroup}>
-                            <label htmlFor="displayName">Nombre a Mostrar</label>
-                            <input id="displayName" type="text" value={displayName} onChange={(e) => setDisplayName(e.target.value)} className={styles.input}/>
-                        </div>
-                        <div className={styles.formGroup}>
-                            <label htmlFor="currency">Moneda Principal</label>
-                            <select id="currency" value={currency} onChange={(e) => setCurrency(e.target.value as 'USD' | 'EUR')} className={styles.select}>
-                                <option value="USD">Dólar Estadounidense (USD)</option>
-                                <option value="EUR">Euro (EUR)</option>
-                            </select>
-                        </div>
-                        <div className={styles.actions}>
-                            <button type="submit" className={styles.button}>Guardar Cambios</button>
-                            {message && <span className={styles.savedMessage}>{message}</span>}
-                        </div>
-                    </form>
-                )}
 
-                {/* Sección de Exportación para usuarios registrados */}
-                {profile && (
-                    <div className={styles.exportSection}>
-                        <ExportManager />
+                        {/* Grid de Estadísticas */}
+                        <div className={styles.statsGrid}>
+                            <div className={styles.statCard}>
+                                <div className={styles.statIcon} style={{ background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444' }}>
+                                    <TrendingUp size={20} />
+                                </div>
+                                <div className={styles.statContent}>
+                                    <span className={styles.statValue}>{formatCurrency(totalExpenses)}</span>
+                                    <span className={styles.statLabel}>Total Gastado</span>
+                                </div>
+                            </div>
+
+                            <div className={styles.statCard}>
+                                <div className={styles.statIcon} style={{ background: 'rgba(34, 197, 94, 0.1)', color: '#22c55e' }}>
+                                    <DollarSign size={20} />
+                                </div>
+                                <div className={styles.statContent}>
+                                    <span className={styles.statValue}>{expenseCount}</span>
+                                    <span className={styles.statLabel}>Transacciones</span>
+                                </div>
+                            </div>
+
+                            <div className={styles.statCard}>
+                                <div className={styles.statIcon} style={{ background: 'rgba(59, 130, 246, 0.1)', color: '#3b82f6' }}>
+                                    <Wallet size={20} />
+                                </div>
+                                <div className={styles.statContent}>
+                                    <span className={`${styles.statValue} ${netWorth >= 0 ? styles.positive : styles.negative}`}>
+                                        {formatCurrency(netWorth)}
+                                    </span>
+                                    <span className={styles.statLabel}>Patrimonio Neto</span>
+                                </div>
+                            </div>
+
+                            <div className={styles.statCard}>
+                                <div className={styles.statIcon} style={{ background: 'rgba(168, 85, 247, 0.1)', color: '#a855f7' }}>
+                                    <PiggyBank size={20} />
+                                </div>
+                                <div className={styles.statContent}>
+                                    <span className={styles.statValue}>{savingsProgress.toFixed(0)}%</span>
+                                    <span className={styles.statLabel}>Ahorro Promedio</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Formulario de Preferencias */}
+                        <div className={styles.settingsCard}>
+                            <div className={styles.settingsHeader}>
+                                <Settings size={18} />
+                                <h4>Preferencias</h4>
+                            </div>
+                            <form onSubmit={handleSave} className={styles.form}>
+                                <div className={styles.formRow}>
+                                    <div className={styles.formGroup}>
+                                        <label htmlFor="displayName">Nombre</label>
+                                        <input
+                                            id="displayName"
+                                            type="text"
+                                            value={displayName}
+                                            onChange={(e) => setDisplayName(e.target.value)}
+                                            className={styles.input}
+                                        />
+                                    </div>
+                                    <div className={styles.formGroup}>
+                                        <label htmlFor="currency">Moneda</label>
+                                        <select
+                                            id="currency"
+                                            value={currency}
+                                            onChange={(e) => setCurrency(e.target.value as UserProfile['currency'])}
+                                            className={styles.select}
+                                        >
+                                            {CURRENCY_OPTIONS.map(opt => (
+                                                <option key={opt.value} value={opt.value}>{opt.label}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div className={styles.actions}>
+                                    <button type="submit" className={styles.button}>Guardar Cambios</button>
+                                    {message && <span className={styles.savedMessage}>{message}</span>}
+                                </div>
+                            </form>
+                        </div>
+
+                        {/* Sección de Exportación */}
+                        <div className={styles.exportSection}>
+                            <ExportManager />
+                        </div>
                     </div>
                 )}
             </>
@@ -125,7 +235,6 @@ const GuestProfile: React.FC<{ setCurrentPage: (page: Page) => void }> = ({ setC
     const [isPasswordValid, setIsPasswordValid] = useState(false);
 
     const getFriendlyErrorMessage = (errorCode: string): string => {
-        // ... (misma función de LoginPage)
         return "Error";
     };
 
@@ -146,7 +255,6 @@ const GuestProfile: React.FC<{ setCurrentPage: (page: Page) => void }> = ({ setC
         setLoading(true);
         setError('');
 
-        // Validación de contraseña para registro
         if (!isPasswordValid) {
             setError('Por favor, ingresa una contraseña que cumpla con los requisitos de seguridad.');
             setLoading(false);
@@ -174,7 +282,7 @@ const GuestProfile: React.FC<{ setCurrentPage: (page: Page) => void }> = ({ setC
                 <UserPlus size={48} className={styles.guestIcon} />
                 <h3>Guarda tu Progreso</h3>
                 <p>Crea una cuenta gratuita para guardar todos tus gastos y planificación financiera. ¡Tu información actual se conservará automáticamente!</p>
-                
+
                 <form onSubmit={handleEmailSignUp} className={styles.guestActions}>
                     <input className={styles.input} type="email" placeholder="Correo electrónico" value={email} onChange={e => setEmail(e.target.value)} required />
                     <PasswordInput
@@ -188,9 +296,9 @@ const GuestProfile: React.FC<{ setCurrentPage: (page: Page) => void }> = ({ setC
                         onValidationChange={setIsPasswordValid}
                     />
                     {error && <p className={styles.error}>{error}</p>}
-                    <button 
-                        type="submit" 
-                        className={styles.button} 
+                    <button
+                        type="submit"
+                        className={styles.button}
                         disabled={loading || !isPasswordValid}
                     >
                         {loading ? 'Creando...' : 'Crear cuenta con correo'}
@@ -206,12 +314,12 @@ const GuestProfile: React.FC<{ setCurrentPage: (page: Page) => void }> = ({ setC
     );
 };
 
-// Componente principal que decide cuál de los dos anteriores renderizar
-export const ProfilePage: React.FC<ProfilePageProps> = ({ isGuest, setCurrentPage, userId }) => {
+// Componente principal
+export const ProfilePage: React.FC<ProfilePageProps> = ({ isGuest, setCurrentPage }) => {
     return (
         <div className={styles.container}>
-            {isGuest 
-                ? <GuestProfile setCurrentPage={setCurrentPage} /> 
+            {isGuest
+                ? <GuestProfile setCurrentPage={setCurrentPage} />
                 : <RegisteredUserProfile />
             }
         </div>

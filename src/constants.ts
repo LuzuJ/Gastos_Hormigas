@@ -8,7 +8,9 @@ export const PAGE_ROUTES = {
   PLANNING: 'planning',
   ANALYSIS: 'analysis',
   REPORTS: 'reports',
+  STATS: 'stats',  // Nueva página de estadísticas visuales
   BUDGET: 'budget',
+  INCOMES: 'incomes',
   PROFILE: 'profile',
 } as const; // 'as const' hace los valores de solo lectura para mayor seguridad
 
@@ -21,6 +23,7 @@ export const SUPABASE_TABLES = {
   CATEGORIES: 'categories',
   SUBCATEGORIES: 'subcategories',
   EXPENSES: 'expenses',
+  INCOMES: 'user_incomes',  // Nueva tabla reconstruida
   FINANCIALS: 'financials',
   FIXED_EXPENSES: 'fixed_expenses',
   SAVINGS_GOALS: 'savings_goals',
@@ -38,10 +41,10 @@ export const SUPABASE_TABLES = {
 } as const;
 
 export const defaultCategoriesStructure = [
-    { name: 'Alimento', icon: 'Pizza', color: '#FFC300', subcategories: ['Supermercado', 'Restaurante', 'Delivery'] },
-    { name: 'Transporte', icon: 'Car', color: '#FF5733', subcategories: ['Gasolina', 'Transporte Público', 'Taxi/Uber'] },
-    { name: 'Hogar', icon: 'Home', color: '#C70039', subcategories: ['Servicios (Luz, Agua)', 'Decoración', 'Reparaciones'] },
-    { name: 'Entretenimiento', icon: 'Gamepad2', color: '#900C3F', subcategories: ['Suscripciones', 'Cine', 'Salidas'] },
-    { name: 'Salud', icon: 'HeartPulse', color: '#581845', subcategories: ['Farmacia', 'Consulta Médica'] },
-    { name: 'Otro', icon: 'ShoppingBag', color: '#2a9d8f', subcategories: ['General'] }
+  { name: 'Alimento', icon: 'Pizza', color: '#FFC300', subcategories: ['Supermercado', 'Restaurante', 'Delivery'] },
+  { name: 'Transporte', icon: 'Car', color: '#FF5733', subcategories: ['Gasolina', 'Transporte Público', 'Taxi/Uber'] },
+  { name: 'Hogar', icon: 'Home', color: '#C70039', subcategories: ['Servicios (Luz, Agua)', 'Decoración', 'Reparaciones'] },
+  { name: 'Entretenimiento', icon: 'Gamepad2', color: '#900C3F', subcategories: ['Suscripciones', 'Cine', 'Salidas'] },
+  { name: 'Salud', icon: 'HeartPulse', color: '#581845', subcategories: ['Farmacia', 'Consulta Médica'] },
+  { name: 'Otro', icon: 'ShoppingBag', color: '#2a9d8f', subcategories: ['General'] }
 ];

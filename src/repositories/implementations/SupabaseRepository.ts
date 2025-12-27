@@ -84,17 +84,36 @@ export abstract class SupabaseRepository<T, ID, CreateDTO = Omit<T, 'id'>, Updat
         user_id: userId
       });
       
+      console.log(`[SupabaseRepository] Creating in ${this.tableName} with userId:`, userId);
+      console.log(`[SupabaseRepository] Database data to insert:`, databaseData);
+      
       const { data: createdData, error } = await this.client
         .from(this.tableName)
         .insert(databaseData)
         .select()
         .single();
       
-      if (error) throw error;
+      if (error) {
+        console.error(`[SupabaseRepository] ❌ Supabase INSERT error in ${this.tableName}:`, error);
+        console.error(`[SupabaseRepository] Error details:`, {
+          message: error.message,
+          details: error.details,
+          hint: error.hint,
+          code: error.code
+        });
+        throw error;
+      }
+      
+      if (!createdData) {
+        console.error(`[SupabaseRepository] ❌ No data returned after INSERT in ${this.tableName}`);
+        throw new Error(`No se pudo crear el registro en ${this.tableName}`);
+      }
+      
+      console.log(`[SupabaseRepository] ✅ Successfully created in ${this.tableName}:`, createdData);
       
       return this.mapDatabaseToModel(createdData);
     } catch (error) {
-      console.error(`Error al crear ${this.tableName}:`, error);
+      console.error(`[SupabaseRepository] ❌ Exception in create() for ${this.tableName}:`, error);
       throw error;
     }
   }
