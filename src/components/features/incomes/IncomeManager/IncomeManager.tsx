@@ -9,6 +9,7 @@ import { Input } from '../../../common/Input/Input';
 import { Modal } from '../../../ui/Modal';
 import type { Income, Asset } from '../../../../types';
 import styles from './IncomeManager.module.css';
+import { AssetForm } from '../../../forms/AssetForm/AssetForm';
 
 interface IncomeManagerProps {
   userId: string;
@@ -17,7 +18,7 @@ interface IncomeManagerProps {
 export const IncomeManager: React.FC<IncomeManagerProps> = ({ userId }) => {
   // Hooks
   const { incomes, loading, error, addIncome, updateIncome, deleteIncome, refreshIncomes } = useIncomes(userId);
-  const { assets } = useNetWorth(userId);
+  const { assets, addAsset } = useNetWorth(userId);
 
   // Form state
   const [description, setDescription] = useState('');
@@ -27,6 +28,8 @@ export const IncomeManager: React.FC<IncomeManagerProps> = ({ userId }) => {
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [isRecurring, setIsRecurring] = useState(false);
   const [recurrenceFrequency, setRecurrenceFrequency] = useState<'weekly' | 'biweekly' | 'monthly' | 'yearly'>('monthly');
+
+  const [showAssetForm, setShowAssetForm] = useState(false);
 
   // Edit state
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -296,9 +299,15 @@ export const IncomeManager: React.FC<IncomeManagerProps> = ({ userId }) => {
               <select
                 id="assetId"
                 value={assetId}
-                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setAssetId(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+                  if (e.target.value === 'new') {
+                    setShowAssetForm(true);
+                  } else {
+                    setAssetId(e.target.value);
+                  }
+                }}
                 className={styles.select}
-                required
+                required={!assetId && !showAssetForm} // Solo requerido si no se está creando uno
               >
                 <option value="">Seleccionar activo...</option>
                 {assets.map(asset => (
@@ -306,6 +315,7 @@ export const IncomeManager: React.FC<IncomeManagerProps> = ({ userId }) => {
                     {asset.name} - {formatCurrency(asset.value)}
                   </option>
                 ))}
+                <option value="new" className={styles.newOption}>+ Crear nuevo activo...</option>
               </select>
             </div>
 
@@ -451,6 +461,18 @@ export const IncomeManager: React.FC<IncomeManagerProps> = ({ userId }) => {
           </div>
         )}
       </div>
+
+      {showAssetForm && (
+        <AssetForm
+          onAdd={async (data) => {
+            const result = await addAsset(data);
+            if (result.success) {
+              toast.success('Activo creado exitosamente');
+            }
+          }}
+          onClose={() => setShowAssetForm(false)}
+        />
+      )}
     </div>
   );
 };

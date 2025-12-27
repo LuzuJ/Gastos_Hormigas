@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  PiggyBank, 
-  TrendingUp, 
-  AlertTriangle, 
-  DollarSign, 
+import toast from 'react-hot-toast';
+import {
+  PiggyBank,
+  TrendingUp,
+  AlertTriangle,
+  DollarSign,
   Target,
   Settings,
   BarChart3
@@ -11,10 +12,10 @@ import {
 import styles from './BudgetManager.module.css';
 import { BudgetAlerts } from '../BudgetAlerts';
 import { Button } from '../common/Button/Button';
-import { 
-  BudgetAnalytics, 
+import {
+  BudgetAnalytics,
   BudgetSuggestion,
-  BudgetIntelligenceService 
+  BudgetIntelligenceService
 } from '../../services/budget/budgetIntelligenceService';
 import { Category, Expense } from '../../types';
 import { formatCurrency } from '../../utils/formatters';
@@ -72,6 +73,50 @@ export const BudgetManager: React.FC<BudgetManagerProps> = ({
       onCategoryBudgetUpdate(suggestion.categoryId, suggestion.suggestedAmount);
     }
   };
+
+  const renderSettings = () => (
+    <div className={styles.overviewContent}>
+      <h3>Configuración de Presupuestos</h3>
+      <div className={styles.simpleBudgetSummary}>
+        {categories.map(category => (
+          <div key={category.id} className={styles.budgetItem} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px' }}>
+            <div className={styles.budgetInfo} style={{ flex: 1 }}>
+              <span style={{ fontWeight: 500, color: '#f8fafc' }}>{category.name}</span>
+            </div>
+            <div className={styles.budgetActions}>
+              <input
+                type="number"
+                defaultValue={category.budget || 0}
+                key={`${category.id}-${category.budget}`}
+                onBlur={(e) => {
+                  const val = parseFloat(e.target.value);
+                  if (!isNaN(val) && onCategoryBudgetUpdate) {
+                    onCategoryBudgetUpdate(category.id, val);
+                    toast.success('Guardado');
+                  }
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    (e.target as HTMLInputElement).blur();
+                  }
+                }}
+                style={{
+                  padding: '8px 12px',
+                  borderRadius: '6px',
+                  border: '1px solid #334155',
+                  background: '#0f172a',
+                  color: 'white',
+                  width: '120px',
+                  textAlign: 'right',
+                  fontSize: '14px'
+                }}
+              />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 
   const renderOverview = () => (
     <div className={styles.overviewContent}>
@@ -150,9 +195,9 @@ export const BudgetManager: React.FC<BudgetManagerProps> = ({
                     <span>{formatCurrency(spent)} / {formatCurrency(category.budget!)}</span>
                   </div>
                   <div className={styles.progressBarContainer}>
-                    <div 
+                    <div
                       className={styles.progressBar}
-                      style={{ 
+                      style={{
                         width: `${Math.min(progress, 100)}%`,
                         backgroundColor
                       }}
@@ -244,31 +289,31 @@ export const BudgetManager: React.FC<BudgetManagerProps> = ({
                     {getConfidenceText(suggestion.confidence)}
                   </span>
                 </div>
-                
+
                 <div className={styles.suggestionDetails}>
                   <h4>{suggestion.categoryName}</h4>
                   <p className={styles.suggestionReason}>{suggestion.reason}</p>
                   <p className={styles.suggestionImpact}>{suggestion.impact}</p>
-                  
+
                   <div className={styles.suggestionNumbers}>
                     {suggestion.currentAmount && (
                       <span>Actual: {formatCurrency(suggestion.currentAmount)}</span>
                     )}
                     <span>Sugerido: {formatCurrency(suggestion.suggestedAmount)}</span>
                   </div>
-                  
+
                   <div className={styles.suggestionData}>
                     <small>
-                      Basado en {suggestion.basedOnData.months} meses de datos • 
-                      Promedio: {formatCurrency(suggestion.basedOnData.averageSpending)} • 
+                      Basado en {suggestion.basedOnData.months} meses de datos •
+                      Promedio: {formatCurrency(suggestion.basedOnData.averageSpending)} •
                       Tendencia: {getTrendText(suggestion.basedOnData.trend)}
                     </small>
                   </div>
                 </div>
-                
+
                 <div className={styles.suggestionActions}>
-                  <Button 
-                    variant="primary" 
+                  <Button
+                    variant="primary"
                     size="small"
                     onClick={() => applySuggestion(suggestion)}
                   >
@@ -323,26 +368,33 @@ export const BudgetManager: React.FC<BudgetManagerProps> = ({
 
       {/* Pestañas de navegación */}
       <div className={styles.tabs}>
-        <button 
+        <button
           className={`${styles.tab} ${activeTab === 'overview' ? styles.active : ''}`}
           onClick={() => setActiveTab('overview')}
         >
           <BarChart3 size={16} />
           Resumen
         </button>
-        <button 
+        <button
           className={`${styles.tab} ${activeTab === 'alerts' ? styles.active : ''}`}
           onClick={() => setActiveTab('alerts')}
         >
           <AlertTriangle size={16} />
           Alertas
         </button>
-        <button 
+        <button
           className={`${styles.tab} ${activeTab === 'suggestions' ? styles.active : ''}`}
           onClick={() => setActiveTab('suggestions')}
         >
           <TrendingUp size={16} />
           Sugerencias ({suggestions.length})
+        </button>
+        <button
+          className={`${styles.tab} ${activeTab === 'settings' ? styles.active : ''}`}
+          onClick={() => setActiveTab('settings')}
+        >
+          <Settings size={16} />
+          Configuración
         </button>
       </div>
 
@@ -350,12 +402,13 @@ export const BudgetManager: React.FC<BudgetManagerProps> = ({
       <div className={styles.tabContent}>
         {activeTab === 'overview' && renderOverview()}
         {activeTab === 'alerts' && (
-          <BudgetAlerts 
-            categories={categories} 
+          <BudgetAlerts
+            categories={categories}
             expenses={expenses}
           />
         )}
         {activeTab === 'suggestions' && renderSuggestions()}
+        {activeTab === 'settings' && renderSettings()}
       </div>
     </div>
   );
