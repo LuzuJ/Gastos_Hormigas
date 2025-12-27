@@ -10,7 +10,11 @@
   "scope": "/",
   "lang": "es-MX",
   "dir": "ltr",
-  "categories": ["finance", "productivity", "utilities"],
+  "categories": [
+    "finance",
+    "productivity",
+    "utilities"
+  ],
   "icons": [
     {
       "src": "/icons/icon-72x72.png",
@@ -66,7 +70,7 @@
       "name": "Registrar Gasto",
       "short_name": "Nuevo Gasto",
       "description": "Registra un gasto rápidamente",
-      "url": "/registro?quick=true",
+      "url": "/registro",
       "icons": [
         {
           "src": "/icons/shortcut-expense.png",
@@ -87,10 +91,10 @@
       ]
     },
     {
-      "name": "Reportes",
-      "short_name": "Reportes",
-      "description": "Ver análisis y reportes",
-      "url": "/reportes",
+      "name": "Estadísticas",
+      "short_name": "Stats",
+      "description": "Ver análisis y estadísticas",
+      "url": "/stats",
       "icons": [
         {
           "src": "/icons/shortcut-reports.png",
@@ -107,7 +111,7 @@
       "form_factor": "narrow"
     },
     {
-      "src": "/screenshots/dashboard-wide.png", 
+      "src": "/screenshots/dashboard-wide.png",
       "sizes": "1024x768",
       "type": "image/png",
       "form_factor": "wide"
