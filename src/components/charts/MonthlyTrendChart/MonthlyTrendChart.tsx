@@ -22,17 +22,42 @@ export const MonthlyTrendChart: React.FC<MonthlyTrendChartProps> = ({ data }) =>
     <div className={styles.chartContainer}>
       <h3 className={styles.title}>Tendencia de Gastos Mensuales</h3>
       {hasData ? (
-        <ResponsiveContainer width="100%" height={200}>
-          <BarChart data={data} margin={{ top: 5, right: 20, left: -10, bottom: 5 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-            <XAxis dataKey="name" stroke="#6b7280" fontSize={12} />
-            <YAxis stroke="#6b7280" fontSize={12} tickFormatter={(value: number) => `$${value}`} />
-            <Tooltip
-              cursor={{ fill: tooltipCursorColor }}
-              formatter={(value: number) => [`$${value.toFixed(2)}`, 'Total Gastado']}
-              labelFormatter={(label) => `Mes: ${label}`}
+        <ResponsiveContainer width="100%" height={180}>
+          <BarChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+            <CartesianGrid strokeDasharray="3 3" stroke="var(--border-color)" vertical={false} />
+            <XAxis
+              dataKey="name"
+              stroke="var(--text-secondary)"
+              fontSize={11}
+              tickLine={false}
+              axisLine={false}
+              dy={10}
             />
-            <Bar dataKey="total" fill="#4f46e5" name="Total Gastado" barSize={30} />
+            <YAxis
+              stroke="var(--text-secondary)"
+              fontSize={11}
+              tickFormatter={(value: number) => `$${value}`}
+              tickLine={false}
+              axisLine={false}
+            />
+            <Tooltip
+              contentStyle={{
+                backgroundColor: 'var(--background-card)',
+                borderColor: 'var(--border-color)',
+                borderRadius: 'var(--radius-md)',
+                boxShadow: 'var(--shadow-lg)',
+                color: 'var(--text-primary)'
+              }}
+              cursor={{ fill: 'var(--background-hover)' }}
+              formatter={(value: number) => [`$${value.toFixed(2)}`, 'Total']}
+              labelFormatter={(label) => `${label}`}
+            />
+            <Bar
+              dataKey="total"
+              fill="var(--primary-accent)"
+              radius={[4, 4, 0, 0]} /* Rounded top bars */
+              barSize={20} /* Slightly thinner bars */
+            />
           </BarChart>
         </ResponsiveContainer>
       ) : (

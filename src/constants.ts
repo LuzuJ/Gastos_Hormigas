@@ -12,6 +12,8 @@ export const PAGE_ROUTES = {
   BUDGET: 'budget',
   INCOMES: 'incomes',
   PROFILE: 'profile',
+  EXPORT: 'export',
+  ACTIVITY: 'activity',
 } as const; // 'as const' hace los valores de solo lectura para mayor seguridad
 
 /**

@@ -1,216 +1,107 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Summary } from '../components/features/reports/Summary/Summary';
-import { SavingsGoalSummary } from '../components/features/savings/SavingsGoals/SavingsGoalSummary';
-import { BudgetSummary } from '../components/features/financials/BudgetSummary/BudgetSummary';
-import { GuestBlockedFeature } from '../components/misc/GuestBlockedFeature/GuestBlockedFeature';
+import React, { useMemo } from 'react';
+import { HeroBalance } from '../components/dashboard/HeroBalance/HeroBalance';
 import { LoadingStateWrapper } from '../components/LoadingState/LoadingState';
-import { FixedExpenseNotifications } from '../components/features/fixed-expenses/FixedExpenseNotifications';
-import { useFixedExpenseReminders } from '../hooks/expenses/useFixedExpenseReminders';
-import { QuickAddButton } from '../components/ui/QuickAddButton';
-import { HealthIndicator, calculateHealthStatus, calculateBalanceHealth } from '../components/ui/HealthIndicator';
-import { QuickExpenseModal } from '../components/modals/QuickExpenseModal';
-import styles from './DashboardPage.module.css';
+import { useExpensesContext, useFinancialsContext, useCategoriesContext } from '../contexts/AppContext';
+import { PageHeader } from '../components/ui/PageHeader/PageHeader';
+import { Card } from '../components/ui/Card/Card';
 import { formatCurrency } from '../utils/formatters';
-import { PAGE_ROUTES } from '../constants';
+import { ArrowDownLeft, ArrowUpRight, Calendar } from 'lucide-react';
 
-import {
-  useCategoriesContext,
-  useExpensesContext,
-  useFinancialsContext,
-  useSavingsGoalsContext,
-  useCombinedCalculationsContext
-} from '../contexts/AppContext';
+import styles from './DashboardPage.module.css';
+import { DailyWisdom } from '../components/dashboard/DailyWisdom/DailyWisdom';
+import { SmartInsight } from '../components/dashboard/SmartInsight/SmartInsight';
 
 interface DashboardPageProps {
-  isGuest: boolean;
-  userId?: string | null;
-  setCurrentPage?: (page: string) => void;
+    isGuest: boolean;
 }
 
-export const DashboardPage: React.FC<DashboardPageProps> = ({ isGuest, userId, setCurrentPage }) => {
-  const {
-    categories,
-    loadingCategories,
-    categoriesError,
-    clearCategoriesError
-  } = useCategoriesContext();
+export const DashboardPage: React.FC<DashboardPageProps> = ({ isGuest }) => {
+    const { expenses, loadingExpenses } = useExpensesContext();
+    const { financials } = useFinancialsContext();
+    const { categories } = useCategoriesContext();
 
-  const {
-    expenses,
-    totalExpensesToday,
-    loadingExpenses,
-    expensesError,
-    clearExpensesError
-  } = useExpensesContext();
+    // Basic derivation for balance (Income - Expenses) - ideally this comes from a context or backend
+    const totalExpenses = expenses?.reduce((sum, e) => sum + e.amount, 0) || 0;
+    const monthlyIncome = financials?.monthlyIncome || 0;
+    const balance = monthlyIncome - totalExpenses;
 
-  const {
-    financials,
-    totalFixedExpenses,
-    loadingFinancials,
-    financialsError,
-    clearFinancialsError
-  } = useFinancialsContext();
+    // Group expenses by date (Today vs Yesterday vs Older)
+    const groupedExpenses = useMemo(() => {
+        const today = new Date().toDateString();
+        const groups: Record<string, typeof expenses> = { 'Hoy': [], 'Anterior': [] };
 
-  const { savingsGoals } = useSavingsGoalsContext();
-  const { monthlyExpensesByCategory, totalExpensesMonth } = useCombinedCalculationsContext();
+        expenses.slice(0, 15).forEach(exp => {
+            const d = new Date(exp.createdAt || Date.now()).toDateString();
+            if (d === today) groups['Hoy'].push(exp);
+            else groups['Anterior'].push(exp);
+        });
+        return groups;
+    }, [expenses]);
 
-  const {
-    notifications: fixedExpenseNotifications,
-    isLoading: loadingNotifications,
-    clearNotificationsForFixedExpense
-  } = useFixedExpenseReminders(!isGuest ? (userId || null) : null);
-
-  const isLoadingCriticalData = loadingCategories || loadingExpenses;
-  const criticalError = categoriesError || expensesError;
-
-  const monthlyIncome = financials?.monthlyIncome || 0;
-  const balance = monthlyIncome - totalExpensesMonth - totalFixedExpenses;
-  const monthlySpendingPercentage = monthlyIncome > 0
-    ? ((totalExpensesMonth + totalFixedExpenses) / monthlyIncome) * 100
-    : 0;
-
-  const handleRetryLoadData = () => {
-    clearCategoriesError();
-    clearExpensesError();
-  };
-
-  // Modal de gasto rápido
-  const [showExpenseModal, setShowExpenseModal] = useState(false);
-
-  // Abrir modal de gasto rápido al hacer clic en el botón +
-  const handleAddExpense = () => {
-    setShowExpenseModal(true);
-  };
-
-  // Últimos 5 gastos
-  const recentExpenses = expenses.slice(0, 5);
-
-  return (
-    <div className={styles.dashboard}>
-      {/* Resumen Compacto */}
-      <div className={styles.summaryCards}>
-        <div className={styles.summaryCard}>
-          <span className={styles.cardLabel}>💰 Hoy</span>
-          <span className={styles.cardValue}>{formatCurrency(totalExpensesToday)}</span>
-        </div>
-        <div className={styles.summaryCard}>
-          <span className={styles.cardLabel}>📅 Este mes</span>
-          <div className={styles.cardValueRow}>
-            <span className={styles.cardValue}>{formatCurrency(totalExpensesMonth)}</span>
-            <HealthIndicator
-              status={calculateHealthStatus(monthlySpendingPercentage)}
-              size="small"
+    return (
+        <div className={styles.zenContainer}>
+            {/* 1. Hero Section */}
+            <HeroBalance
+                balance={balance}
+                monthlyIncome={monthlyIncome}
             />
-          </div>
-        </div>
-        <div className={`${styles.summaryCard} ${balance < 0 ? styles.danger : ''}`}>
-          <span className={styles.cardLabel}>{balance >= 0 ? '✅ Disponible' : '⚠️ Sobregiro'}</span>
-          <div className={styles.cardValueRow}>
-            <span className={styles.cardValue}>{formatCurrency(Math.abs(balance))}</span>
-            <HealthIndicator
-              status={calculateBalanceHealth(balance, monthlyIncome)}
-              size="small"
-            />
-          </div>
-        </div>
-      </div>
 
-      {/* Notificaciones de gastos fijos */}
-      {!isGuest && !loadingNotifications && fixedExpenseNotifications.length > 0 && (
-        <div className={styles.notificationsSection}>
-          <FixedExpenseNotifications
-            notifications={fixedExpenseNotifications.slice(0, 3)}
-            onDismiss={clearNotificationsForFixedExpense}
-          />
-        </div>
-      )}
+            {/* 0. Wisdom & Insights */}
+            <DailyWisdom />
+            <SmartInsight />
 
-      {/* Grid de contenido */}
-      <div className={styles.contentGrid}>
-        {/* Últimas transacciones */}
-        <LoadingStateWrapper
-          loading={isLoadingCriticalData}
-          error={criticalError}
-          onRetry={handleRetryLoadData}
-          onDismissError={() => {
-            clearCategoriesError();
-            clearExpensesError();
-          }}
-          loadingMessage="Cargando..."
-        >
-          <section className={styles.section}>
-            <h2 className={styles.sectionTitle}>Últimos gastos</h2>
-            {recentExpenses.length > 0 ? (
-              <ul className={styles.transactionList}>
-                {recentExpenses.map((expense) => (
-                  <li key={expense.id} className={styles.transactionItem}>
-                    <div className={styles.transactionInfo}>
-                      <span className={styles.transactionCategory}>
-                        {(() => {
-                          const cat = categories.find(c => c.id === expense.categoryId);
-                          return cat ? `${cat.icon || '📦'} ${cat.name}` : expense.categoryId;
-                        })()}
-                      </span>
-                      {expense.description && (
-                        <span className={styles.transactionDesc}>{expense.description}</span>
-                      )}
-                    </div>
-                    <span className={styles.transactionAmount}>
-                      -{formatCurrency(expense.amount)}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className={styles.emptyMessage}>Sin gastos registrados</p>
-            )}
-          </section>
-        </LoadingStateWrapper>
-
-        {/* Sección lateral */}
-        <aside className={styles.sidebar}>
-          {isGuest ? (
-            <div className={styles.guestSection}>
-              <GuestBlockedFeature message="Crea una cuenta para ver presupuestos y metas." />
+            {/* 2. Quick Stats Row (Simple In/Out) */}
+            <div className={styles.quickStats}>
+                <div className={styles.statPill}>
+                    <ArrowDownLeft size={16} color="var(--success)" />
+                    <span>Ingresos: {formatCurrency(monthlyIncome)}</span>
+                </div>
+                <div className={styles.statPill}>
+                    <ArrowUpRight size={16} color="var(--danger)" />
+                    <span>Gastos: {formatCurrency(totalExpenses)}</span>
+                </div>
             </div>
-          ) : (
-            <>
-              <LoadingStateWrapper
-                loading={loadingFinancials}
-                error={financialsError}
-                onDismissError={clearFinancialsError}
-                loadingMessage="Cargando..."
-              >
-                <section className={styles.section}>
-                  <h2 className={styles.sectionTitle}>Presupuestos</h2>
-                  <BudgetSummary
-                    categories={categories}
-                    monthlyExpensesByCategory={monthlyExpensesByCategory}
-                  />
-                </section>
-              </LoadingStateWrapper>
 
-              <section className={styles.section}>
-                <h2 className={styles.sectionTitle}>Metas de ahorro</h2>
-                <SavingsGoalSummary savingsGoals={savingsGoals} />
-              </section>
-            </>
-          )}
-        </aside>
-      </div>
+            {/* 3. Transaction Feed */}
+            <div className={styles.feedSection}>
+                <h3 className={styles.sectionTitle}>Actividad Reciente</h3>
 
-      {/* Botón flotante para añadir */}
-      <QuickAddButton
-        onAddExpense={handleAddExpense}
-        onNavigate={setCurrentPage}
-      />
+                <LoadingStateWrapper loading={loadingExpenses} error={null}>
+                    <div className={styles.feedList}>
+                        {Object.entries(groupedExpenses).map(([label, group]) => (
+                            group.length > 0 && (
+                                <div key={label} className={styles.dayGroup}>
+                                    <span className={styles.dayLabel}>{label}</span>
+                                    {group.map(expense => {
+                                        const cat = categories.find(c => c.id === expense.categoryId);
+                                        return (
+                                            <div key={expense.id} className={styles.feedItem}>
+                                                <div className={styles.feedIcon} style={{ background: (cat?.color || '#ccc') + '20', color: cat?.color || '#666' }}>
+                                                    {cat?.icon || '📦'}
+                                                </div>
+                                                <div className={styles.feedContent}>
+                                                    <span className={styles.feedTitle}>{cat?.name || 'Gasto'}</span>
+                                                    <span className={styles.feedMeta}>{expense.description || 'Sin descripción'}</span>
+                                                </div>
+                                                <span className={styles.feedAmount}>
+                                                    -{formatCurrency(expense.amount)}
+                                                </span>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            )
+                        ))}
 
-      {/* Modal de gasto rápido */}
-      <QuickExpenseModal
-        isOpen={showExpenseModal}
-        onClose={() => setShowExpenseModal(false)}
-      />
-    </div>
-  );
+                        {expenses.length === 0 && (
+                            <div className={styles.emptyState}>
+                                <Calendar size={48} strokeWidth={1} />
+                                <p>Sin actividad aún</p>
+                            </div>
+                        )}
+                    </div>
+                </LoadingStateWrapper>
+            </div>
+        </div>
+    );
 };

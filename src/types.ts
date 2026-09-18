@@ -55,8 +55,8 @@ export interface Financials {
 
 export interface LayoutProps {
   children: React.ReactNode;
-  currentPage: 'dashboard' | 'categories';
-  setCurrentPage: React.Dispatch<React.SetStateAction<'dashboard' | 'categories'>>;
+  currentPage: 'dashboard' | 'categories' | 'planning' | 'reports' | 'stats' | 'profile' | 'budget' | 'incomes' | 'registro' | 'analysis' | 'settings' | 'export' | 'activity';
+  setCurrentPage: React.Dispatch<React.SetStateAction<any>>;
 }
 
 export interface FixedExpense {

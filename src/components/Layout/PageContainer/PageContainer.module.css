@@ -1,0 +1,28 @@
+/* PageContainer.module.css */
+
+.container {
+    width: 100%;
+    max-width: 1000px;
+    /* Zen focus width */
+    margin: 0 auto;
+    padding: var(--space-md);
+    animation: fadeIn var(--transition-normal);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (min-width: 768px) {
+    .container {
+        padding: var(--space-lg);
+    }
+}

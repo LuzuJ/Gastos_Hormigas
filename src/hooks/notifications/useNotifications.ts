@@ -7,6 +7,8 @@ export interface Notification {
   customId?: string; // ID personalizado para notificaciones especiales (ej: gastos fijos)
 }
 
+import toast from 'react-hot-toast';
+
 export const useNotifications = () => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const idCounter = useRef(0);
@@ -21,6 +23,16 @@ export const useNotifications = () => {
           ...notification,
           id: notification.customId || idCounter.current
         };
+
+        // Trigger Toast for urgent messages
+        if (notification.type === 'danger') {
+          toast.error(notification.message, { duration: 5000 });
+        } else if (notification.type === 'warning') {
+          toast(notification.message, { icon: '⚠️', duration: 4000 });
+        } else if (notification.type === 'success') {
+          toast.success(notification.message);
+        }
+
         return [...prev, newNotification];
       }
       return prev;

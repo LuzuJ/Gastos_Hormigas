@@ -24,8 +24,8 @@ export async function validateRLSPolicies(): Promise<{
     const testTables = ['expenses', 'incomes', 'assets', 'liabilities'];
 
     for (const table of testTables) {
-      const { data, error } = await supabase
-        .from(table)
+      const { data, error } = await (supabase
+        .from(table as any) as any)
         .select('id')
         .limit(1);
 

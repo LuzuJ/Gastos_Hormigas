@@ -1,3 +1,4 @@
+/* BarChart.module.css */
 .container {
     display: flex;
     flex-direction: column;
@@ -18,7 +19,8 @@
 }
 
 .label {
-    font-size: 0.7rem;
+    font-size: 0.75rem;
+    /* Improved readability */
     color: var(--text-secondary);
     max-width: 60%;
     overflow: hidden;
@@ -27,30 +29,32 @@
 }
 
 .value {
-    font-size: 0.7rem;
+    font-size: 0.75rem;
     font-weight: 600;
     color: var(--text-primary);
 }
 
 .barTrack {
-    height: 6px;
+    height: 8px;
+    /* Slightly thicker for modern look */
     background: var(--background-secondary);
-    border-radius: 3px;
+    border-radius: var(--radius-sm);
     overflow: hidden;
 }
 
 .barFill {
     height: 100%;
-    border-radius: 3px;
+    border-radius: var(--radius-sm);
     transition: width 0.5s ease-out;
-    min-width: 4px;
+    min-width: 6px;
 }
 
 .emptyState {
-    padding: 1rem;
+    padding: 1.5rem;
     text-align: center;
     color: var(--text-secondary);
-    font-size: 0.75rem;
+    font-size: 0.85rem;
     background: var(--background-secondary);
-    border-radius: 6px;
+    border-radius: var(--radius-md);
+    border: 1px dashed var(--border-color);
 }

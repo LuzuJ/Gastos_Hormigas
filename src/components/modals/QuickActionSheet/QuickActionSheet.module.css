@@ -1,0 +1,244 @@
+/* QuickActionSheet.module.css */
+
+.overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(4px);
+    z-index: 2000;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    opacity: 0;
+    animation: fadeIn 0.2s forwards;
+}
+
+.sheet {
+    width: 100%;
+    max-width: 500px;
+    background: var(--bg-card);
+    border-radius: 24px 24px 0 0;
+    box-shadow: var(--shadow-lg);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transform: translateY(100%);
+    animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    /* Desktop centered modal style */
+}
+
+@media (min-width: 640px) {
+    .overlay {
+        align-items: center;
+    }
+
+    .sheet {
+        border-radius: 24px;
+        margin: 20px;
+        transform: scale(0.95);
+        opacity: 0;
+        animation: scaleIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+}
+
+/* Header & Tabs */
+.header {
+    display: flex;
+    padding: var(--space-xs);
+    margin: var(--space-md);
+    background: var(--bg-body);
+    border-radius: var(--radius-full);
+    position: relative;
+}
+
+.tab {
+    flex: 1;
+    border: none;
+    background: transparent;
+    padding: 8px;
+    border-radius: var(--radius-full);
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    z-index: 1;
+}
+
+.tab.active {
+    color: white;
+    box-shadow: var(--shadow-sm);
+}
+
+.indicator {
+    position: absolute;
+    top: var(--space-xs);
+    left: var(--space-xs);
+    bottom: var(--space-xs);
+    width: calc(50% - var(--space-xs));
+    border-radius: var(--radius-full);
+    transition: transform var(--transition-normal);
+}
+
+.indicator.expense {
+    background: var(--danger);
+    transform: translateX(0);
+}
+
+.indicator.income {
+    background: var(--success);
+    transform: translateX(100%);
+}
+
+/* Content */
+.content {
+    padding: 0 var(--space-lg) var(--space-lg);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+}
+
+.amountGroup {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-xs);
+}
+
+.label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.amountInputContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    width: 100%;
+}
+
+.currency {
+    font-size: 2rem;
+    color: var(--text-tertiary);
+    font-weight: 500;
+    position: absolute;
+    left: 20%;
+}
+
+.amountInput {
+    width: 100%;
+    border: none;
+    background: transparent;
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    text-align: center;
+    outline: none;
+    padding: 0;
+}
+
+.amountInput::placeholder {
+    color: var(--border-light);
+}
+
+/* Form Grid */
+.grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-md);
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.select,
+.textInput {
+    width: 100%;
+    padding: 12px;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-light);
+    background: var(--bg-body);
+    color: var(--text-primary);
+    font-size: 0.95rem;
+    transition: border-color var(--transition-fast);
+}
+
+.select:focus,
+.textInput:focus {
+    outline: none;
+    border-color: var(--primary);
+}
+
+.fullWidth {
+    grid-column: 1 / -1;
+}
+
+/* Actions */
+.footer {
+    padding: var(--space-md);
+    border-top: 1px solid var(--border-light);
+    display: flex;
+    gap: var(--space-md);
+}
+
+.btnCancel {
+    flex: 1;
+    padding: 14px;
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    font-weight: 600;
+    cursor: pointer;
+    border-radius: var(--radius-lg);
+}
+
+.btnSubmit {
+    flex: 2;
+    padding: 14px;
+    border: none;
+    border-radius: var(--radius-lg);
+    background: var(--text-primary);
+    color: var(--bg-card);
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform var(--transition-fast);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.btnSubmit:active {
+    transform: scale(0.98);
+}
+
+.btnSubmit:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+@keyframes fadeIn {
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    to {
+        transform: translateY(0);
+    }
+}
+
+@keyframes scaleIn {
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}

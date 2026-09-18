@@ -44,17 +44,12 @@ export const useExpenses = (userId: string | null) => {
             'Error al agregar el gasto'
         );
 
-        // Si fue exitoso, recargar los gastos manualmente (fallback por si falla realtime)
-        if (result.success) {
-            console.log('[useExpenses] Gasto agregado, recargando lista...');
-            try {
-                // Pequeña espera para asegurar que los datos fueron escritos en la BD
-                await new Promise(resolve => setTimeout(resolve, 300));
-                const updatedExpenses = await expenseServiceRepo.getExpenses(userId);
-                setExpenses(updatedExpenses);
-            } catch (error) {
-                console.error('[useExpenses] Error recargando gastos:', error);
-            }
+        if (result.success && result.data) {
+            // Optimistic update
+            setExpenses(prev => [result.data, ...prev]);
+
+            // Background refresh to ensure consistency (optional but safe)
+            expenseServiceRepo.getExpenses(userId).then(updated => setExpenses(updated)).catch(console.error);
         }
 
         return result;
@@ -70,17 +65,9 @@ export const useExpenses = (userId: string | null) => {
             'Error al actualizar el gasto'
         );
 
-        // Si fue exitoso, recargar los gastos manualmente (fallback por si falla realtime)
-        if (result.success) {
-            console.log('[useExpenses] Gasto actualizado, recargando lista...');
-            try {
-                // Pequeña espera para asegurar que los datos fueron actualizados en la BD
-                await new Promise(resolve => setTimeout(resolve, 300));
-                const updatedExpenses = await expenseServiceRepo.getExpenses(userId);
-                setExpenses(updatedExpenses);
-            } catch (error) {
-                console.error('[useExpenses] Error recargando gastos:', error);
-            }
+        if (result.success && result.data) {
+            // Optimistic update
+            setExpenses(prev => prev.map(e => e.id === expenseId ? result.data : e));
         }
 
         return result;
@@ -96,17 +83,9 @@ export const useExpenses = (userId: string | null) => {
             'Error al eliminar el gasto'
         );
 
-        // Si fue exitoso, recargar los gastos manualmente (fallback por si falla realtime)
         if (result.success) {
-            console.log('[useExpenses] Gasto eliminado, recargando lista...');
-            try {
-                // Pequeña espera para asegurar que los datos fueron eliminados de la BD
-                await new Promise(resolve => setTimeout(resolve, 300));
-                const updatedExpenses = await expenseServiceRepo.getExpenses(userId);
-                setExpenses(updatedExpenses);
-            } catch (error) {
-                console.error('[useExpenses] Error recargando gastos:', error);
-            }
+            // Optimistic update
+            setExpenses(prev => prev.filter(e => e.id !== expenseId));
         }
 
         return result;

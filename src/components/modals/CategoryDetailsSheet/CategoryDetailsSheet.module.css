@@ -1,0 +1,158 @@
+/* CategoryDetailsSheet.module.css */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(4px);
+    z-index: 2000;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    /* Mobile bottom sheet */
+    padding-bottom: 0;
+    /* Align sheet to bottom */
+}
+
+@media (min-width: 768px) {
+    .overlay {
+        align-items: center;
+        /* Desktop modal */
+    }
+}
+
+.sheet {
+    background: var(--bg-card);
+    width: 100%;
+    max-width: 500px;
+    border-radius: var(--radius-2xl) var(--radius-2xl) 0 0;
+    padding: var(--space-lg);
+    box-shadow: var(--shadow-xl);
+    animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    max-height: 85vh;
+    overflow-y: auto;
+    padding-bottom: 120px;
+    /* Space for Floating Dock */
+}
+
+@media (min-width: 768px) {
+    .sheet {
+        border-radius: var(--radius-2xl);
+        max-height: 80vh;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(100%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.titleRow {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+}
+
+.iconBox {
+    width: 48px;
+    height: 48px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    background: var(--bg-hover);
+}
+
+.title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin: 0;
+    color: var(--text-primary);
+}
+
+.section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+}
+
+.label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.inputGroup {
+    display: flex;
+    gap: var(--space-sm);
+}
+
+.input {
+    flex: 1;
+    padding: 12px;
+    border-radius: var(--radius-md);
+    background: var(--bg-body);
+    border: 1px solid var(--border-light);
+    color: var(--text-primary);
+    font-size: 1rem;
+}
+
+.btnPrimary {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.subList {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.subChip {
+    background: var(--bg-hover);
+    padding: 6px 12px;
+    border-radius: var(--radius-full);
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.deleteSub {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+}
+
+.deleteSub:hover {
+    color: var(--danger);
+}

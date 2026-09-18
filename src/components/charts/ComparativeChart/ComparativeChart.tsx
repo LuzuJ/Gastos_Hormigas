@@ -23,7 +23,7 @@ export const ComparativeChart: React.FC<ComparativeChartProps> = ({ data }) => {
   const [chartType, setChartType] = useState<ChartType>('bar');
   const [comparisonType, setComparisonType] = useState<ComparisonType>('month');
   const [showVariation, setShowVariation] = useState(false);
-  
+
   const tooltipCursorColor = isDark ? '#374151' : '#f3f4f6';
 
   // Cálculos mejorados de variación
@@ -31,7 +31,7 @@ export const ComparativeChart: React.FC<ComparativeChartProps> = ({ data }) => {
     return data.map(item => {
       const variation = item.actual - item.anterior;
       const percentage = item.anterior > 0 ? ((variation / item.anterior) * 100) : 0;
-      
+
       return {
         ...item,
         variation,
@@ -46,7 +46,7 @@ export const ComparativeChart: React.FC<ComparativeChartProps> = ({ data }) => {
     const totalAnterior = enhancedData.reduce((sum, item) => sum + item.anterior, 0);
     const totalVariation = totalActual - totalAnterior;
     const totalPercentage = totalAnterior > 0 ? ((totalVariation / totalAnterior) * 100) : 0;
-    
+
     return {
       totalActual,
       totalAnterior,
@@ -80,18 +80,18 @@ export const ComparativeChart: React.FC<ComparativeChartProps> = ({ data }) => {
       return (
         <LineChart data={enhancedData} margin={{ top: 5, right: 20, left: 30, bottom: 5 }}>
           <CartesianGrid strokeDasharray="3 3" stroke={isDark ? "#374151" : "#e5e7eb"} />
-          <XAxis 
-            dataKey="name" 
-            stroke={isDark ? "#cbd5e1" : "#6b7280"} 
+          <XAxis
+            dataKey="name"
+            stroke={isDark ? "#cbd5e1" : "#6b7280"}
             fontSize={12}
             angle={-45}
             textAnchor="end"
             height={80}
           />
-          <YAxis 
-            stroke={isDark ? "#cbd5e1" : "#6b7280"} 
-            fontSize={12} 
-            tickFormatter={(value) => `$${value}`} 
+          <YAxis
+            stroke={isDark ? "#cbd5e1" : "#6b7280"}
+            fontSize={12}
+            tickFormatter={(value) => `$${value}`}
           />
           <Tooltip
             cursor={{ stroke: tooltipCursorColor, strokeWidth: 2 }}
@@ -104,18 +104,18 @@ export const ComparativeChart: React.FC<ComparativeChartProps> = ({ data }) => {
             }}
           />
           <Legend />
-          <Line 
-            dataKey="anterior" 
+          <Line
+            dataKey="anterior"
             name={periodLabels.previous}
-            stroke="#a5b4fc" 
+            stroke="#a5b4fc"
             strokeWidth={3}
             dot={{ fill: '#a5b4fc', strokeWidth: 2, r: 4 }}
             activeDot={{ r: 6, stroke: '#a5b4fc' }}
           />
-          <Line 
-            dataKey="actual" 
+          <Line
+            dataKey="actual"
             name={periodLabels.current}
-            stroke="#4f46e5" 
+            stroke="#4f46e5"
             strokeWidth={3}
             dot={{ fill: '#4f46e5', strokeWidth: 2, r: 4 }}
             activeDot={{ r: 6, stroke: '#4f46e5' }}
@@ -125,24 +125,24 @@ export const ComparativeChart: React.FC<ComparativeChartProps> = ({ data }) => {
     }
 
     return (
-      <BarChart 
-        data={enhancedData} 
-        layout="vertical" 
+      <BarChart
+        data={enhancedData}
+        layout="vertical"
         margin={{ top: 5, right: 20, left: 30, bottom: 5 }}
       >
         <CartesianGrid strokeDasharray="3 3" stroke={isDark ? "#374151" : "#e5e7eb"} />
-        <XAxis 
-          type="number" 
-          stroke={isDark ? "#cbd5e1" : "#6b7280"} 
-          fontSize={12} 
-          tickFormatter={(value) => `$${value}`} 
+        <XAxis
+          type="number"
+          stroke={isDark ? "#cbd5e1" : "#6b7280"}
+          fontSize={12}
+          tickFormatter={(value) => `$${value}`}
         />
-        <YAxis 
-          type="category" 
-          dataKey="name" 
-          stroke={isDark ? "#cbd5e1" : "#6b7280"} 
-          fontSize={12} 
-          width={120} 
+        <YAxis
+          type="category"
+          dataKey="name"
+          stroke={isDark ? "#cbd5e1" : "#6b7280"}
+          fontSize={12}
+          width={120}
         />
         <Tooltip
           cursor={{ fill: tooltipCursorColor }}
@@ -184,12 +184,12 @@ export const ComparativeChart: React.FC<ComparativeChartProps> = ({ data }) => {
               Total: <strong>${totalStats.totalActual.toLocaleString()}</strong>
             </span>
             <span className={`${styles.statItem} ${totalStats.totalVariation >= 0 ? styles.positive : styles.negative}`}>
-              {totalStats.totalVariation >= 0 ? '+' : ''}${totalStats.totalVariation.toLocaleString()} 
+              {totalStats.totalVariation >= 0 ? '+' : ''}${totalStats.totalVariation.toLocaleString()}
               ({totalStats.totalVariation >= 0 ? '+' : ''}{totalStats.totalPercentage.toFixed(1)}%)
             </span>
           </div>
         </div>
-        
+
         <div className={styles.controls}>
           {/* Selector de tipo de gráfico */}
           <div className={styles.controlGroup}>
@@ -263,7 +263,7 @@ export const ComparativeChart: React.FC<ComparativeChartProps> = ({ data }) => {
               if (significantVariations.length === 0) {
                 // Verificar si es porque no hay datos anteriores
                 const hasNoPreviousData = enhancedData.every(item => item.anterior === 0);
-                
+
                 return (
                   <div className={styles.emptyVariations}>
                     {hasNoPreviousData ? (
@@ -305,3 +305,5 @@ export const ComparativeChart: React.FC<ComparativeChartProps> = ({ data }) => {
     </div>
   );
 };
+
+export default ComparativeChart;

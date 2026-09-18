@@ -1,7 +1,7 @@
 {
-  "name": "Gastos Hormigas - Tu Compañero Financiero Personal",
-  "short_name": "Gastos Hormigas",
-  "description": "Gestiona tus finanzas de manera fácil y divertida",
+  "name": "Gestor Gastos MJ",
+  "short_name": "Gestor MJ",
+  "description": "Gestiona tus finanzas de manera fácil y divertida con ayuda inteligente",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0f172a",

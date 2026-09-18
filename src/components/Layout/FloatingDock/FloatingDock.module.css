@@ -1,0 +1,128 @@
+/* FloatingDock.module.css */
+
+.dockContainer {
+    position: fixed;
+    bottom: var(--space-lg);
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-sm) var(--space-md);
+    background: var(--bg-glass);
+    backdrop-filter: var(--glass-blur);
+    border: var(--glass-border);
+    border-radius: var(--radius-full);
+    box-shadow: var(--shadow-lg);
+    transition: all var(--transition-normal);
+}
+
+.dockItem {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-full);
+    color: var(--text-secondary);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.dockItem:hover {
+    background: var(--bg-card);
+    color: var(--text-primary);
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-md);
+}
+
+.dockItem.active {
+    background: var(--primary-subtle);
+    color: var(--primary);
+}
+
+/* Tooltip */
+.tooltip {
+    position: absolute;
+    bottom: 110%;
+    left: 50%;
+    transform: translateX(-50%) scale(0.8);
+    background: var(--text-primary);
+    color: var(--bg-card);
+    padding: 4px 8px;
+    border-radius: var(--radius-sm);
+    font-size: 0.75rem;
+    font-weight: 500;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: all var(--transition-fast);
+}
+
+.dockItem:hover .tooltip {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+}
+
+/* Add Button (Floating separate or integrated) */
+.addButton {
+    width: 52px;
+    height: 52px;
+    background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+    color: white;
+    border-radius: var(--radius-full);
+    border: 4px solid var(--bg-body);
+    /* Cutout effect if needed */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+    cursor: pointer;
+    transition: all var(--transition-normal);
+}
+
+.addButton:hover {
+    transform: scale(1.1) rotate(90deg);
+}
+
+/* Mobile Adaptation */
+@media (max-width: 640px) {
+    .dockContainer {
+        bottom: 0;
+        left: 0;
+        transform: none;
+        width: 100%;
+        border-radius: 20px 20px 0 0;
+        justify-content: space-around;
+        padding: var(--space-sm) var(--space-md) calc(var(--space-sm) + env(safe-area-inset-bottom));
+        background: var(--bg-card);
+        /* Solid background on mobile for better perf */
+        border: none;
+        border-top: 1px solid var(--border-light);
+    }
+
+    .dockItem:hover {
+        transform: none;
+        /* No jump on touch */
+        background: transparent;
+    }
+
+    .dockItem.active {
+        background: transparent;
+        color: var(--primary);
+    }
+
+    .tooltip {
+        display: none;
+        /* No tooltips on mobile */
+    }
+
+    .addButton {
+        margin-top: -32px;
+        border: 6px solid var(--bg-body);
+    }
+}

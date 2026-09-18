@@ -1,0 +1,200 @@
+/* ActivityPage.module.css */
+
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    max-width: 800px;
+    margin: 0 auto;
+    padding-bottom: 120px;
+    /* Space for dock */
+}
+
+/* Header */
+.stickyHeader {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: var(--bg-body);
+    /* Transparent/Blended */
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    padding: var(--space-md) 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.2s;
+}
+
+.stickyHeader.scrolled {
+    border-color: var(--border-light);
+}
+
+.searchBar {
+    display: flex;
+    align-items: center;
+    background: var(--bg-card);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-full);
+    padding: 0 var(--space-md);
+    height: 48px;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.2s;
+}
+
+.searchBar:focus-within {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px var(--primary-light);
+}
+
+.searchInput {
+    flex: 1;
+    border: none;
+    background: transparent;
+    height: 100%;
+    padding: 0 var(--space-sm);
+    font-size: 0.95rem;
+    color: var(--text-primary);
+    outline: none;
+}
+
+.filterRow {
+    display: flex;
+    gap: var(--space-xs);
+    overflow-x: auto;
+    padding-bottom: 4px;
+    scrollbar-width: none;
+}
+
+.filterRow::-webkit-scrollbar {
+    display: none;
+}
+
+.filterChip {
+    padding: 6px 12px;
+    border-radius: var(--radius-full);
+    background: var(--bg-card);
+    border: 1px solid var(--border-light);
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+    font-weight: 500;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.filterChip:hover {
+    background: var(--bg-hover);
+}
+
+.filterChip.active {
+    background: var(--text-primary);
+    color: var(--bg-card);
+    border-color: var(--text-primary);
+}
+
+/* List Groups */
+.groupTitle {
+    font-size: 1.5rem;
+    /* Zen large headers */
+    font-weight: 800;
+    color: var(--text-tertiary);
+    margin: var(--space-lg) 0 var(--space-xs);
+    padding-left: var(--space-xs);
+}
+
+.groupTitle:first-child {
+    margin-top: 0;
+}
+
+/* Card overrides */
+.transactionCard {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--space-sm);
+    transition: transform 0.2s;
+    cursor: pointer;
+}
+
+.transactionCard:active {
+    transform: scale(0.98);
+}
+
+.txLeft {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+}
+
+.iconBox {
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    background: var(--bg-hover);
+    color: var(--text-primary);
+}
+
+.txInfo {
+    display: flex;
+    flex-direction: column;
+}
+
+.txDesc {
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 1rem;
+}
+
+.txMeta {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.txRight {
+    text-align: right;
+}
+
+.txAmount {
+    font-weight: 700;
+    font-size: 1rem;
+    display: block;
+}
+
+.txAmount.expense {
+    color: var(--text-primary);
+}
+
+.txAmount.income {
+    color: var(--success);
+}
+
+.loadMore {
+    width: 100%;
+    padding: 16px;
+    margin-top: var(--space-lg);
+    border: none;
+    background: transparent;
+    color: var(--text-tertiary);
+    font-weight: 600;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.loadMore:hover {
+    color: var(--primary);
+}
+
+.emptyState {
+    text-align: center;
+    padding: 40px;
+    color: var(--text-tertiary);
+}

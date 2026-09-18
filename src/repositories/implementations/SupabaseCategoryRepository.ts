@@ -9,11 +9,11 @@ import { v4 as uuidv4 } from 'uuid';
  * Implementación del repositorio de categorías para Supabase
  */
 export class SupabaseCategoryRepository extends SupabaseRepository<Category, string> implements ICategoryRepository {
-  
+
   constructor() {
     super(SUPABASE_TABLES.CATEGORIES);
   }
-  
+
   /**
    * Inicializa las categorías por defecto para un usuario nuevo
    * @param userId - ID del usuario
@@ -27,11 +27,11 @@ export class SupabaseCategoryRepository extends SupabaseRepository<Category, str
         .select('id')
         .eq('user_id', userId)
         .limit(1);
-      
+
       if (checkError) {
         throw checkError;
       }
-      
+
       if (!existingCategories || existingCategories.length === 0) {
         // Crear categorías por defecto
         for (const categoryTemplate of defaultCategoriesStructure) {
@@ -48,11 +48,11 @@ export class SupabaseCategoryRepository extends SupabaseRepository<Category, str
               is_active: true,
               budget_amount: null
             });
-          
+
           if (categoryError) {
             throw categoryError;
           }
-          
+
           // Insertar las subcategorías
           if (categoryTemplate.subcategories && categoryTemplate.subcategories.length > 0) {
             const subcategories = categoryTemplate.subcategories.map(subcatName => ({
@@ -60,25 +60,25 @@ export class SupabaseCategoryRepository extends SupabaseRepository<Category, str
               category_id: categoryId,
               name: subcatName
             }));
-            
+
             const { error: subcategoryError } = await this.client
               .from(SUPABASE_TABLES.SUBCATEGORIES)
               .insert(subcategories);
-            
+
             if (subcategoryError) {
               throw subcategoryError;
             }
           }
         }
       }
-      
+
       return true;
     } catch (error) {
       console.error('Error al inicializar categorías por defecto:', error);
       return false;
     }
   }
-  
+
   /**
    * Obtiene todas las categorías con sus subcategorías
    * @param userId - ID del usuario
@@ -102,11 +102,11 @@ export class SupabaseCategoryRepository extends SupabaseRepository<Category, str
         `)
         .eq('user_id', userId)
         .order('name');
-      
+
       if (error) {
         throw error;
       }
-      
+
       return data?.map(category => ({
         id: category.id,
         name: category.name,
@@ -114,17 +114,17 @@ export class SupabaseCategoryRepository extends SupabaseRepository<Category, str
         color: category.color || undefined,
         isDefault: category.is_active,
         budget: category.budget_amount || undefined,
-        subcategories: (category.subcategories || []).map(subcategory => ({
+        subcategories: ((category[SUPABASE_TABLES.SUBCATEGORIES] || category.subcategories || []).map((subcategory: any) => ({
           id: subcategory.id,
           name: subcategory.name
-        }))
+        })))
       })) || [];
     } catch (error) {
       console.error('Error al obtener categorías con subcategorías:', error);
       return [];
     }
   }
-  
+
   /**
    * Añade una subcategoría a una categoría existente
    * @param userId - ID del usuario
@@ -141,24 +141,24 @@ export class SupabaseCategoryRepository extends SupabaseRepository<Category, str
         .eq('id', categoryId)
         .eq('user_id', userId)
         .single();
-      
+
       if (categoryError) throw categoryError;
       if (!categoryData) throw new Error('La categoría no existe o no pertenece al usuario');
-      
+
       const newSubcategory = {
         id: uuidv4(),
         category_id: categoryId,
         name: subcategoryName
       };
-      
+
       const { data, error } = await this.client
         .from(SUPABASE_TABLES.SUBCATEGORIES)
         .insert(newSubcategory)
         .select()
         .single();
-      
+
       if (error) throw error;
-      
+
       return {
         id: data.id,
         name: data.name
@@ -168,7 +168,7 @@ export class SupabaseCategoryRepository extends SupabaseRepository<Category, str
       throw error;
     }
   }
-  
+
   /**
    * Elimina una subcategoría
    * @param userId - ID del usuario
@@ -185,26 +185,26 @@ export class SupabaseCategoryRepository extends SupabaseRepository<Category, str
         .eq('id', categoryId)
         .eq('user_id', userId)
         .single();
-      
+
       if (categoryError) throw categoryError;
       if (!categoryData) throw new Error('La categoría no existe o no pertenece al usuario');
-      
+
       // Eliminar la subcategoría
       const { error } = await this.client
         .from(SUPABASE_TABLES.SUBCATEGORIES)
         .delete()
         .eq('id', subcategoryId)
         .eq('category_id', categoryId);
-      
+
       if (error) throw error;
-      
+
       return true;
     } catch (error) {
       console.error('Error al eliminar subcategoría:', error);
       return false;
     }
   }
-  
+
   /**
    * Actualiza una subcategoría
    * @param userId - ID del usuario
@@ -222,10 +222,10 @@ export class SupabaseCategoryRepository extends SupabaseRepository<Category, str
         .eq('id', categoryId)
         .eq('user_id', userId)
         .single();
-      
+
       if (categoryError) throw categoryError;
       if (!categoryData) throw new Error('La categoría no existe o no pertenece al usuario');
-      
+
       // Actualizar la subcategoría
       const { data, error } = await this.client
         .from(SUPABASE_TABLES.SUBCATEGORIES)
@@ -234,9 +234,9 @@ export class SupabaseCategoryRepository extends SupabaseRepository<Category, str
         .eq('category_id', categoryId)
         .select()
         .single();
-      
+
       if (error) throw error;
-      
+
       return {
         id: data.id,
         name: data.name
@@ -246,7 +246,47 @@ export class SupabaseCategoryRepository extends SupabaseRepository<Category, str
       throw error;
     }
   }
-  
+
+  /**
+   * Actualiza el presupuesto de una categoría
+   * @param userId - ID del usuario
+   * @param categoryId - ID de la categoría
+   * @param budget - Nuevo presupuesto
+   * @returns Una promesa que resuelve a la categoría actualizada
+   */
+  async updateCategoryBudget(userId: string, categoryId: string, budget: number): Promise<Category> {
+    try {
+      console.log(`[SupabaseCategoryRepository] Updating budget for ${categoryId} to ${budget}`);
+
+      const { data, error } = await this.client
+        .from(SUPABASE_TABLES.CATEGORIES)
+        .update({ budget_amount: budget })
+        .eq('id', categoryId)
+        .eq('user_id', userId)
+        .select(`
+          id,
+          name,
+          icon,
+          color,
+          is_active,
+          budget_amount,
+          ${SUPABASE_TABLES.SUBCATEGORIES} (
+            id,
+            name
+          )
+        `)
+        .single();
+
+      if (error) throw error;
+
+      console.log(`[SupabaseCategoryRepository] Budget updated successfully.`);
+      return this.mapDatabaseToModel(data);
+    } catch (error) {
+      console.error('Error al actualizar presupuesto:', error);
+      throw error;
+    }
+  }
+
   /**
    * Suscribe a cambios en las categorías del usuario
    * @param userId - ID del usuario
@@ -263,17 +303,17 @@ export class SupabaseCategoryRepository extends SupabaseRepository<Category, str
         console.error('Error loading initial categories:', error);
         callback([]);
       });
-    
+
     // Crear un canal para las categorías
     const channel = this.client
       .channel(`${SUPABASE_TABLES.CATEGORIES}-${userId}`)
-      .on('postgres_changes', 
-        { 
-          event: '*', 
-          schema: 'public', 
+      .on('postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
           table: SUPABASE_TABLES.CATEGORIES,
           filter: `user_id=eq.${userId}`
-        }, 
+        },
         () => {
           // Cuando hay cambios, obtenemos las categorías actualizadas
           this.getCategoriesWithSubcategories(userId)
@@ -303,13 +343,13 @@ export class SupabaseCategoryRepository extends SupabaseRepository<Category, str
         }
       )
       .subscribe();
-    
+
     // Devolver función para cancelar la suscripción
     return () => {
       this.client.removeChannel(channel);
     };
   }
-  
+
   /**
    * Convierte un objeto de la base de datos al modelo de dominio
    * @param data - Datos de la base de datos (SupabaseCategory)
@@ -329,7 +369,7 @@ export class SupabaseCategoryRepository extends SupabaseRepository<Category, str
       }))
     };
   }
-  
+
   /**
    * Convierte un objeto del modelo de dominio al formato de la base de datos
    * @param data - Datos del modelo de dominio (Category)
@@ -337,7 +377,7 @@ export class SupabaseCategoryRepository extends SupabaseRepository<Category, str
    */
   protected mapModelToDatabase(data: Partial<Category>): Record<string, any> {
     const databaseData: Record<string, any> = {};
-    
+
     if (data.name !== undefined) {
       databaseData.name = data.name;
     }
@@ -353,7 +393,7 @@ export class SupabaseCategoryRepository extends SupabaseRepository<Category, str
     if (data.budget !== undefined) {
       databaseData.budget_amount = data.budget;
     }
-    
+
     return databaseData;
   }
 }

@@ -1,0 +1,51 @@
+/* Card.module.css */
+
+.card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+    transition: box-shadow var(--transition-normal);
+    display: flex;
+    flex-direction: column;
+}
+
+.card:hover {
+    /* Optional hover effect, maybe controlled by prop */
+}
+
+/* Variants */
+.elevated {
+    box-shadow: var(--shadow-md);
+    border-color: transparent;
+}
+
+.outlined {
+    box-shadow: none;
+    border: 1px solid var(--border-light);
+    background-color: transparent;
+}
+
+.glass {
+    background: var(--bg-glass);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Padding Sizes */
+.noPadding {
+    padding: 0;
+}
+
+.sm {
+    padding: var(--space-sm);
+}
+
+.md {
+    padding: var(--space-md);
+}
+
+.lg {
+    padding: var(--space-lg);
+}

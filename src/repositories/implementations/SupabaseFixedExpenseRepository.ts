@@ -25,16 +25,16 @@ interface SupabaseFixedExpense {
 /**
  * Implementación del repositorio de gastos fijos para Supabase
  */
-export class SupabaseFixedExpenseRepository 
-  extends SupabaseRepository<FixedExpense, string> 
+export class SupabaseFixedExpenseRepository
+  extends SupabaseRepository<FixedExpense, string>
   implements IFixedExpenseRepository {
-  
+
   private readonly subscriptions: Map<string, RealtimeChannel> = new Map();
-  
+
   constructor() {
     super(SUPABASE_TABLES.FIXED_EXPENSES);
   }
-  
+
   /**
    * Obtiene los gastos fijos de un usuario
    * @param userId - ID del usuario
@@ -43,7 +43,7 @@ export class SupabaseFixedExpenseRepository
   async getFixedExpenses(userId: string): Promise<FixedExpense[]> {
     return this.getAll(userId);
   }
-  
+
   /**
    * Agrega un nuevo gasto fijo
    * @param userId - ID del usuario
@@ -53,7 +53,7 @@ export class SupabaseFixedExpenseRepository
   async addFixedExpense(userId: string, fixedExpenseData: Omit<FixedExpense, 'id'>): Promise<FixedExpense> {
     return this.create(userId, fixedExpenseData);
   }
-  
+
   /**
    * Actualiza un gasto fijo existente
    * @param userId - ID del usuario
@@ -62,13 +62,13 @@ export class SupabaseFixedExpenseRepository
    * @returns Una promesa que resuelve al gasto fijo actualizado
    */
   async updateFixedExpense(
-    userId: string, 
-    fixedExpenseId: string, 
+    userId: string,
+    fixedExpenseId: string,
     partialData: Partial<FixedExpense>
   ): Promise<FixedExpense> {
     return this.update(userId, fixedExpenseId, partialData);
   }
-  
+
   /**
    * Elimina un gasto fijo
    * @param userId - ID del usuario
@@ -78,7 +78,7 @@ export class SupabaseFixedExpenseRepository
   async deleteFixedExpense(userId: string, fixedExpenseId: string): Promise<boolean> {
     return this.delete(userId, fixedExpenseId);
   }
-  
+
   /**
    * Actualiza el último mes registrado para un gasto fijo
    * @param userId - ID del usuario
@@ -98,7 +98,7 @@ export class SupabaseFixedExpenseRepository
       return false;
     }
   }
-  
+
   /**
    * Suscribe a cambios en los gastos fijos del usuario
    * @param userId - ID del usuario
@@ -106,14 +106,14 @@ export class SupabaseFixedExpenseRepository
    * @returns Una función para cancelar la suscripción
    */
   subscribeToFixedExpenses(
-    userId: string, 
+    userId: string,
     callback: (fixedExpenses: FixedExpense[]) => void
   ): () => void {
     // Cancelar suscripción previa si existe
     if (this.subscriptions.has(userId)) {
       this.subscriptions.get(userId)?.unsubscribe();
     }
-    
+
     // Crear una nueva suscripción
     const channel = this.client
       .channel(`${SUPABASE_TABLES.FIXED_EXPENSES}-${userId}`)
@@ -132,10 +132,10 @@ export class SupabaseFixedExpenseRepository
         }
       )
       .subscribe();
-    
+
     // Guardar la referencia del canal para poder cancelarlo después
     this.subscriptions.set(userId, channel);
-    
+
     // También disparar una carga inicial de datos
     this.getFixedExpenses(userId)
       .then(fixedExpenses => {
@@ -145,14 +145,14 @@ export class SupabaseFixedExpenseRepository
         console.error('[SupabaseFixedExpenseRepository] Error loading initial fixed expenses:', error);
         callback([]);
       });
-    
+
     // Devolver función para cancelar la suscripción
     return () => {
       channel.unsubscribe();
       this.subscriptions.delete(userId);
     };
   }
-  
+
   /**
    * Convierte un objeto de la base de datos al modelo de dominio
    * @param data - Datos de la base de datos (SupabaseFixedExpense)
@@ -168,7 +168,7 @@ export class SupabaseFixedExpenseRepository
       lastPostedMonth: undefined, // Este campo no existe en la BD
     };
   }
-  
+
   /**
    * Convierte un objeto del modelo de dominio al formato de la base de datos
    * @param data - Datos del modelo de dominio (FixedExpense)
@@ -176,7 +176,7 @@ export class SupabaseFixedExpenseRepository
    */
   protected mapModelToDatabase(data: Partial<FixedExpense>): Partial<SupabaseFixedExpense> {
     const databaseData: Partial<SupabaseFixedExpense> = {};
-    
+
     if (data.description !== undefined) {
       databaseData.name = data.description; // Modelo usa 'description', BD usa 'name'
     }
@@ -185,13 +185,16 @@ export class SupabaseFixedExpenseRepository
     }
     if (data.category !== undefined) {
       // Modelo usa category (string), BD usa category_id (UUID)
-      databaseData.category_id = data.category || null;
+      // Si la categoría es 'General' o texto libre, no podemos guardarla en un campo UUID foreign key.
+      // Asumimos NULL para gastos generales sin categoría específica de BD.
+      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(data.category);
+      databaseData.category_id = isUuid ? data.category : null;
     }
     if (data.dayOfMonth !== undefined) {
       databaseData.day_of_month = data.dayOfMonth;
     }
     // lastPostedMonth no existe en la BD, lo ignoramos
-    
+
     // Campos adicionales con valores por defecto si no se especifican
     if (databaseData.frequency === undefined) {
       databaseData.frequency = 'monthly'; // Valor por defecto
@@ -199,7 +202,7 @@ export class SupabaseFixedExpenseRepository
     if (databaseData.is_active === undefined) {
       databaseData.is_active = true; // Valor por defecto
     }
-    
+
     return databaseData;
   }
 }

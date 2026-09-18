@@ -55,8 +55,8 @@ export const QuickExpenseModal: React.FC<QuickExpenseModalProps> = ({ isOpen, on
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (!description.trim() || !amount || !categoryId) {
-            toast.error('Completa todos los campos');
+        if (!amount || !categoryId) {
+            toast.error('Completa el monto y la categoría');
             return;
         }
 
@@ -69,8 +69,11 @@ export const QuickExpenseModal: React.FC<QuickExpenseModalProps> = ({ isOpen, on
         setIsSubmitting(true);
 
         try {
+            const selectedCat = categories.find(c => c.id === categoryId);
+            const finalDescription = description.trim() || selectedCat?.name || 'Gasto General';
+
             await addExpense({
-                description: description.trim(),
+                description: finalDescription,
                 amount: parsedAmount,
                 categoryId,
                 subCategory: subCategory || 'General',
@@ -106,40 +109,30 @@ export const QuickExpenseModal: React.FC<QuickExpenseModalProps> = ({ isOpen, on
             size="medium"
         >
             <form onSubmit={handleSubmit} className={styles.form}>
-                <div className={styles.formGroup}>
+
+                {/* 1. Monto (Prioridad Alta) */}
+                <div className={styles.amountGroup}>
                     <label className={styles.label}>
-                        <Tag size={14} />
-                        Descripción
+                        <DollarSign size={14} />
+                        Monto
                     </label>
                     <Input
-                        type="text"
-                        value={description}
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setDescription(e.target.value)}
-                        placeholder="¿En qué gastaste?"
+                        type="number"
+                        step="0.01"
+                        value={amount}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setAmount(e.target.value)}
+                        placeholder="0.00"
                         required
                         autoFocus
+                        className={styles.amountInput}
                     />
                 </div>
 
+                {/* 2. Categoría y Subcategoría */}
                 <div className={styles.formRow}>
                     <div className={styles.formGroup}>
                         <label className={styles.label}>
-                            <DollarSign size={14} />
-                            Monto
-                        </label>
-                        <Input
-                            type="number"
-                            step="0.01"
-                            value={amount}
-                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setAmount(e.target.value)}
-                            placeholder="0.00"
-                            required
-                        />
-                    </div>
-
-                    <div className={styles.formGroup}>
-                        <label className={styles.label}>
-                            <Calendar size={14} />
+                            <Tag size={14} />
                             Categoría
                         </label>
                         <select
@@ -153,23 +146,38 @@ export const QuickExpenseModal: React.FC<QuickExpenseModalProps> = ({ isOpen, on
                             ))}
                         </select>
                     </div>
+
+                    {selectedCategory?.subcategories && selectedCategory.subcategories.length > 0 && (
+                        <div className={styles.formGroup}>
+                            <label className={styles.label}>Subcategoría</label>
+                            <select
+                                value={subCategory}
+                                onChange={(e) => setSubCategory(e.target.value)}
+                                className={styles.select}
+                            >
+                                {selectedCategory.subcategories.map(sub => (
+                                    <option key={sub.id} value={sub.name}>{sub.name}</option>
+                                ))}
+                            </select>
+                        </div>
+                    )}
                 </div>
 
-                {selectedCategory?.subcategories && selectedCategory.subcategories.length > 0 && (
-                    <div className={styles.formGroup}>
-                        <label className={styles.label}>Subcategoría</label>
-                        <select
-                            value={subCategory}
-                            onChange={(e) => setSubCategory(e.target.value)}
-                            className={styles.select}
-                        >
-                            {selectedCategory.subcategories.map(sub => (
-                                <option key={sub.id} value={sub.name}>{sub.name}</option>
-                            ))}
-                        </select>
-                    </div>
-                )}
+                {/* 3. Descripción (Opcional) */}
+                <div className={styles.formGroup}>
+                    <label className={styles.label}>
+                        <Tag size={14} />
+                        Descripción <span className={styles.optional}>(Opcional)</span>
+                    </label>
+                    <Input
+                        type="text"
+                        value={description}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setDescription(e.target.value)}
+                        placeholder={selectedCategory?.name || "Descripción del gasto"}
+                    />
+                </div>
 
+                {/* 4. Método de Pago (Activo) */}
                 {assets.length > 0 && (
                     <div className={styles.formGroup}>
                         <label className={styles.label}>

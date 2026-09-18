@@ -8,14 +8,14 @@ import type { Financials, FixedExpense } from '../../types';
 export const useFinancials = (userId: string | null) => {
     const [financials, setFinancials] = useState<Financials | null>(null);
     const [fixedExpenses, setFixedExpenses] = useState<FixedExpense[]>([]);
-    const { 
-        loading: loadingFinancials, 
-        error: financialsError, 
-        startLoading, 
-        stopLoading, 
-        clearError 
+    const {
+        loading: loadingFinancials,
+        error: financialsError,
+        startLoading,
+        stopLoading,
+        clearError
     } = useLoadingState(true);
-    
+
     const [loadingFixedExpenses, setLoadingFixedExpenses] = useState(true);
     const [fixedExpensesError, setFixedExpensesError] = useState<string | null>(null);
 
@@ -99,6 +99,17 @@ export const useFinancials = (userId: string | null) => {
         );
     }, [userId]);
 
+    const updateFixedExpense = useCallback(async (id: string, data: Partial<FixedExpense>) => {
+        if (!userId) {
+            return { success: false, error: 'Usuario no autenticado' };
+        }
+
+        return await handleAsyncOperation(
+            () => fixedExpenseServiceRepo.updateFixedExpense(userId, id, data),
+            'Error al actualizar el gasto fijo'
+        );
+    }, [userId]);
+
     const totalFixedExpenses = useMemo(() => {
         return fixedExpenses.reduce((sum, expense) => sum + expense.amount, 0);
     }, [fixedExpenses]);
@@ -121,6 +132,7 @@ export const useFinancials = (userId: string | null) => {
         // Operaciones
         setMonthlyIncome,
         addFixedExpense,
+        updateFixedExpense,
         deleteFixedExpense,
         // Fuentes de pago
         paymentSources,

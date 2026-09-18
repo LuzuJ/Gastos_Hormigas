@@ -1,497 +1,528 @@
-// Tipos de base de datos generados automáticamente para Supabase
-// Estos tipos representan la estructura exacta de las tablas en PostgreSQL
+export type Json =
+  | string
+  | number
+  | boolean
+  | null
+  | { [key: string]: Json | undefined }
+  | Json[];
 
-export interface Database {
+export type Database = {
   public: {
     Tables: {
+      profiles: {
+        Row: {
+          id: string;
+          email: string | null;
+          full_name: string | null;
+          display_name?: string | null;
+          avatar_url: string | null;
+          theme?: string | null;
+          language?: string | null;
+          currency?: string | null;
+          default_workspace_id: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id: string;
+          email?: string | null;
+          full_name?: string | null;
+          display_name?: string | null;
+          avatar_url?: string | null;
+          theme?: string | null;
+          language?: string | null;
+          currency?: string | null;
+          default_workspace_id?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          email?: string | null;
+          full_name?: string | null;
+          display_name?: string | null;
+          avatar_url?: string | null;
+          theme?: string | null;
+          language?: string | null;
+          currency?: string | null;
+          default_workspace_id?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
       users: {
         Row: {
           id: string;
           email: string | null;
-          display_name: string;
+          display_name?: string | null;
+          full_name?: string | null;
           avatar_url: string | null;
-          theme: string | null;
-          currency: 'USD' | 'EUR' | 'MXN' | 'COP' | 'ARS' | 'CLP' | 'PEN';
-          language: string | null;
+          theme?: string | null;
+          language?: string | null;
+          currency?: string;
           created_at: string;
           updated_at: string;
         };
         Insert: {
           id: string;
           email?: string | null;
-          display_name?: string;
+          display_name?: string | null;
+          full_name?: string | null;
           avatar_url?: string | null;
           theme?: string | null;
-          currency?: 'USD' | 'EUR' | 'MXN' | 'COP' | 'ARS' | 'CLP' | 'PEN';
           language?: string | null;
+          currency?: string;
           created_at?: string;
           updated_at?: string;
         };
         Update: {
           id?: string;
           email?: string | null;
-          display_name?: string;
+          display_name?: string | null;
+          full_name?: string | null;
           avatar_url?: string | null;
           theme?: string | null;
-          currency?: 'USD' | 'EUR' | 'MXN' | 'COP' | 'ARS' | 'CLP' | 'PEN';
           language?: string | null;
+          currency?: string;
           created_at?: string;
           updated_at?: string;
         };
+        Relationships: [];
+      };
+      workspaces: {
+        Row: {
+          id: string;
+          name: string;
+          type: 'personal' | 'business';
+          currency: string;
+          plan_tier: 'free' | 'pro' | 'enterprise';
+          created_by: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          name: string;
+          type: 'personal' | 'business';
+          currency?: string;
+          plan_tier?: 'free' | 'pro' | 'enterprise';
+          created_by?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          name?: string;
+          type?: 'personal' | 'business';
+          currency?: string;
+          plan_tier?: 'free' | 'pro' | 'enterprise';
+          created_by?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      workspace_members: {
+        Row: {
+          id: string;
+          workspace_id: string;
+          user_id: string;
+          role: 'owner' | 'admin' | 'accountant' | 'member';
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          workspace_id: string;
+          user_id: string;
+          role?: 'owner' | 'admin' | 'accountant' | 'member';
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          workspace_id?: string;
+          user_id?: string;
+          role?: 'owner' | 'admin' | 'accountant' | 'member';
+          created_at?: string;
+        };
+        Relationships: [];
+      };
+      accounts: {
+        Row: {
+          id: string;
+          workspace_id: string;
+          code: string | null;
+          name: string;
+          type: 'asset' | 'liability' | 'equity' | 'revenue' | 'expense';
+          subtype: 'cash' | 'bank' | 'credit_card' | 'savings_vault' | 'receivable' | 'payable' | 'general' | 'cost_of_goods' | 'operating_expense';
+          currency: string;
+          initial_balance: number;
+          current_balance: number;
+          credit_limit: number;
+          icon: string | null;
+          color: string | null;
+          is_active: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          workspace_id: string;
+          code?: string | null;
+          name: string;
+          type: 'asset' | 'liability' | 'equity' | 'revenue' | 'expense';
+          subtype?: 'cash' | 'bank' | 'credit_card' | 'savings_vault' | 'receivable' | 'payable' | 'general' | 'cost_of_goods' | 'operating_expense';
+          currency?: string;
+          initial_balance?: number;
+          current_balance?: number;
+          credit_limit?: number;
+          icon?: string | null;
+          color?: string | null;
+          is_active?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          workspace_id?: string;
+          code?: string | null;
+          name?: string;
+          type?: 'asset' | 'liability' | 'equity' | 'revenue' | 'expense';
+          subtype?: 'cash' | 'bank' | 'credit_card' | 'savings_vault' | 'receivable' | 'payable' | 'general' | 'cost_of_goods' | 'operating_expense';
+          currency?: string;
+          initial_balance?: number;
+          current_balance?: number;
+          credit_limit?: number;
+          icon?: string | null;
+          color?: string | null;
+          is_active?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
       };
       categories: {
         Row: {
           id: string;
-          user_id: string;
+          workspace_id: string;
           name: string;
+          parent_id: string | null;
           icon: string | null;
           color: string | null;
-          is_default: boolean;
-          budget: number | null;
+          budget_monthly: number;
+          is_ant_expense_default: boolean;
+          is_favorite: boolean;
           created_at: string;
           updated_at: string;
         };
         Insert: {
           id?: string;
-          user_id: string;
+          workspace_id: string;
           name: string;
+          parent_id?: string | null;
           icon?: string | null;
           color?: string | null;
-          is_default?: boolean;
-          budget?: number | null;
+          budget_monthly?: number;
+          is_ant_expense_default?: boolean;
+          is_favorite?: boolean;
           created_at?: string;
           updated_at?: string;
         };
         Update: {
           id?: string;
-          user_id?: string;
+          workspace_id?: string;
           name?: string;
+          parent_id?: string | null;
           icon?: string | null;
           color?: string | null;
-          is_default?: boolean;
-          budget?: number | null;
+          budget_monthly?: number;
+          is_ant_expense_default?: boolean;
+          is_favorite?: boolean;
           created_at?: string;
           updated_at?: string;
         };
+        Relationships: [];
       };
-      subcategories: {
+      cost_centers: {
         Row: {
           id: string;
-          category_id: string;
+          workspace_id: string;
+          code: string;
           name: string;
+          is_active: boolean;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          workspace_id: string;
+          code: string;
+          name: string;
+          is_active?: boolean;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          workspace_id?: string;
+          code?: string;
+          name?: string;
+          is_active?: boolean;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
+      contacts: {
+        Row: {
+          id: string;
+          workspace_id: string;
+          name: string;
+          tax_id: string | null;
+          email: string | null;
+          phone: string | null;
+          type: 'vendor' | 'customer' | 'both';
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          workspace_id: string;
+          name: string;
+          tax_id?: string | null;
+          email?: string | null;
+          phone?: string | null;
+          type?: 'vendor' | 'customer' | 'both';
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          workspace_id?: string;
+          name?: string;
+          tax_id?: string | null;
+          email?: string | null;
+          phone?: string | null;
+          type?: 'vendor' | 'customer' | 'both';
+          created_at?: string;
+        };
+        Relationships: [];
+      };
+      journal_entries: {
+        Row: {
+          id: string;
+          workspace_id: string;
+          entry_number: number;
+          entry_date: string;
+          entry_type: 'simple_expense' | 'simple_income' | 'simple_transfer' | 'manual_journal' | 'recurring';
+          memo: string | null;
+          is_ant_expense: boolean;
+          status: 'draft' | 'posted' | 'void';
+          created_by: string | null;
           created_at: string;
           updated_at: string;
         };
         Insert: {
           id?: string;
-          category_id: string;
-          name: string;
+          workspace_id: string;
+          entry_number?: number;
+          entry_date?: string;
+          entry_type?: 'simple_expense' | 'simple_income' | 'simple_transfer' | 'manual_journal' | 'recurring';
+          memo?: string | null;
+          is_ant_expense?: boolean;
+          status?: 'draft' | 'posted' | 'void';
+          created_by?: string | null;
           created_at?: string;
           updated_at?: string;
         };
         Update: {
           id?: string;
-          category_id?: string;
-          name?: string;
+          workspace_id?: string;
+          entry_number?: number;
+          entry_date?: string;
+          entry_type?: 'simple_expense' | 'simple_income' | 'simple_transfer' | 'manual_journal' | 'recurring';
+          memo?: string | null;
+          is_ant_expense?: boolean;
+          status?: 'draft' | 'posted' | 'void';
+          created_by?: string | null;
           created_at?: string;
           updated_at?: string;
         };
+        Relationships: [];
       };
-      payment_sources: {
+      journal_entry_lines: {
         Row: {
           id: string;
-          user_id: string;
-          name: string;
-          type: 'cash' | 'checking' | 'savings' | 'credit_card' | 'debit_card' | 'loan' | 'income_salary' | 'income_extra' | 'investment' | 'other';
-          balance: number;
+          entry_id: string;
+          account_id: string;
+          category_id: string | null;
+          cost_center_id: string | null;
+          contact_id: string | null;
           description: string | null;
-          is_active: boolean;
-          icon: string | null;
-          color: string | null;
-          auto_update: boolean;
+          debit: number;
+          credit: number;
           created_at: string;
-          updated_at: string;
         };
         Insert: {
           id?: string;
-          user_id: string;
+          entry_id: string;
+          account_id: string;
+          category_id?: string | null;
+          cost_center_id?: string | null;
+          contact_id?: string | null;
+          description?: string | null;
+          debit?: number;
+          credit?: number;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          entry_id?: string;
+          account_id?: string;
+          category_id?: string | null;
+          cost_center_id?: string | null;
+          contact_id?: string | null;
+          description?: string | null;
+          debit?: number;
+          credit?: number;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
+      recurring_rules: {
+        Row: {
+          id: string;
+          workspace_id: string;
           name: string;
-          type: 'cash' | 'checking' | 'savings' | 'credit_card' | 'debit_card' | 'loan' | 'income_salary' | 'income_extra' | 'investment' | 'other';
-          balance?: number;
-          description?: string | null;
-          is_active?: boolean;
-          icon?: string | null;
-          color?: string | null;
-          auto_update?: boolean;
-          created_at?: string;
-          updated_at?: string;
-        };
-        Update: {
-          id?: string;
-          user_id?: string;
-          name?: string;
-          type?: 'cash' | 'checking' | 'savings' | 'credit_card' | 'debit_card' | 'loan' | 'income_salary' | 'income_extra' | 'investment' | 'other';
-          balance?: number;
-          description?: string | null;
-          is_active?: boolean;
-          icon?: string | null;
-          color?: string | null;
-          auto_update?: boolean;
-          created_at?: string;
-          updated_at?: string;
-        };
-      };
-      expenses: {
-        Row: {
-          id: string;
-          user_id: string;
-          description: string;
           amount: number;
-          category_id: string;
-          sub_category: string;
-          payment_source_id: string | null;
-          balance_after_transaction: number | null;
-          is_automatic: boolean;
-          parent_transaction_id: string | null;
-          created_at: string;
-          updated_at: string;
-        };
-        Insert: {
-          id?: string;
-          user_id: string;
-          description: string;
-          amount: number;
-          category_id: string;
-          sub_category: string;
-          payment_source_id?: string | null;
-          balance_after_transaction?: number | null;
-          is_automatic?: boolean;
-          parent_transaction_id?: string | null;
-          created_at?: string;
-          updated_at?: string;
-        };
-        Update: {
-          id?: string;
-          user_id?: string;
-          description?: string;
-          amount?: number;
-          category_id?: string;
-          sub_category?: string;
-          payment_source_id?: string | null;
-          balance_after_transaction?: number | null;
-          is_automatic?: boolean;
-          parent_transaction_id?: string | null;
-          created_at?: string;
-          updated_at?: string;
-        };
-      };
-      fixed_expenses: {
-        Row: {
-          id: string;
-          user_id: string;
-          description: string;
-          amount: number;
-          category: string;
-          day_of_month: number;
-          last_posted_month: string | null;
+          entry_type: 'expense' | 'income' | 'transfer';
+          source_account_id: string | null;
+          destination_account_id: string | null;
+          category_id: string | null;
+          frequency: 'daily' | 'weekly' | 'biweekly' | 'monthly' | 'yearly';
+          day_of_month: number | null;
+          next_run_at: string;
           is_active: boolean;
           created_at: string;
           updated_at: string;
         };
         Insert: {
           id?: string;
-          user_id: string;
-          description: string;
+          workspace_id: string;
+          name: string;
           amount: number;
-          category: string;
-          day_of_month: number;
-          last_posted_month?: string | null;
+          entry_type: 'expense' | 'income' | 'transfer';
+          source_account_id?: string | null;
+          destination_account_id?: string | null;
+          category_id?: string | null;
+          frequency: 'daily' | 'weekly' | 'biweekly' | 'monthly' | 'yearly';
+          day_of_month?: number | null;
+          next_run_at: string;
           is_active?: boolean;
           created_at?: string;
           updated_at?: string;
         };
         Update: {
           id?: string;
-          user_id?: string;
-          description?: string;
+          workspace_id?: string;
+          name?: string;
           amount?: number;
-          category?: string;
-          day_of_month?: number;
-          last_posted_month?: string | null;
+          entry_type?: 'expense' | 'income' | 'transfer';
+          source_account_id?: string | null;
+          destination_account_id?: string | null;
+          category_id?: string | null;
+          frequency?: 'daily' | 'weekly' | 'biweekly' | 'monthly' | 'yearly';
+          day_of_month?: number | null;
+          next_run_at?: string;
           is_active?: boolean;
           created_at?: string;
           updated_at?: string;
         };
+        Relationships: [];
       };
-      financials: {
+      savings_vaults: {
         Row: {
           id: string;
-          user_id: string;
-          monthly_income: number;
-          created_at: string;
-          updated_at: string;
-        };
-        Insert: {
-          id?: string;
-          user_id: string;
-          monthly_income?: number;
-          created_at?: string;
-          updated_at?: string;
-        };
-        Update: {
-          id?: string;
-          user_id?: string;
-          monthly_income?: number;
-          created_at?: string;
-          updated_at?: string;
-        };
-      };
-      savings_goals: {
-        Row: {
-          id: string;
-          user_id: string;
+          workspace_id: string;
+          account_id: string | null;
           name: string;
           target_amount: number;
           current_amount: number;
+          target_date: string | null;
+          icon: string | null;
+          color: string | null;
+          is_active: boolean;
           created_at: string;
           updated_at: string;
         };
         Insert: {
           id?: string;
-          user_id: string;
+          workspace_id: string;
+          account_id?: string | null;
           name: string;
           target_amount: number;
           current_amount?: number;
+          target_date?: string | null;
+          icon?: string | null;
+          color?: string | null;
+          is_active?: boolean;
           created_at?: string;
           updated_at?: string;
         };
         Update: {
           id?: string;
-          user_id?: string;
+          workspace_id?: string;
+          account_id?: string | null;
           name?: string;
           target_amount?: number;
           current_amount?: number;
+          target_date?: string | null;
+          icon?: string | null;
+          color?: string | null;
+          is_active?: boolean;
           created_at?: string;
           updated_at?: string;
         };
+        Relationships: [];
       };
-      assets: {
-        Row: {
-          id: string;
-          user_id: string;
-          name: string;
-          value: number;
-          type: 'cash' | 'investment' | 'property';
-          description: string | null;
-          created_at: string;
-          updated_at: string;
-        };
-        Insert: {
-          id?: string;
-          user_id: string;
-          name: string;
-          value: number;
-          type: 'cash' | 'investment' | 'property';
-          description?: string | null;
-          created_at?: string;
-          updated_at?: string;
-        };
-        Update: {
-          id?: string;
-          user_id?: string;
-          name?: string;
-          value?: number;
-          type?: 'cash' | 'investment' | 'property';
-          description?: string | null;
-          created_at?: string;
-          updated_at?: string;
-        };
-      };
-      liabilities: {
-        Row: {
-          id: string;
-          user_id: string;
-          name: string;
-          amount: number;
-          original_amount: number | null;
-          type: 'credit_card' | 'loan' | 'mortgage' | 'student_loan' | 'other';
-          interest_rate: number | null;
-          monthly_payment: number | null;
-          duration: number | null;
-          due_date: string | null;
-          description: string | null;
-          is_archived: boolean;
-          archived_at: string | null;
-          created_at: string;
-          updated_at: string;
-        };
-        Insert: {
-          id?: string;
-          user_id: string;
-          name: string;
-          amount: number;
-          original_amount?: number | null;
-          type: 'credit_card' | 'loan' | 'mortgage' | 'student_loan' | 'other';
-          interest_rate?: number | null;
-          monthly_payment?: number | null;
-          duration?: number | null;
-          due_date?: string | null;
-          description?: string | null;
-          is_archived?: boolean;
-          archived_at?: string | null;
-          created_at?: string;
-          updated_at?: string;
-        };
-        Update: {
-          id?: string;
-          user_id?: string;
-          name?: string;
-          amount?: number;
-          original_amount?: number | null;
-          type?: 'credit_card' | 'loan' | 'mortgage' | 'student_loan' | 'other';
-          interest_rate?: number | null;
-          monthly_payment?: number | null;
-          duration?: number | null;
-          due_date?: string | null;
-          description?: string | null;
-          is_archived?: boolean;
-          archived_at?: string | null;
-          created_at?: string;
-          updated_at?: string;
-        };
-      };
-      debt_payments: {
-        Row: {
-          id: string;
-          user_id: string;
-          liability_id: string;
-          amount: number;
-          payment_date: string;
-          description: string | null;
-          payment_type: 'regular' | 'extra' | 'interest_only';
-          created_at: string;
-          updated_at: string;
-        };
-        Insert: {
-          id?: string;
-          user_id: string;
-          liability_id: string;
-          amount: number;
-          payment_date: string;
-          description?: string | null;
-          payment_type?: 'regular' | 'extra' | 'interest_only';
-          created_at?: string;
-          updated_at?: string;
-        };
-        Update: {
-          id?: string;
-          user_id?: string;
-          liability_id?: string;
-          amount?: number;
-          payment_date?: string;
-          description?: string | null;
-          payment_type?: 'regular' | 'extra' | 'interest_only';
-          created_at?: string;
-          updated_at?: string;
-        };
-      };
-      incomes: {
-        Row: {
-          id: string;
-          user_id: string;
-          amount: number;
-          description: string;
-          category: 'salary' | 'freelance' | 'investment' | 'gift' | 'other';
-          asset_id: string | null;
-          asset_name: string | null;
-          date: string;
-          is_recurring: boolean;
-          recurrence_frequency: 'weekly' | 'biweekly' | 'monthly' | 'yearly' | null;
-          recurrence_day: number | null;
-          next_recurrence_date: string | null;
-          created_at: string;
-          updated_at: string;
-        };
-        Insert: {
-          id?: string;
-          user_id: string;
-          amount: number;
-          description: string;
-          category: 'salary' | 'freelance' | 'investment' | 'gift' | 'other';
-          asset_id?: string | null;
-          asset_name?: string | null;
-          date: string;
-          is_recurring?: boolean;
-          recurrence_frequency?: 'weekly' | 'biweekly' | 'monthly' | 'yearly' | null;
-          recurrence_day?: number | null;
-          next_recurrence_date?: string | null;
-          created_at?: string;
-          updated_at?: string;
-        };
-        Update: {
-          id?: string;
-          user_id?: string;
-          amount?: number;
-          description?: string;
-          category?: 'salary' | 'freelance' | 'investment' | 'gift' | 'other';
-          asset_id?: string | null;
-          asset_name?: string | null;
-          date?: string;
-          is_recurring?: boolean;
-          recurrence_frequency?: 'weekly' | 'biweekly' | 'monthly' | 'yearly' | null;
-          recurrence_day?: number | null;
-          next_recurrence_date?: string | null;
-          created_at?: string;
-          updated_at?: string;
-        };
-      };
-      // Agregar más tablas según sea necesario...
     };
     Views: {
       [_ in never]: never;
     };
     Functions: {
-      initialize_default_categories: {
-        Args: { user_id: string };
-        Returns: void;
+      record_simple_entry: {
+        Args: {
+          p_workspace_id: string;
+          p_amount: number;
+          p_entry_type: 'expense' | 'income' | 'transfer';
+          p_source_account_id?: string | null;
+          p_dest_account_id?: string | null;
+          p_category_id?: string | null;
+          p_memo?: string | null;
+          p_is_ant?: boolean;
+          p_date?: string;
+        };
+        Returns: string;
       };
-      // Agregar más funciones según sea necesario...
+      user_has_workspace_access: {
+        Args: {
+          ws_id: string;
+        };
+        Returns: boolean;
+      };
     };
     Enums: {
-      payment_source_type: 'cash' | 'checking' | 'savings' | 'credit_card' | 'debit_card' | 'loan' | 'income_salary' | 'income_extra' | 'investment' | 'other';
-      asset_type: 'cash' | 'investment' | 'property';
-      liability_type: 'credit_card' | 'loan' | 'mortgage' | 'student_loan' | 'other';
-      debt_payment_type: 'regular' | 'extra' | 'interest_only';
-      recurring_frequency: 'weekly' | 'biweekly' | 'monthly' | 'quarterly' | 'yearly';
-      income_category: 'salary' | 'freelance' | 'business' | 'investment' | 'other';
-      transaction_type: 'income' | 'expense';
-      transaction_history_type: 'income' | 'expense' | 'transfer';
-      alert_type: 'low_balance' | 'upcoming_payment' | 'debt_reminder' | 'budget_exceeded' | 'savings_opportunity' | 'income_received' | 'goal_achieved';
-      alert_severity: 'low' | 'medium' | 'high' | 'critical';
-      achievement_category: 'budget' | 'savings' | 'debt' | 'income' | 'general';
-      achievement_tier: 'bronze' | 'silver' | 'gold' | 'platinum';
-      achievement_requirement_type: 'budget_streak' | 'savings_goal' | 'debt_payment' | 'expense_reduction' | 'income_increase' | 'net_worth_growth';
-      achievement_period: 'monthly' | 'yearly' | 'total';
+      [_ in never]: never;
     };
     CompositeTypes: {
       [_ in never]: never;
     };
   };
-}
+};
 
-// Tipos de utilidad para trabajar con Supabase
-export type Tables<T extends keyof Database['public']['Tables']> = Database['public']['Tables'][T]['Row'];
-export type Enums<T extends keyof Database['public']['Enums']> = Database['public']['Enums'][T];
-
-// Alias de tipos para facilitar el uso
-export type SupabaseUser = Tables<'users'>;
-export type SupabaseCategory = Tables<'categories'>;
-export type SupabaseSubcategory = Tables<'subcategories'>;
-export type SupabaseExpense = Tables<'expenses'>;
-export type SupabasePaymentSource = Tables<'payment_sources'>;
-export type SupabaseFixedExpense = Tables<'fixed_expenses'>;
-export type SupabaseFinancials = Tables<'financials'>;
-export type SupabaseSavingsGoal = Tables<'savings_goals'>;
-export type SupabaseAsset = Tables<'assets'>;
-export type SupabaseLiability = Tables<'liabilities'>;
-export type SupabaseDebtPayment = Tables<'debt_payments'>;
+// Aliases de compatibilidad
+export type SupabaseUser = Database['public']['Tables']['profiles']['Row'];
+export type SupabaseProfile = Database['public']['Tables']['profiles']['Row'];
+export type SupabaseAccount = Database['public']['Tables']['accounts']['Row'];
+export type SupabaseCategory = Database['public']['Tables']['categories']['Row'];
+export type SupabaseSubcategory = Database['public']['Tables']['categories']['Row'];
+export type SupabaseWorkspace = Database['public']['Tables']['workspaces']['Row'];
+export type SupabaseJournalEntry = Database['public']['Tables']['journal_entries']['Row'];
+export type SupabaseJournalLine = Database['public']['Tables']['journal_entry_lines']['Row'];
+export type SupabaseRecurringRule = Database['public']['Tables']['recurring_rules']['Row'];
+export type SupabaseSavingsVault = Database['public']['Tables']['savings_vaults']['Row'];

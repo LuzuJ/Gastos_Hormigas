@@ -1,24 +1,11 @@
-import React, { type ReactNode, useState, useEffect } from 'react';
-import styles from './Layout.module.css';
+import React, { type ReactNode, useState } from 'react';
 import { PAGE_ROUTES } from '../../../constants';
-import { Notifications } from '../../misc/Notifications/Notifications';
+import { FloatingDock } from '../../layout/FloatingDock/FloatingDock';
+import { ToolsSheet } from '../../modals/ToolsSheet/ToolsSheet'; // Static import for stability
+import { QuickActionSheet } from '../../modals/QuickActionSheet/QuickActionSheet';
 import { useNotificationsContext } from '../../../contexts/AppContext';
-import { ThemeToggler } from '../../ui/ThemeToggler/ThemeToggler';
-import {
-  UserPlus,
-  WifiOff,
-  LayoutDashboard,
-  Wallet,
-  BarChart3,
-  User,
-  ChevronDown,
-  ClipboardList,
-  PiggyBank,
-  TrendingUp,
-  FileText,
-  PieChart,
-  Tag
-} from 'lucide-react';
+import { Notifications } from '../../misc/Notifications/Notifications';
+import styles from './Layout.module.css';
 
 export type Page = typeof PAGE_ROUTES[keyof typeof PAGE_ROUTES];
 
@@ -29,154 +16,73 @@ interface LayoutProps {
   isGuest?: boolean;
 }
 
-// Definir grupos de navegación
-const NAV_GROUPS = {
-  FINANZAS: [PAGE_ROUTES.REGISTRO, PAGE_ROUTES.INCOMES, PAGE_ROUTES.BUDGET, PAGE_ROUTES.PLANNING],
-  REPORTES: [PAGE_ROUTES.STATS, PAGE_ROUTES.ANALYSIS, PAGE_ROUTES.REPORTS]
-};
-
 export const Layout: React.FC<LayoutProps> = ({ currentPage, setCurrentPage, children, isGuest }) => {
   const { notifications, removeNotification } = useNotificationsContext();
-  const [isOnline, setIsOnline] = useState(navigator.onLine);
-  const [openSubmenu, setOpenSubmenu] = useState<string | null>(null);
+  const [isQuickAddOpen, setIsQuickAddOpen] = useState(false);
+  const [isToolsOpen, setIsToolsOpen] = useState(false);
 
-  useEffect(() => {
-    const handleOnline = () => setIsOnline(true);
-    const handleOffline = () => setIsOnline(false);
-
-    window.addEventListener('online', handleOnline);
-    window.addEventListener('offline', handleOffline);
-
-    return () => {
-      window.removeEventListener('online', handleOnline);
-      window.removeEventListener('offline', handleOffline);
-    };
-  }, []);
-
-  const handleGoToProfile = () => {
-    setCurrentPage(PAGE_ROUTES.PROFILE);
+  // Map Pages to IDs for Dock
+  const getActiveTab = () => {
+    switch (currentPage) {
+      case PAGE_ROUTES.DASHBOARD: return 'dashboard';
+      case PAGE_ROUTES.PROFILE: return 'profile';
+      case PAGE_ROUTES.STATS: return 'analysis';
+      case PAGE_ROUTES.ACTIVITY: return 'transactions';
+      default: return 'dashboard';
+    }
   };
 
-  const isInGroup = (group: Page[]) => group.includes(currentPage);
-
-  const toggleSubmenu = (menu: string) => {
-    setOpenSubmenu(openSubmenu === menu ? null : menu);
+  const handleTabChange = (id: string) => {
+    if (id === 'dashboard') setCurrentPage(PAGE_ROUTES.DASHBOARD);
+    if (id === 'profile') setCurrentPage(PAGE_ROUTES.PROFILE);
+    if (id === 'analysis') setCurrentPage(PAGE_ROUTES.STATS); // Stats = Insights
+    if (id === 'transactions') setCurrentPage(PAGE_ROUTES.ACTIVITY);
+    // Menu (id='menu') is handled by onMenuClick
   };
 
-  const handleNavClick = (page: Page) => {
-    setCurrentPage(page);
-    setOpenSubmenu(null);
+  const handleToolNavigate = (route: string) => {
+    // Check if route matches generic PAGE_ROUTES
+    const pageKey = Object.keys(PAGE_ROUTES).find(k => PAGE_ROUTES[k as keyof typeof PAGE_ROUTES] === route);
+    if (pageKey) {
+      setCurrentPage(route as Page);
+    }
   };
 
   return (
-    <div className={styles.container}>
-      {isGuest && (
-        <div className={styles.guestBanner}>
-          <span>Modo invitado</span>
-          <button onClick={handleGoToProfile}>
-            <UserPlus size={14} />
-            Crear cuenta
-          </button>
-        </div>
-      )}
-
-      {/* Header Compacto */}
+    <div className={styles.appContainer}>
       <header className={styles.header}>
-        <div className={styles.headerLeft}>
-          <h1 className={styles.logo}>💰 Gastos Hormigas</h1>
+        <div className={styles.brand}>
+          Gestor Gastos MJ
+          {isGuest && <span className={styles.guestBadge}>Beta</span>}
         </div>
-        <div className={styles.headerActions}>
-          {!isOnline && (
-            <div className={styles.offlineAlert}>
-              <WifiOff size={14} />
-            </div>
-          )}
-          <Notifications notifications={notifications} onRemove={removeNotification} />
-          <ThemeToggler />
-        </div>
+        <Notifications notifications={notifications} onRemove={removeNotification} />
       </header>
 
-      {/* Navegación Simplificada - 4 items */}
-      <nav className={styles.mainNav}>
-        {/* Inicio */}
-        <button
-          onClick={() => handleNavClick(PAGE_ROUTES.DASHBOARD)}
-          className={`${styles.navLink} ${currentPage === PAGE_ROUTES.DASHBOARD ? styles.active : ''}`}
-        >
-          <LayoutDashboard size={18} />
-          <span>Inicio</span>
-        </button>
-
-        {/* Finanzas - Dropdown */}
-        <div className={styles.navDropdown}>
-          <button
-            onClick={() => toggleSubmenu('finanzas')}
-            className={`${styles.navLink} ${isInGroup(NAV_GROUPS.FINANZAS) ? styles.active : ''}`}
-          >
-            <Wallet size={18} />
-            <span>Finanzas</span>
-            <ChevronDown size={14} className={`${styles.chevron} ${openSubmenu === 'finanzas' ? styles.open : ''}`} />
-          </button>
-          {openSubmenu === 'finanzas' && (
-            <div className={styles.submenu}>
-              <button onClick={() => handleNavClick(PAGE_ROUTES.REGISTRO)}>
-                <ClipboardList size={16} /> Gastos
-              </button>
-              <button onClick={() => handleNavClick(PAGE_ROUTES.INCOMES)}>
-                <TrendingUp size={16} /> Ingresos
-              </button>
-              <button onClick={() => handleNavClick(PAGE_ROUTES.BUDGET)}>
-                <PiggyBank size={16} /> Presupuestos
-              </button>
-              <button onClick={() => handleNavClick(PAGE_ROUTES.PLANNING)}>
-                <Wallet size={16} /> Planificación
-              </button>
-            </div>
-          )}
-        </div>
-
-        {/* Reportes - Dropdown */}
-        <div className={styles.navDropdown}>
-          <button
-            onClick={() => toggleSubmenu('reportes')}
-            className={`${styles.navLink} ${isInGroup(NAV_GROUPS.REPORTES) ? styles.active : ''}`}
-          >
-            <BarChart3 size={18} />
-            <span>Reportes</span>
-            <ChevronDown size={14} className={`${styles.chevron} ${openSubmenu === 'reportes' ? styles.open : ''}`} />
-          </button>
-          {openSubmenu === 'reportes' && (
-            <div className={styles.submenu}>
-              <button onClick={() => handleNavClick(PAGE_ROUTES.STATS)}>
-                <PieChart size={16} /> Estadísticas
-              </button>
-              <button onClick={() => handleNavClick(PAGE_ROUTES.ANALYSIS)}>
-                <Tag size={16} /> Categorías
-              </button>
-              <button onClick={() => handleNavClick(PAGE_ROUTES.REPORTS)}>
-                <FileText size={16} /> Reportes
-              </button>
-            </div>
-          )}
-        </div>
-
-        {/* Perfil */}
-        <button
-          onClick={() => handleNavClick(PAGE_ROUTES.PROFILE)}
-          className={`${styles.navLink} ${currentPage === PAGE_ROUTES.PROFILE ? styles.active : ''}`}
-        >
-          <User size={18} />
-          <span>Perfil</span>
-        </button>
-      </nav>
-
-      <main className={styles.mainContent}>
+      <main className={styles.main}>
         {children}
       </main>
 
-      <footer className={styles.footer}>
-        <p>No gastes más de lo que tienes ❤️</p>
-      </footer>
+      <FloatingDock
+        activeTab={getActiveTab()}
+        onTabChange={handleTabChange}
+        onAddClick={() => setIsQuickAddOpen(true)}
+        onMenuClick={() => setIsToolsOpen(true)}
+      />
+
+      <QuickActionSheet
+        isOpen={isQuickAddOpen}
+        onClose={() => setIsQuickAddOpen(false)}
+      />
+
+      {/* Dynamic Tools Sheet */}
+      {isToolsOpen && (
+        <ToolsSheet
+          isOpen={isToolsOpen}
+          onClose={() => setIsToolsOpen(false)}
+          onNavigate={handleToolNavigate}
+        />
+      )}
+
     </div>
   );
 };

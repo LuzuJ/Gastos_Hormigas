@@ -1,340 +1,182 @@
-import React, { useState, useMemo } from 'react';
-import { ChevronDown, Plus, Wallet, CreditCard, Target, PiggyBank, Receipt, TrendingUp } from 'lucide-react';
-import { FixedExpenses } from '../components/features/fixed-expenses/FixedExpenses/FixedExpenses';
-import { NetWorthManager } from '../components/features/financials/NetWorthManager/NetWorthManager';
-import { GuestBlockedFeature } from '../components/misc/GuestBlockedFeature/GuestBlockedFeature';
-import { LoadingStateWrapper } from '../components/LoadingState/LoadingState';
-import { SavingsGoalsSection } from '../components/pages/PlanningPage/SavingsGoalsSection';
-import { DebtManagerSection } from '../components/pages/PlanningPage/DebtManagerSection';
-import { Modal } from '../components/ui/Modal';
-import { IncomeForm } from '../components/forms/IncomeForm/IncomeForm';
+import React, { useState } from 'react';
+import { PageContainer } from '../components/layout/PageContainer/PageContainer';
+import { PageHeader } from '../components/ui/PageHeader/PageHeader';
+import { Card } from '../components/ui/Card/Card';
 import {
-    useCategoriesContext,
-    useFinancialsContext,
+    useNetWorthContext,
     useSavingsGoalsContext,
-    useNetWorthContext
+    useFinancialsContext
 } from '../contexts/AppContext';
-import { useAuth } from '../contexts/AuthContext';
-import { useIncomes } from '../hooks/incomes/useIncomes';
 import { formatCurrency } from '../utils/formatters';
+import { HandCoins, Wallet, CreditCard, Target, Receipt } from 'lucide-react';
 import styles from './PlanningPage.module.css';
+import { AssetDetailsSheet } from '../components/modals/PlanningSheets/AssetDetailsSheet';
+import { LiabilityDetailsSheet } from '../components/modals/PlanningSheets/LiabilityDetailsSheet';
+import { SavingsGoalSheet } from '../components/modals/PlanningSheets/SavingsGoalSheet';
+import { FixedExpensesSheet } from '../components/modals/PlanningSheets/FixedExpensesSheet';
+import { FinancialTips } from '../components/dashboard/FinancialTips/FinancialTips';
 
-export interface PlanningPageProps {
-    isGuest: boolean;
-}
+type SheetType = 'assets' | 'liabilities' | 'goals' | 'fixed' | null;
 
-type AccordionSection = 'deudas' | 'gastosFijos' | 'metas' | 'ingresos' | null;
-
-export const PlanningPage: React.FC<PlanningPageProps> = ({ isGuest }) => {
-    const [openSection, setOpenSection] = useState<AccordionSection>(null);
-    const [showIncomeModal, setShowIncomeModal] = useState(false);
-
-    const { user } = useAuth();
-
-    // Hook para obtener ingresos reales
-    const { incomes, loading: loadingIncomes } = useIncomes(user?.id || null);
-
+export const PlanningPage: React.FC<{ isGuest?: boolean }> = ({ isGuest }) => {
+    // Contexts
     const {
-        categories,
-        loadingCategories,
-        categoriesError,
-        clearCategoriesError
-    } = useCategoriesContext();
-
-    const {
-        financials,
-        setMonthlyIncome,
-        fixedExpenses,
-        addFixedExpense,
-        deleteFixedExpense,
-        loadingFinancials,
-        financialsError,
-        clearFinancialsError
-    } = useFinancialsContext();
-
-    const {
-        savingsGoals,
-        addSavingsGoal,
-        deleteSavingsGoal,
-        addAmountToGoal,
-        subtractAmountFromGoal,
-        loadingSavingsGoals,
-        savingsGoalsError,
-        clearSavingsGoalsError
-    } = useSavingsGoalsContext();
-
-    const {
-        assets,
-        liabilities,
-        netWorth,
-        totalAssets,
-        totalLiabilities,
-        addAsset,
-        updateAsset,
-        deleteAsset,
-        addLiability,
-        updateLiability,
-        deleteLiability,
-        loadingNetWorth,
-        netWorthError,
-        clearNetWorthError
+        netWorth, assets, liabilities, totalAssets, totalLiabilities,
+        addAsset, updateAsset, deleteAsset, addLiability, updateLiability, deleteLiability
     } = useNetWorthContext();
+    const {
+        savingsGoals, addSavingsGoal, updateSavingsGoal, deleteSavingsGoal,
+        addAmountToGoal, subtractAmountFromGoal
+    } = useSavingsGoalsContext();
+    const { fixedExpenses, addFixedExpense, deleteFixedExpense } = useFinancialsContext();
 
-    const isLoadingCritical = loadingCategories || loadingFinancials || loadingIncomes;
-    const criticalError = categoriesError || financialsError;
-
-    // Calcular ingresos del mes actual
-    const monthlyIncomeFromRecords = useMemo(() => {
-        if (!incomes || incomes.length === 0) return 0;
-
-        const now = new Date();
-        const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-
-        return incomes
-            .filter(income => {
-                const incomeDate = new Date(income.date);
-                return incomeDate >= startOfMonth && incomeDate <= now;
-            })
-            .reduce((sum, income) => sum + income.amount, 0);
-    }, [incomes]);
-
-    // Usar el mayor entre manual y calculado
-    const displayIncome = Math.max(financials?.monthlyIncome || 0, monthlyIncomeFromRecords);
-
-    const toggleSection = (section: AccordionSection) => {
-        setOpenSection(openSection === section ? null : section);
-    };
-
-    if (isGuest) {
-        return (
-            <div className={styles.container}>
-                <div className={styles.header}>
-                    <h2 className={styles.title}>📊 Planificación Financiera</h2>
-                </div>
-                <div className={styles.section}>
-                    <GuestBlockedFeature message="Gestiona tus activos, pasivos, gastos fijos y metas de ahorro creando una cuenta." />
-                </div>
-            </div>
-        );
-    }
+    const [activeSheet, setActiveSheet] = useState<SheetType>(null);
 
     return (
-        <div className={styles.container}>
-            <div className={styles.header}>
-                <h2 className={styles.title}>📊 Planificación Financiera</h2>
-            </div>
-
-            {/* Hero - Patrimonio Neto */}
-            <div className={styles.netWorthHero}>
-                <div className={styles.netWorthLabel}>Patrimonio Neto</div>
-                <div className={`${styles.netWorthValue} ${netWorth >= 0 ? styles.positive : styles.negative}`}>
-                    {formatCurrency(netWorth)}
-                </div>
-            </div>
-
-            {/* Grid 2 columnas: Activos | Pasivos */}
-            <div className={styles.mainGrid}>
-                {/* Activos */}
-                <div className={styles.summaryCard}>
-                    <div className={styles.cardHeader}>
-                        <span className={styles.cardTitle}>
-                            <Wallet size={18} /> Activos
-                        </span>
-                        <span className={`${styles.cardTotal} ${styles.positive}`}>
-                            {formatCurrency(totalAssets)}
-                        </span>
-                    </div>
-                    <div className={styles.itemList}>
-                        {assets.length === 0 ? (
-                            <div className={styles.emptyState}>Sin activos registrados</div>
-                        ) : (
-                            assets.map(asset => (
-                                <div key={asset.id} className={styles.item}>
-                                    <div className={styles.itemInfo}>
-                                        <span className={styles.itemName}>{asset.name}</span>
-                                        <span className={styles.itemType}>{asset.type}</span>
-                                    </div>
-                                    <span className={`${styles.itemValue} ${styles.positive}`}>
-                                        +{formatCurrency(asset.value)}
-                                    </span>
-                                </div>
-                            ))
-                        )}
-                    </div>
-                </div>
-
-                {/* Pasivos */}
-                <div className={styles.summaryCard}>
-                    <div className={styles.cardHeader}>
-                        <span className={styles.cardTitle}>
-                            <CreditCard size={18} /> Pasivos
-                        </span>
-                        <span className={`${styles.cardTotal} ${styles.negative}`}>
-                            -{formatCurrency(totalLiabilities)}
-                        </span>
-                    </div>
-                    <div className={styles.itemList}>
-                        {liabilities.length === 0 ? (
-                            <div className={styles.emptyState}>Sin pasivos registrados</div>
-                        ) : (
-                            liabilities.map(liability => (
-                                <div key={liability.id} className={styles.item}>
-                                    <div className={styles.itemInfo}>
-                                        <span className={styles.itemName}>{liability.name}</span>
-                                        <span className={styles.itemType}>{liability.type}</span>
-                                    </div>
-                                    <span className={`${styles.itemValue} ${styles.negative}`}>
-                                        -{formatCurrency(liability.amount ?? 0)}
-                                    </span>
-                                </div>
-                            ))
-                        )}
-                    </div>
-                </div>
-            </div>
-
-            <LoadingStateWrapper
-                loading={isLoadingCritical}
-                error={criticalError}
-                onDismissError={() => {
-                    clearCategoriesError();
-                    clearFinancialsError();
-                }}
-                loadingMessage="Cargando datos..."
-            >
-                <>
-                    {/* Gestión Activos/Pasivos - Acordeón */}
-                    <div className={styles.accordion}>
-                        <button
-                            className={styles.accordionHeader}
-                            onClick={() => toggleSection('deudas')}
-                        >
-                            <span className={styles.accordionTitle}>
-                                <CreditCard size={18} /> Gestionar Activos y Deudas
-                            </span>
-                            <ChevronDown
-                                size={18}
-                                className={`${styles.accordionChevron} ${openSection === 'deudas' ? styles.open : ''}`}
-                            />
-                        </button>
-                        {openSection === 'deudas' && (
-                            <div className={styles.accordionContent}>
-                                <NetWorthManager
-                                    assets={assets}
-                                    liabilities={liabilities}
-                                    onAddAsset={addAsset}
-                                    onUpdateAsset={updateAsset}
-                                    onDeleteAsset={deleteAsset}
-                                    onAddLiability={addLiability}
-                                    onUpdateLiability={updateLiability}
-                                    onDeleteLiability={deleteLiability}
-                                />
-                            </div>
-                        )}
-                    </div>
-
-                    {/* Gastos Fijos - Acordeón */}
-                    <div className={styles.accordion}>
-                        <button
-                            className={styles.accordionHeader}
-                            onClick={() => toggleSection('gastosFijos')}
-                        >
-                            <span className={styles.accordionTitle}>
-                                <Receipt size={18} /> Gastos Fijos Mensuales
-                            </span>
-                            <ChevronDown
-                                size={18}
-                                className={`${styles.accordionChevron} ${openSection === 'gastosFijos' ? styles.open : ''}`}
-                            />
-                        </button>
-                        {openSection === 'gastosFijos' && (
-                            <div className={styles.accordionContent}>
-                                <FixedExpenses
-                                    categories={categories}
-                                    fixedExpenses={fixedExpenses}
-                                    onAdd={async (data) => { await addFixedExpense(data); }}
-                                    onDelete={async (id: string) => { await deleteFixedExpense(id); }}
-                                />
-                            </div>
-                        )}
-                    </div>
-
-                    {/* Metas de Ahorro - Acordeón */}
-                    <div className={styles.accordion}>
-                        <button
-                            className={styles.accordionHeader}
-                            onClick={() => toggleSection('metas')}
-                        >
-                            <span className={styles.accordionTitle}>
-                                <Target size={18} /> Metas de Ahorro
-                            </span>
-                            <ChevronDown
-                                size={18}
-                                className={`${styles.accordionChevron} ${openSection === 'metas' ? styles.open : ''}`}
-                            />
-                        </button>
-                        {openSection === 'metas' && (
-                            <div className={styles.accordionContent}>
-                                <SavingsGoalsSection
-                                    savingsGoals={savingsGoals}
-                                    onAdd={addSavingsGoal}
-                                    onDelete={deleteSavingsGoal}
-                                    onAddFunds={addAmountToGoal}
-                                    onRemoveFunds={subtractAmountFromGoal}
-                                    loading={loadingSavingsGoals}
-                                    error={savingsGoalsError}
-                                    onDismissError={clearSavingsGoalsError}
-                                    isGuest={isGuest}
-                                />
-                            </div>
-                        )}
-                    </div>
-
-                    {/* Ingreso Mensual - Acordeón */}
-                    <div className={styles.accordion}>
-                        <button
-                            className={styles.accordionHeader}
-                            onClick={() => toggleSection('ingresos')}
-                        >
-                            <span className={styles.accordionTitle}>
-                                <PiggyBank size={18} /> Ingreso Mensual: {formatCurrency(displayIncome)}
-                                {monthlyIncomeFromRecords > 0 && (
-                                    <TrendingUp size={14} style={{ color: '#10b981', marginLeft: '4px' }} />
-                                )}
-                            </span>
-                            <ChevronDown
-                                size={18}
-                                className={`${styles.accordionChevron} ${openSection === 'ingresos' ? styles.open : ''}`}
-                            />
-                        </button>
-                        {openSection === 'ingresos' && (
-                            <div className={styles.accordionContent}>
-                                <IncomeForm
-                                    currentIncome={financials?.monthlyIncome || 0}
-                                    onSetIncome={async (income: number) => {
-                                        await setMonthlyIncome(income);
-                                    }}
-                                />
-                            </div>
-                        )}
-                    </div>
-                </>
-            </LoadingStateWrapper>
-
-            {/* Modal de Ingreso */}
-            <Modal
-                isOpen={showIncomeModal}
-                onClose={() => setShowIncomeModal(false)}
-                title="Configurar Ingreso Mensual"
-            >
-                <IncomeForm
-                    currentIncome={financials?.monthlyIncome || 0}
-                    onSetIncome={async (income: number) => {
-                        await setMonthlyIncome(income);
-                        setShowIncomeModal(false);
-                    }}
+        <PageContainer>
+            <div className={styles.container}>
+                <PageHeader
+                    title="Planificación"
+                    subtitle="Tu mapa hacia la libertad financiera"
+                    icon={<HandCoins size={24} />}
                 />
-            </Modal>
-        </div>
+
+                {/* Net Worth - Full Width Hero */}
+                <div className={styles.heroSection}>
+                    <span className={styles.netWorthLabel}>Patrimonio Neto Total</span>
+                    <span className={`${styles.netWorthValue} ${netWorth >= 0 ? styles.positive : styles.negative}`}>
+                        {formatCurrency(netWorth)}
+                    </span>
+                    <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginTop: '8px' }}>
+                        (Activos - Pasivos)
+                    </div>
+                </div>
+
+                {/* Main Sections - Vertical Stack or Grid depending on breadth */}
+                {/* User asked to de-compress. Using full width cards for primary categories might be better, 
+                    OR better grid spacing. Let's use a cleaner Grid with visual separation. */}
+
+                <h3 className={styles.sectionHeader}>Balance General</h3>
+                <div className={styles.grid2}>
+                    <div onClick={() => setActiveSheet('assets')} style={{ cursor: 'pointer' }}>
+                        <Card padding="lg" className={styles.hoverCard}>
+                            <div className={styles.sectionTitle}>
+                                <div className={styles.iconCircle} style={{ background: 'rgba(var(--success-rgb), 0.1)', color: 'var(--success)' }}>
+                                    <Wallet size={20} />
+                                </div>
+                                Activos
+                            </div>
+                            <div style={{ fontSize: '1.8rem', fontWeight: 700, color: 'var(--success)' }}>
+                                {formatCurrency(totalAssets)}
+                            </div>
+                            <div className={styles.cardFooter}>
+                                {assets.length} activos registrados
+                                <span className={styles.arrow}>&rarr;</span>
+                            </div>
+                        </Card>
+                    </div>
+
+                    <div onClick={() => setActiveSheet('liabilities')} style={{ cursor: 'pointer' }}>
+                        <Card padding="lg" className={styles.hoverCard}>
+                            <div className={styles.sectionTitle}>
+                                <div className={styles.iconCircle} style={{ background: 'rgba(var(--danger-rgb), 0.1)', color: 'var(--danger)' }}>
+                                    <CreditCard size={20} />
+                                </div>
+                                Pasivos
+                            </div>
+                            <div style={{ fontSize: '1.8rem', fontWeight: 700, color: 'var(--danger)' }}>
+                                -{formatCurrency(totalLiabilities)}
+                            </div>
+                            <div className={styles.cardFooter}>
+                                {liabilities.length} deudas registradas
+                                <span className={styles.arrow}>&rarr;</span>
+                            </div>
+                        </Card>
+                    </div>
+                </div>
+
+                <h3 className={styles.sectionHeader}>Metas y Compromisos</h3>
+                <div className={styles.grid2}>
+                    <div onClick={() => setActiveSheet('goals')} style={{ cursor: 'pointer' }}>
+                        <Card padding="lg" className={styles.hoverCard}>
+                            <div className={styles.sectionTitle}>
+                                <div className={styles.iconCircle} style={{ background: 'rgba(var(--primary-rgb), 0.1)', color: 'var(--primary)' }}>
+                                    <Target size={20} />
+                                </div>
+                                Metas de Ahorro
+                            </div>
+                            <div style={{ fontSize: '1.8rem', fontWeight: 700, color: 'var(--primary)' }}>
+                                {savingsGoals.length}
+                            </div>
+                            <div className={styles.cardFooter}>
+                                Metas activas
+                                <span className={styles.arrow}>&rarr;</span>
+                            </div>
+                        </Card>
+                    </div>
+
+                    <div onClick={() => setActiveSheet('fixed')} style={{ cursor: 'pointer' }}>
+                        <Card padding="lg" className={styles.hoverCard}>
+                            <div className={styles.sectionTitle}>
+                                <div className={styles.iconCircle} style={{ background: 'var(--bg-hover)', color: 'var(--text-primary)' }}>
+                                    <Receipt size={20} />
+                                </div>
+                                Gastos Fijos
+                            </div>
+                            <div style={{ fontSize: '1.8rem', fontWeight: 700, color: 'var(--text-primary)' }}>
+                                {fixedExpenses.length}
+                            </div>
+                            <div className={styles.cardFooter}>
+                                Recurrentes mensuales
+                                <span className={styles.arrow}>&rarr;</span>
+                            </div>
+                        </Card>
+                    </div>
+                </div>
+
+                {/* Financial Tips Section */}
+                <FinancialTips />
+
+                {/* Sheets */}
+                <AssetDetailsSheet
+                    isOpen={activeSheet === 'assets'}
+                    onClose={() => setActiveSheet(null)}
+                    assets={assets}
+                    onAddAsset={addAsset}
+                    onUpdateAsset={updateAsset}
+                    onDeleteAsset={deleteAsset}
+                />
+
+                <LiabilityDetailsSheet
+                    isOpen={activeSheet === 'liabilities'}
+                    onClose={() => setActiveSheet(null)}
+                    liabilities={liabilities}
+                    onAddLiability={addLiability}
+                    onUpdateLiability={updateLiability}
+                    onDeleteLiability={deleteLiability}
+                />
+
+                <SavingsGoalSheet
+                    isOpen={activeSheet === 'goals'}
+                    onClose={() => setActiveSheet(null)}
+                    goals={savingsGoals}
+                    onAddGoal={addSavingsGoal}
+                    onUpdateGoal={updateSavingsGoal}
+                    onDeleteGoal={deleteSavingsGoal}
+                    onAddAmount={addAmountToGoal}
+                    onSubtractAmount={subtractAmountFromGoal}
+                />
+
+                <FixedExpensesSheet
+                    isOpen={activeSheet === 'fixed'}
+                    onClose={() => setActiveSheet(null)}
+                    expenses={fixedExpenses}
+                    onAddExpense={addFixedExpense}
+                    onDeleteExpense={deleteFixedExpense}
+                />
+            </div>
+        </PageContainer>
     );
 };
+
+export default PlanningPage;

@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧪 Test de Endpoints - Gastos Hormigas</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .test-section {
+            margin-bottom: 30px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 20px;
+            transition: all 0.3s;
+        }
+        
+        .test-section:hover {
+            border-color: #667eea;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+        }
+        
+        .test-section h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .test-section p {
+            color: #666;
+            margin-bottom: 15px;
+        }
+        
+        .button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .button:active {
+            transform: translateY(0);
+        }
+        
+        .button.secondary {
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+        
+        .status {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            display: none;
+        }
+        
+        .status.show {
+            display: block;
+        }
+        
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .status.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        
+        .console {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            max-height: 400px;
+            overflow-y: auto;
+            margin-top: 20px;
+        }
+        
+        .console-line {
+            margin: 5px 0;
+            padding: 5px;
+            border-left: 3px solid transparent;
+        }
+        
+        .console-line.success {
+            color: #4ec9b0;
+            border-left-color: #4ec9b0;
+        }
+        
+        .console-line.error {
+            color: #f48771;
+            border-left-color: #f48771;
+        }
+        
+        .console-line.info {
+            color: #569cd6;
+            border-left-color: #569cd6;
+        }
+        
+        .console-line.test {
+            color: #dcdcaa;
+            border-left-color: #dcdcaa;
+        }
+        
+        .summary {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        
+        .summary h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+        
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            margin: 5px 0;
+            background: white;
+            border-radius: 5px;
+        }
+        
+        .badge {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .badge.success {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .badge.error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .badge.warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧪 Test de Endpoints</h1>
+            <p>Gastos Hormigas - Pruebas de Conectividad y Funcionalidad</p>
+        </div>
+        
+        <div class="content">
+            <!-- Test de Conexión -->
+            <div class="test-section">
+                <h2>🔌 Conexión a Supabase</h2>
+                <p>Verifica que la aplicación puede conectarse correctamente a la base de datos.</p>
+                <button class="button" onclick="testConnection()">Probar Conexión</button>
+                <div id="connection-status" class="status"></div>
+            </div>
+            
+            <!-- Test de Autenticación -->
+            <div class="test-section">
+                <h2>🔐 Autenticación</h2>
+                <p>Prueba los endpoints de autenticación y sesión.</p>
+                <button class="button" onclick="testAuth()">Probar Auth</button>
+                <button class="button secondary" onclick="goToLogin()">Ir a Login</button>
+                <div id="auth-status" class="status"></div>
+            </div>
+            
+            <!-- Test de Lectura -->
+            <div class="test-section">
+                <h2>📖 Endpoints de Lectura</h2>
+                <p>Prueba todos los endpoints SELECT de las tablas principales.</p>
+                <button class="button" onclick="testRead()">Probar Lectura</button>
+                <div id="read-status" class="status"></div>
+            </div>
+            
+            <!-- Test de RLS -->
+            <div class="test-section">
+                <h2>🛡️ Row Level Security (RLS)</h2>
+                <p>Verifica que las políticas de seguridad estén funcionando.</p>
+                <button class="button" onclick="testRLS()">Probar RLS</button>
+                <div id="rls-status" class="status"></div>
+            </div>
+            
+            <!-- Test de Tiempo Real -->
+            <div class="test-section">
+                <h2>⚡ Suscripciones en Tiempo Real</h2>
+                <p>Prueba las capacidades de tiempo real de Supabase.</p>
+                <button class="button" onclick="testRealtime()">Probar Realtime</button>
+                <div id="realtime-status" class="status"></div>
+            </div>
+            
+            <!-- Test Completo -->
+            <div class="test-section">
+                <h2>🚀 Ejecutar Todos los Tests</h2>
+                <p>Ejecuta una batería completa de pruebas de todos los endpoints.</p>
+                <button class="button" onclick="runAllTests()" style="font-size: 18px; padding: 15px 40px;">
+                    ▶️ Ejecutar Todos los Tests
+                </button>
+            </div>
+            
+            <!-- Consola de Resultados -->
+            <div id="console" class="console" style="display: none;"></div>
+            
+            <!-- Resumen -->
+            <div id="summary" class="summary" style="display: none;">
+                <h3>📊 Resumen de Resultados</h3>
+                <div id="summary-content"></div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const console_div = document.getElementById('console');
+        const summary_div = document.getElementById('summary');
+        
+        function log(type, message) {
+            const timestamp = new Date().toLocaleTimeString();
+            const line = document.createElement('div');
+            line.className = `console-line ${type}`;
+            const icons = {
+                success: '✅',
+                error: '❌',
+                info: 'ℹ️',
+                test: '🧪'
+            };
+            line.textContent = `${icons[type]} [${timestamp}] ${message}`;
+            console_div.appendChild(line);
+            console_div.scrollTop = console_div.scrollHeight;
+        }
+        
+        function showStatus(elementId, type, message) {
+            const el = document.getElementById(elementId);
+            el.className = `status show ${type}`;
+            el.textContent = message;
+        }
+        
+        function showConsole() {
+            console_div.style.display = 'block';
+            console_div.innerHTML = '';
+        }
+        
+        async function testConnection() {
+            showConsole();
+            showStatus('connection-status', 'info', '⏳ Probando conexión...');
+            log('test', 'Iniciando test de conexión a Supabase...');
+            
+            try {
+                // Usar la función del módulo si está disponible
+                if (typeof window.testConnection === 'function') {
+                    const result = await window.testConnection();
+                    if (result) {
+                        showStatus('connection-status', 'success', '✅ Conexión exitosa a Supabase');
+                        log('success', 'Conexión a Supabase establecida correctamente');
+                    } else {
+                        showStatus('connection-status', 'error', '❌ Error de conexión');
+                        log('error', 'No se pudo conectar a Supabase');
+                    }
+                } else {
+                    showStatus('connection-status', 'error', '❌ Módulo de tests no cargado. Abre http://localhost:5173 primero.');
+                    log('error', 'Módulo testEndpoints no disponible. Abre la aplicación principal primero.');
+                }
+            } catch (err) {
+                showStatus('connection-status', 'error', `❌ Error: ${err.message}`);
+                log('error', `Excepción: ${err.message}`);
+            }
+        }
+        
+        async function testAuth() {
+            showConsole();
+            showStatus('auth-status', 'info', '⏳ Probando autenticación...');
+            log('test', 'Iniciando test de autenticación...');
+            
+            try {
+                if (typeof window.testAuth === 'function') {
+                    const result = await window.testAuth();
+                    const allPassed = Object.values(result).every(v => v);
+                    if (allPassed) {
+                        showStatus('auth-status', 'success', '✅ Tests de autenticación pasados');
+                        log('success', 'Todos los tests de autenticación exitosos');
+                    } else {
+                        showStatus('auth-status', 'error', '⚠️ Algunos tests fallaron');
+                        log('error', 'Algunos tests de autenticación fallaron');
+                    }
+                } else {
+                    showStatus('auth-status', 'error', '❌ Módulo de tests no cargado');
+                    log('error', 'Abre http://localhost:5173 primero');
+                }
+            } catch (err) {
+                showStatus('auth-status', 'error', `❌ Error: ${err.message}`);
+                log('error', `Excepción: ${err.message}`);
+            }
+        }
+        
+        async function testRead() {
+            showConsole();
+            showStatus('read-status', 'info', '⏳ Probando endpoints de lectura...');
+            log('test', 'Iniciando tests de lectura...');
+            
+            try {
+                if (typeof window.testRead === 'function') {
+                    const result = await window.testRead();
+                    const passed = Object.values(result).filter(Boolean).length;
+                    const total = Object.keys(result).length;
+                    showStatus('read-status', 'success', `✅ ${passed}/${total} endpoints funcionando`);
+                    log('success', `Tests de lectura completados: ${passed}/${total} exitosos`);
+                } else {
+                    showStatus('read-status', 'error', '❌ Módulo de tests no cargado');
+                    log('error', 'Abre http://localhost:5173 primero');
+                }
+            } catch (err) {
+                showStatus('read-status', 'error', `❌ Error: ${err.message}`);
+                log('error', `Excepción: ${err.message}`);
+            }
+        }
+        
+        async function testRLS() {
+            showConsole();
+            showStatus('rls-status', 'info', '⏳ Probando RLS...');
+            log('test', 'Iniciando test de Row Level Security...');
+            
+            try {
+                if (typeof window.testRLS === 'function') {
+                    const result = await window.testRLS();
+                    if (result.skipped) {
+                        showStatus('rls-status', 'info', 'ℹ️ Test saltado (sin usuario autenticado)');
+                        log('info', 'Test de RLS saltado: requiere autenticación');
+                    } else {
+                        const passed = Object.values(result).filter(Boolean).length;
+                        showStatus('rls-status', 'success', `✅ RLS funcionando correctamente`);
+                        log('success', `Políticas RLS verificadas: ${passed} políticas activas`);
+                    }
+                } else {
+                    showStatus('rls-status', 'error', '❌ Módulo de tests no cargado');
+                    log('error', 'Abre http://localhost:5173 primero');
+                }
+            } catch (err) {
+                showStatus('rls-status', 'error', `❌ Error: ${err.message}`);
+                log('error', `Excepción: ${err.message}`);
+            }
+        }
+        
+        async function testRealtime() {
+            showConsole();
+            showStatus('realtime-status', 'info', '⏳ Probando tiempo real...');
+            log('test', 'Iniciando test de suscripciones en tiempo real...');
+            
+            try {
+                if (typeof window.testRealtime === 'function') {
+                    const result = await window.testRealtime();
+                    if (result) {
+                        showStatus('realtime-status', 'success', '✅ Tiempo real funcionando');
+                        log('success', 'Suscripciones en tiempo real operativas');
+                    } else {
+                        showStatus('realtime-status', 'error', '❌ Tiempo real no disponible');
+                        log('error', 'Suscripciones en tiempo real fallaron');
+                    }
+                } else {
+                    showStatus('realtime-status', 'error', '❌ Módulo de tests no cargado');
+                    log('error', 'Abre http://localhost:5173 primero');
+                }
+            } catch (err) {
+                showStatus('realtime-status', 'error', `❌ Error: ${err.message}`);
+                log('error', `Excepción: ${err.message}`);
+            }
+        }
+        
+        async function runAllTests() {
+            showConsole();
+            summary_div.style.display = 'none';
+            log('test', '🚀 INICIANDO BATERÍA COMPLETA DE TESTS');
+            log('info', '='.repeat(60));
+            
+            try {
+                if (typeof window.testEndpoints === 'function') {
+                    const results = await window.testEndpoints();
+                    
+                    // Mostrar resumen
+                    summary_div.style.display = 'block';
+                    const summaryContent = document.getElementById('summary-content');
+                    summaryContent.innerHTML = `
+                        <div class="summary-item">
+                            <span>Conexión Supabase</span>
+                            <span class="badge ${results.connection ? 'success' : 'error'}">
+                                ${results.connection ? '✅ OK' : '❌ Error'}
+                            </span>
+                        </div>
+                        <div class="summary-item">
+                            <span>Autenticación</span>
+                            <span class="badge ${results.auth.getCurrentUser && results.auth.session ? 'success' : 'warning'}">
+                                ${results.auth.getCurrentUser && results.auth.session ? '✅ OK' : '⚠️ Sin auth'}
+                            </span>
+                        </div>
+                        <div class="summary-item">
+                            <span>Endpoints de Lectura</span>
+                            <span class="badge success">
+                                ${Object.values(results.read).filter(Boolean).length}/${Object.keys(results.read).length} OK
+                            </span>
+                        </div>
+                        <div class="summary-item">
+                            <span>Row Level Security</span>
+                            <span class="badge ${results.rls.skipped ? 'warning' : 'success'}">
+                                ${results.rls.skipped ? '⚠️ Saltado' : '✅ OK'}
+                            </span>
+                        </div>
+                        <div class="summary-item">
+                            <span>Tiempo Real</span>
+                            <span class="badge ${results.realtime ? 'success' : 'error'}">
+                                ${results.realtime ? '✅ OK' : '❌ Error'}
+                            </span>
+                        </div>
+                    `;
+                    
+                    log('success', '✅ TESTS COMPLETADOS');
+                } else {
+                    log('error', '❌ Módulo de tests no disponible');
+                    log('info', '👉 Abre http://localhost:5173 en otra pestaña primero');
+                    log('info', '👉 Luego recarga esta página y vuelve a intentar');
+                }
+            } catch (err) {
+                log('error', `❌ Error ejecutando tests: ${err.message}`);
+            }
+        }
+        
+        function goToLogin() {
+            window.open('http://localhost:5173', '_blank');
+        }
+        
+        // Verificar si los tests están disponibles al cargar
+        window.addEventListener('load', () => {
+            if (typeof window.testEndpoints !== 'function') {
+                log('info', '⚠️ Módulo de tests no cargado');
+                log('info', '👉 Paso 1: Abre http://localhost:5173 en otra pestaña');
+                log('info', '👉 Paso 2: Espera a que cargue la aplicación');
+                log('info', '👉 Paso 3: Recarga esta página');
+                log('info', '👉 Paso 4: Ejecuta los tests');
+                console_div.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>

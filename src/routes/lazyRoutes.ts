@@ -58,12 +58,7 @@ export const ProfilePage = createLazyRoute(
   "Cargando Perfil..."
 );
 
-export const ManageCategoriesPage = createLazyRoute(
-  () => import('../pages/ManageCategoriesPage').then(module => ({
-    default: module.ManageCategoriesPage
-  })),
-  "Cargando Categorías..."
-);
+
 
 export const BudgetPage = createLazyRoute(
   () => import('../pages/BudgetPage'),
@@ -82,6 +77,20 @@ export const StatsPage = createLazyRoute(
     default: module.StatsPage
   })),
   "Cargando Estadísticas..."
+);
+
+export const ExportPage = createLazyRoute(
+  () => import('../pages/ExportPage').then(module => ({
+    default: module.ExportPage
+  })),
+  "Cargando Exportación..."
+);
+
+export const ActivityPage = createLazyRoute(
+  () => import('../pages/ActivityPage').then(module => ({
+    default: module.ActivityPage
+  })),
+  "Cargando Actividad..."
 );
 
 // ===== COMPONENTES GRANDES - CODE SPLITTING =====
@@ -131,8 +140,9 @@ export const preloadRoutes = {
   planning: () => preloadWithCache('planning', () => import('../pages/PlanningPage')),
   registro: () => preloadWithCache('registro', () => import('../pages/RegistroPage')),
   profile: () => preloadWithCache('profile', () => import('../pages/ProfilePage')),
-  categories: () => preloadWithCache('categories', () => import('../pages/ManageCategoriesPage')),
+
   budget: () => preloadWithCache('budget', () => import('../pages/BudgetPage')),
+  export: () => preloadWithCache('export', () => import('../pages/ExportPage')),
 
   // Componentes grandes
   charts: () => Promise.all([
@@ -160,7 +170,7 @@ export const PRELOAD_STRATEGIES = {
   '/reports': {
     immediate: ['charts', 'analysis'],
     delayed: ['dashboard', 'planning'],
-    onHover: ['export-manager']
+    onHover: ['export']
   },
   '/planning': {
     immediate: ['advanced'],

@@ -104,8 +104,8 @@ async function getTableSchema(tableName: string): Promise<ColumnInfo[]> {
  */
 async function tableExists(tableName: string): Promise<boolean> {
     try {
-        const { error } = await supabase
-            .from(tableName)
+        const { error } = await (supabase
+            .from(tableName as any) as any)
             .select('id')
             .limit(1);
 
@@ -123,8 +123,8 @@ async function tableExists(tableName: string): Promise<boolean> {
  */
 async function getColumnsFromQuery(tableName: string): Promise<string[]> {
     try {
-        const { data, error } = await supabase
-            .from(tableName)
+        const { data, error } = await (supabase
+            .from(tableName as any) as any)
             .select('*')
             .limit(1);
 

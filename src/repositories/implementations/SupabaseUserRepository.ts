@@ -100,9 +100,9 @@ export class SupabaseUserRepository extends SupabaseRepository<UserProfile, stri
    * @param data - Datos de la base de datos (SupabaseUser)
    * @returns El modelo de dominio (UserProfile)
    */
-  protected mapDatabaseToModel(data: SupabaseUser): UserProfile {
+  protected mapDatabaseToModel(data: any): UserProfile {
     return {
-      displayName: data.display_name || 'Usuario',
+      displayName: data.full_name || data.display_name || 'Usuario',
       email: data.email || '',
       currency: data.currency || 'USD',
       avatarUrl: data.avatar_url || undefined,
@@ -116,10 +116,11 @@ export class SupabaseUserRepository extends SupabaseRepository<UserProfile, stri
    * @param data - Datos del modelo de dominio (UserProfile)
    * @returns El objeto formateado para la base de datos
    */
-  protected mapModelToDatabase(data: Partial<UserProfile>): Partial<SupabaseUser> {
-    const databaseData: Partial<SupabaseUser> = {};
+  protected mapModelToDatabase(data: Partial<UserProfile>): any {
+    const databaseData: any = {};
 
     if (data.displayName !== undefined) {
+      databaseData.full_name = data.displayName;
       databaseData.display_name = data.displayName;
     }
     if (data.email !== undefined) {

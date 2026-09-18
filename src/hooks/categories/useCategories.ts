@@ -42,7 +42,7 @@ export const useCategories = (userId: string | null) => {
         };
 
         let unsubscribeRef: (() => void) | null = null;
-        
+
         initializeAndSubscribe().then(unsubscribe => {
             unsubscribeRef = unsubscribe;
         }).catch(error => {
@@ -63,10 +63,15 @@ export const useCategories = (userId: string | null) => {
             return { success: false, error: 'Datos inválidos' };
         }
 
-        return await handleAsyncOperation(
+        const result = await handleAsyncOperation(
             () => categoryServiceRepo.addCategory(userId, categoryName.trim()),
             'Error al agregar la categoría'
         );
+
+        if (result.success && result.data) {
+            setCategories(prev => [...prev, result.data]);
+        }
+        return result;
     }, [userId]);
 
     const deleteCategory = useCallback(async (categoryId: string) => {
@@ -74,10 +79,15 @@ export const useCategories = (userId: string | null) => {
             return { success: false, error: 'Usuario no autenticado' };
         }
 
-        return await handleAsyncOperation(
+        const result = await handleAsyncOperation(
             () => categoryServiceRepo.deleteCategory(userId, categoryId),
             'Error al eliminar la categoría'
         );
+
+        if (result.success) {
+            setCategories(prev => prev.filter(c => c.id !== categoryId));
+        }
+        return result;
     }, [userId]);
 
     const addSubCategory = useCallback(async (categoryId: string, subCategoryName: string) => {
@@ -85,41 +95,56 @@ export const useCategories = (userId: string | null) => {
             return { success: false, error: 'Datos inválidos' };
         }
 
+        // Check exists...
         const category = categories.find(c => c.id === categoryId);
-        
-        // Evita duplicados (insensible a mayúsculas/minúsculas).
         const subExists = category?.subcategories.some(
-          sub => sub.name.toLowerCase() === subCategoryName.trim().toLowerCase()
+            sub => sub.name.toLowerCase() === subCategoryName.trim().toLowerCase()
         );
 
         if (subExists) {
             return { success: false, error: `La subcategoría "${subCategoryName}" ya existe` };
         }
 
-        return await handleAsyncOperation(
+        const result = await handleAsyncOperation(
             () => categoryServiceRepo.addSubCategory(userId, categoryId, subCategoryName.trim()),
             'Error al agregar la subcategoría'
         );
+
+        if (result.success && result.data) {
+            setCategories(prev => prev.map(c => {
+                if (c.id === categoryId) {
+                    return { ...c, subcategories: [...c.subcategories, result.data] };
+                }
+                return c;
+            }));
+        }
+        return result;
     }, [userId, categories]);
 
-    /**
-     * CORRECCIÓN: Esta función ahora coincide con la lógica del servicio.
-     * Construye el objeto `subCategoryToDelete` y lo pasa a la función del servicio.
-     */
     const deleteSubCategory = useCallback(async (categoryId: string, subCategoryId: string, subCategoryName: string) => {
         if (!userId) {
             return { success: false, error: 'Usuario no autenticado' };
         }
-        
+
         const subCategoryToDelete: SubCategory = {
             id: subCategoryId,
             name: subCategoryName
         };
 
-        return await handleAsyncOperation(
+        const result = await handleAsyncOperation(
             () => categoryServiceRepo.deleteSubCategory(userId, categoryId, subCategoryToDelete.id),
             'Error al eliminar la subcategoría'
         );
+
+        if (result.success) {
+            setCategories(prev => prev.map(c => {
+                if (c.id === categoryId) {
+                    return { ...c, subcategories: c.subcategories.filter(s => s.id !== subCategoryId) };
+                }
+                return c;
+            }));
+        }
+        return result;
     }, [userId]);
 
     const updateCategoryBudget = useCallback(async (categoryId: string, budget: number) => {
@@ -127,10 +152,15 @@ export const useCategories = (userId: string | null) => {
             return { success: false, error: 'Datos inválidos' };
         }
 
-        return await handleAsyncOperation(
+        const result = await handleAsyncOperation(
             () => categoryServiceRepo.updateCategoryBudget(userId, categoryId, budget),
             'Error al actualizar el presupuesto'
         );
+
+        if (result.success && result.data) {
+            setCategories(prev => prev.map(c => c.id === categoryId ? result.data : c));
+        }
+        return result;
     }, [userId]);
 
     const updateCategoryStyle = useCallback(async (categoryId: string, style: { icon: string; color: string }) => {
@@ -138,10 +168,15 @@ export const useCategories = (userId: string | null) => {
             return { success: false, error: 'Usuario no autenticado' };
         }
 
-        return await handleAsyncOperation(
+        const result = await handleAsyncOperation(
             () => categoryServiceRepo.updateCategoryStyle(userId, categoryId, style),
             'Error al actualizar el estilo'
         );
+
+        if (result.success && result.data) {
+            setCategories(prev => prev.map(c => c.id === categoryId ? result.data : c));
+        }
+        return result;
     }, [userId]);
 
     const clearCategoriesError = useCallback(() => {

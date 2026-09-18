@@ -1,0 +1,217 @@
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    z-index: 2000;
+    display: flex;
+    justify-content: flex-end;
+    animation: fadeIn 0.2s ease-out;
+}
+
+.sheet {
+    width: 100%;
+    max-width: 450px;
+    height: 100vh;
+    background: var(--bg-card);
+    display: flex;
+    flex-direction: column;
+    padding: var(--space-lg);
+    gap: var(--space-lg);
+    box-shadow: -4px 0 20px rgba(0, 0, 0, 0.3);
+    overflow-y: auto;
+    animation: slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    border-left: 1px solid var(--border-light);
+    padding-bottom: 120px;
+    /* Space for FloatingDock */
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: var(--space-md);
+    border-bottom: 1px solid var(--border-light);
+}
+
+.titleRow {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+}
+
+.iconBox {
+    width: 48px;
+    height: 48px;
+    background: var(--bg-hover);
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+}
+
+.title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+}
+
+.label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.inputGroup {
+    display: flex;
+    gap: var(--space-sm);
+}
+
+.input {
+    flex: 1;
+    padding: 12px;
+    background: var(--bg-body);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    font-size: 1rem;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+.input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px rgba(var(--primary-rgb), 0.1);
+}
+
+.select {
+    width: 100%;
+    padding: 12px;
+    background: var(--bg-body);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    font-size: 1rem;
+    outline: none;
+    cursor: pointer;
+}
+
+.btnPrimary {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 16px;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.2s;
+}
+
+.btnPrimary:hover {
+    filter: brightness(1.1);
+}
+
+.list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+}
+
+.listItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    background: var(--bg-hover);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-light);
+}
+
+.itemContent {
+    display: flex;
+    flex-direction: column;
+}
+
+.itemName {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.itemValue {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.deleteBtn {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 50%;
+    transition: all 0.2s;
+}
+
+.deleteBtn:hover {
+    background: rgba(255, 0, 0, 0.1);
+    color: var(--danger);
+}
+
+.closeButtonContainer {
+    margin-top: auto;
+    padding-top: var(--space-md);
+}
+
+.closeButton {
+    width: 100%;
+    padding: 14px;
+    background: var(--bg-hover);
+    border: none;
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+.closeButton:hover {
+    background: var(--border-light);
+}

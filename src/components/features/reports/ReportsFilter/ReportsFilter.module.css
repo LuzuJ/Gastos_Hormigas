@@ -5,8 +5,13 @@
   border: 1px solid var(--border-color);
   transition: all 0.2s ease;
   background: var(--background-card);
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.filterCard:hover {
+  box-shadow: var(--shadow-md);
+  border-color: var(--primary-accent-light);
 }
 
 .filterHeader {
@@ -29,14 +34,14 @@
 
 .filterTitle {
   margin: 0;
-  font-size: 16px;
+  font-size: 1rem;
   font-weight: 600;
   color: var(--text-headings);
 }
 
 .filterSummary {
   margin: 2px 0 0 0;
-  font-size: 13px;
+  font-size: 0.85rem;
   color: var(--text-secondary);
 }
 
@@ -50,12 +55,12 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 13px;
-  padding: 6px 12px;
+  font-size: 0.85rem;
+  padding: 0.5rem 0.75rem;
   background: var(--background-secondary);
   color: var(--text-secondary);
   border: 1px solid var(--border-color);
-  border-radius: 6px;
+  border-radius: var(--radius-md);
   cursor: pointer;
   transition: all 0.2s ease;
   font-weight: 500;
@@ -65,24 +70,27 @@
   background: var(--background-hover);
   color: var(--text-primary);
   border-color: var(--primary-accent);
+  box-shadow: var(--shadow-sm);
 }
 
 .toggleButton {
-  font-size: 13px !important;
-  padding: 6px 12px !important;
+  font-size: 0.85rem !important;
+  padding: 0.5rem 0.75rem !important;
   background: var(--primary-accent) !important;
-  color: white !important;
+  color: var(--primary-accent-text) !important;
   border: 1px solid var(--primary-accent) !important;
-  border-radius: 6px !important;
+  border-radius: var(--radius-md) !important;
   cursor: pointer;
   transition: all 0.2s ease;
   font-weight: 500 !important;
+  box-shadow: var(--shadow-sm) !important;
 }
 
 .toggleButton:hover {
   background: var(--primary-accent-hover) !important;
   border-color: var(--primary-accent-hover) !important;
   transform: translateY(-1px) !important;
+  box-shadow: var(--shadow-md) !important;
 }
 
 /* Filter Content */
@@ -90,6 +98,8 @@
   border-top: 1px solid var(--border-color);
   padding: 20px;
   background: var(--background-secondary);
+  border-bottom-left-radius: var(--radius-lg);
+  border-bottom-right-radius: var(--radius-lg);
 }
 
 .filterSection {
@@ -105,7 +115,7 @@
   align-items: center;
   gap: 8px;
   margin-bottom: 12px;
-  font-size: 14px;
+  font-size: 0.9rem;
   font-weight: 600;
   color: var(--text-headings);
 }
@@ -122,12 +132,12 @@
 }
 
 .periodButton {
-  padding: 8px 16px;
+  padding: 0.5rem 1rem;
   border: 1px solid var(--border-color);
-  border-radius: 6px;
+  border-radius: var(--radius-md);
   background: var(--background-card);
   color: var(--text-secondary);
-  font-size: 13px;
+  font-size: 0.85rem;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -138,12 +148,14 @@
   border-color: var(--primary-accent);
   color: var(--primary-accent);
   background: var(--background-hover);
+  transform: translateY(-1px);
 }
 
 .periodButton.active {
   background: var(--primary-accent);
   border-color: var(--primary-accent);
-  color: white;
+  color: var(--primary-accent-text);
+  box-shadow: var(--shadow-sm);
 }
 
 /* Custom Date Range */
@@ -162,17 +174,17 @@
 .dateInputGroup label {
   display: block;
   margin-bottom: 6px;
-  font-size: 13px;
+  font-size: 0.85rem;
   font-weight: 500;
   color: var(--text-secondary);
 }
 
 .dateInput {
   width: 100%;
-  padding: 8px 12px;
+  padding: 0.5rem 0.75rem;
   border: 1px solid var(--border-color);
-  border-radius: 6px;
-  font-size: 14px;
+  border-radius: var(--radius-md);
+  font-size: 0.9rem;
   background: var(--background-card);
   color: var(--text-primary);
   transition: border-color 0.2s ease;
@@ -191,10 +203,10 @@
 
 .select {
   width: 100%;
-  padding: 8px 12px;
+  padding: 0.5rem 0.75rem;
   border: 1px solid var(--border-color);
-  border-radius: 6px;
-  font-size: 14px;
+  border-radius: var(--radius-md);
+  font-size: 0.9rem;
   background: var(--background-card);
   color: var(--text-primary);
   cursor: pointer;
@@ -214,35 +226,35 @@
     align-items: stretch;
     gap: 12px;
   }
-  
+
   .headerLeft {
     justify-content: center;
     text-align: center;
   }
-  
+
   .headerActions {
     justify-content: center;
   }
-  
+
   .periodButtons {
     justify-content: center;
   }
-  
+
   .periodButton {
     flex: 1;
     min-width: calc(50% - 4px);
     text-align: center;
   }
-  
+
   .customDateRange {
     flex-direction: column;
     gap: 12px;
   }
-  
+
   .dateInputGroup {
     min-width: auto;
   }
-  
+
   .categorySelect {
     max-width: none;
   }
@@ -252,202 +264,18 @@
   .filterContent {
     padding: 16px;
   }
-  
+
   .periodButton {
     min-width: 100%;
   }
-  
+
   .filterHeader {
     padding: 12px 16px;
   }
 }
 
-/* Modo Oscuro y Claro - Mejores contrastes */
-[data-theme="dark"] .filterCard {
-  border-color: var(--border-color);
-  background: var(--background-card);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-[data-theme="dark"] .filterTitle {
-  color: var(--text-headings);
-}
-
-[data-theme="dark"] .filterSummary {
-  color: var(--text-secondary);
-}
-
-[data-theme="dark"] .filterContent {
-  border-top-color: var(--border-color);
-  background: var(--background-secondary);
-}
-
-[data-theme="dark"] .sectionHeader {
-  color: var(--text-headings);
-}
-
-[data-theme="dark"] .sectionHeader svg {
-  color: var(--text-secondary);
-}
-
-[data-theme="dark"] .periodButton {
-  border-color: var(--border-color);
-  background: var(--background-card);
-  color: var(--text-secondary);
-}
-
-[data-theme="dark"] .periodButton:hover {
-  border-color: var(--primary-accent);
-  color: var(--primary-accent);
-  background: var(--background-hover);
-}
-
-[data-theme="dark"] .dateInput,
-[data-theme="dark"] .select {
-  border-color: var(--border-color);
-  background: var(--background-card);
-  color: var(--text-primary);
-}
-
-[data-theme="dark"] .dateInput:focus,
-[data-theme="dark"] .select:focus {
-  border-color: var(--primary-accent);
-}
-
-[data-theme="dark"] .dateInputGroup label {
-  color: var(--text-secondary);
-}
-
-[data-theme="dark"] .resetButton {
-  background: var(--background-secondary);
-  color: var(--text-secondary);
-  border-color: var(--border-color);
-}
-
-[data-theme="dark"] .resetButton:hover {
-  background: var(--background-hover);
-  color: var(--text-primary);
-  border-color: var(--primary-accent);
-}
-
-[data-theme="dark"] .toggleButton {
-  background: var(--primary-accent) !important;
-  color: white !important;
-  border-color: var(--primary-accent) !important;
-}
-
-[data-theme="dark"] .toggleButton:hover {
-  background: var(--primary-accent-hover) !important;
-  border-color: var(--primary-accent-hover) !important;
-}
-
-/* Mejores contrastes para modo claro */
-:root .filterCard {
-  background: var(--background-card);
-  border: 1px solid var(--border-color);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
-}
-
-:root .filterCard:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  border-color: var(--primary-accent);
-}
-
-:root .filterContent {
-  background: var(--background-secondary);
-  border-top-color: var(--border-color);
-}
-
-:root .periodButton {
-  background: var(--background-card);
-  border-color: var(--border-color);
-  color: var(--text-secondary);
-  font-weight: 600;
-}
-
-:root .periodButton:hover {
-  background: var(--background-hover);
-  border-color: var(--primary-accent);
-  color: var(--primary-accent);
-}
-
-:root .dateInput,
-:root .select {
-  background: var(--background-card);
-  border-color: var(--border-color);
-  color: var(--text-primary);
-}
-
-:root .dateInputGroup label {
-  color: var(--text-secondary);
-  font-weight: 600;
-}
-
-:root .resetButton {
-  background: var(--background-secondary);
-  color: var(--text-secondary);
-  border-color: var(--border-color);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-}
-
-:root .resetButton:hover {
-  background: var(--background-hover);
-  color: var(--text-primary);
-  border-color: var(--primary-accent);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-}
-
-:root .toggleButton {
-  background: var(--primary-accent) !important;
-  color: white !important;
-  border-color: var(--primary-accent) !important;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
-}
-
-:root .toggleButton:hover {
-  background: var(--primary-accent-hover) !important;
-  border-color: var(--primary-accent-hover) !important;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15) !important;
-}
-
-/* Estados de hover mejorados */
-.filterCard:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  border-color: var(--primary-accent);
-}
-
+/* Dark mode overrides are reduced because we used CSS variables! */
 [data-theme="dark"] .filterCard:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-}
-
-/* Sobrescribir estilos del componente Button para toggleButton */
-button.toggleButton,
-.toggleButton.toggleButton {
-  background: var(--primary-accent) !important;
-  color: white !important;
-  border: 1px solid var(--primary-accent) !important;
-  font-size: 13px !important;
-  padding: 6px 12px !important;
-  border-radius: 6px !important;
-  font-weight: 500 !important;
-}
-
-button.toggleButton:hover,
-.toggleButton.toggleButton:hover {
-  background: var(--primary-accent-hover) !important;
-  border-color: var(--primary-accent-hover) !important;
-  transform: translateY(-1px) !important;
-}
-
-[data-theme="dark"] button.toggleButton,
-[data-theme="dark"] .toggleButton.toggleButton {
-  background: var(--primary-accent) !important;
-  color: white !important;
-  border-color: var(--primary-accent) !important;
-}
-
-[data-theme="dark"] button.toggleButton:hover,
-[data-theme="dark"] .toggleButton.toggleButton:hover {
-  background: var(--primary-accent-hover) !important;
-  border-color: var(--primary-accent-hover) !important;
+  box-shadow: var(--shadow-lg);
+  border-color: var(--primary-accent);
 }

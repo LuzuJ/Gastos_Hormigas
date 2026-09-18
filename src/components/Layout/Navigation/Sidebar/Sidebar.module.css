@@ -1,0 +1,208 @@
+/* Sidebar.module.css */
+
+.sidebar {
+    width: 280px;
+    height: 100vh;
+    background: var(--bg-card);
+    border-right: 1px solid var(--border-light);
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 50;
+    transition: transform var(--transition-normal);
+}
+
+.header {
+    padding: var(--space-lg) var(--space-md);
+    border-bottom: 1px solid var(--border-light);
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: 800;
+    background: linear-gradient(to right, var(--primary-500), var(--primary-600));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    margin: 0;
+}
+
+.version {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-top: var(--space-xs);
+}
+
+.content {
+    flex: 1;
+    overflow-y: auto;
+    padding: var(--space-lg) var(--space-md);
+}
+
+.nav {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+}
+
+.sectionLabel {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: var(--space-sm) var(--space-md);
+    margin-top: var(--space-md);
+}
+
+.sectionLabel:first-child {
+    margin-top: 0;
+}
+
+.navItem {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    padding: var(--space-sm) var(--space-md);
+    border-radius: var(--radius-md);
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    width: 100%;
+    text-align: left;
+    transition: all var(--transition-fast);
+    position: relative;
+    text-decoration: none;
+}
+
+.navItem:hover {
+    background: var(--bg-body);
+    color: var(--text-primary);
+}
+
+.navItem.active {
+    background: var(--primary-50);
+    color: var(--primary-600);
+    font-weight: 600;
+}
+
+/* Dark mode adjustment for active state if needed, usually handled by var(--primary-50) override in theme */
+
+.activeIndicator {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 20px;
+    background: var(--primary-600);
+    border-radius: 4px 0 0 4px;
+}
+
+.navGroup {
+    margin-bottom: var(--space-xs);
+}
+
+.groupHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: var(--space-sm) var(--space-md);
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    border-radius: var(--radius-md);
+    transition: all var(--transition-fast);
+}
+
+.groupHeader:hover {
+    background: var(--bg-body);
+    color: var(--text-primary);
+}
+
+.groupLabel {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+}
+
+.groupContent {
+    padding-left: var(--space-lg);
+    /* Indent children */
+    margin-top: var(--space-xs);
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    position: relative;
+}
+
+.groupContent::before {
+    content: '';
+    position: absolute;
+    left: var(--space-lg);
+    /* Guide line position */
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: var(--border-light);
+}
+
+.groupContent .navItem {
+    font-size: 0.9rem;
+    padding-left: var(--space-lg);
+}
+
+.footer {
+    padding: var(--space-md);
+    border-top: 1px solid var(--border-light);
+}
+
+.guestCard {
+    background: var(--warning-bg);
+    border: 1px solid var(--warning-text);
+    /* opacity reduced via hex if needed, strict for now */
+    border-radius: var(--radius-md);
+    padding: var(--space-md);
+    text-align: center;
+}
+
+.guestCard p {
+    color: var(--warning-text);
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: var(--space-sm);
+}
+
+.upgradeButton {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-sm);
+    padding: var(--space-sm);
+    background: var(--primary-600);
+    color: white;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform var(--transition-fast);
+}
+
+.upgradeButton:hover {
+    background: var(--primary-700);
+}
+
+.userCard {
+    display: flex;
+    justify-content: center;
+}

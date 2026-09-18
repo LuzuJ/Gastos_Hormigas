@@ -5,12 +5,12 @@ import type { SavingsGoal, SavingsGoalFormData } from '../../types';
 
 export const useSavingsGoals = (userId: string | null) => {
     const [savingsGoals, setSavingsGoals] = useState<SavingsGoal[]>([]);
-    const { 
-        loading: loadingSavingsGoals, 
-        error: savingsGoalsError, 
-        startLoading, 
-        stopLoading, 
-        clearError 
+    const {
+        loading: loadingSavingsGoals,
+        error: savingsGoalsError,
+        startLoading,
+        stopLoading,
+        clearError
     } = useLoadingState(true);
 
     useEffect(() => {
@@ -23,7 +23,7 @@ export const useSavingsGoals = (userId: string | null) => {
         try {
             startLoading();
             clearError();
-            
+
             const unsubscribe = savingsGoalServiceRepo.onSavingsGoalsUpdate(userId, (data: SavingsGoal[]) => {
                 setSavingsGoals(data);
                 stopLoading();
@@ -44,6 +44,17 @@ export const useSavingsGoals = (userId: string | null) => {
         return await handleAsyncOperation(
             () => savingsGoalServiceRepo.addSavingsGoal(userId, data),
             'Error al agregar la meta de ahorro'
+        );
+    }, [userId]);
+
+    const updateSavingsGoal = useCallback(async (goalId: string, data: Partial<SavingsGoalFormData>) => {
+        if (!userId) {
+            return { success: false, error: 'Usuario no autenticado' };
+        }
+
+        return await handleAsyncOperation(
+            () => savingsGoalServiceRepo.updateSavingsGoal(userId, goalId, data),
+            'Error al actualizar la meta de ahorro'
         );
     }, [userId]);
 
@@ -98,6 +109,7 @@ export const useSavingsGoals = (userId: string | null) => {
         savingsGoalsError,
         clearSavingsGoalsError,
         addSavingsGoal,
+        updateSavingsGoal,
         deleteSavingsGoal,
         addAmountToGoal,
         subtractAmountFromGoal

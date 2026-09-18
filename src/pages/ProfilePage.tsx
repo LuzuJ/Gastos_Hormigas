@@ -1,327 +1,247 @@
 import React, { useState, useEffect } from 'react';
 import { authService } from '../services/auth/authService';
 import { LoadingStateWrapper } from '../components/LoadingState/LoadingState';
-import { ExportManager } from '../components/features/reports/ExportManager/ExportManager';
-import { PasswordInput } from '../components/ui/PasswordInput/PasswordInput';
 import styles from './ProfilePage.module.css';
-import { LogOut, UserPlus, Settings, TrendingUp, Wallet, Calendar, DollarSign, PiggyBank } from 'lucide-react';
+import { LogOut, Settings, TrendingUp, Wallet, Calendar, PiggyBank, User, CheckCircle, Sun, Moon } from 'lucide-react';
+import { useTheme } from '../hooks/useTheme';
+import { PageHeader } from '../components/ui/PageHeader/PageHeader';
+import { PageContainer } from '../components/layout/PageContainer/PageContainer';
 import { useProfileContext, useExpensesContext, useNetWorthContext, useSavingsGoalsContext } from '../contexts/AppContext';
 import { CURRENCY_OPTIONS, formatCurrency } from '../utils/formatters';
 import type { Page } from '../components/layout/Layout/Layout';
-import type { UserProfile } from '../types';
 import { PAGE_ROUTES } from '../constants';
+import { UserProfile } from '../types';
+
+// Atoms
+import { Card } from '../components/ui/Card/Card';
+import { Button } from '../components/ui/Button/Button';
+import { Input } from '../components/ui/Input/Input';
+import { StatsCard } from '../components/ui/StatsCard/StatsCard';
+import { PasswordInput } from '../components/ui/PasswordInput/PasswordInput'; // Keeping existing compound for now, or replace later
 
 interface ProfilePageProps {
-    userId: string | null;
+    userId?: string;
     isGuest: boolean;
     setCurrentPage: (page: Page) => void;
 }
 
-// Componente para el perfil de un usuario REGISTRADO
-const RegisteredUserProfile: React.FC = () => {
-    const {
-        profile,
-        updateUserProfile,
-        loadingProfile,
-        profileError,
-        clearProfileError
-    } = useProfileContext();
-
-    // Datos financieros para estadísticas
+export const ProfilePage: React.FC<ProfilePageProps> = ({ isGuest, setCurrentPage }) => {
+    const { profile, updateUserProfile: updateProfile, loadingProfile: profileLoading, profileError } = useProfileContext();
     const { expenses } = useExpensesContext();
-
-    const { assets, liabilities } = useNetWorthContext();
+    const { netWorth } = useNetWorthContext();
     const { savingsGoals } = useSavingsGoalsContext();
+    const { isDark, toggleTheme } = useTheme();
 
     const [displayName, setDisplayName] = useState('');
     const [currency, setCurrency] = useState<UserProfile['currency']>('USD');
     const [message, setMessage] = useState('');
+    const [isSaving, setIsSaving] = useState(false);
 
     useEffect(() => {
         if (profile) {
-            setDisplayName(profile.displayName);
-            setCurrency(profile.currency);
+            setDisplayName(profile.displayName || '');
+            setCurrency(profile.currency || 'USD');
         }
-    }, [profile?.displayName, profile?.currency]);
+    }, [profile]);
 
     const handleSave = async (e: React.FormEvent) => {
         e.preventDefault();
-        setMessage('');
-
-        const result = await updateUserProfile({ displayName, currency });
-
-        if (result?.success) {
-            setMessage('¡Perfil guardado con éxito!');
+        if (!profile) return;
+        setIsSaving(true);
+        try {
+            await updateProfile({ displayName, currency });
+            setMessage('Perfil actualizado correctamente');
             setTimeout(() => setMessage(''), 3000);
-        } else {
-            setMessage(result?.error || 'Error al guardar. Inténtalo de nuevo.');
+        } catch (err) {
+            setMessage('Error al actualizar');
+        } finally {
+            setIsSaving(false);
         }
     };
 
-    // Calcular estadísticas
-    const totalExpenses = expenses.reduce((acc, exp) => acc + exp.amount, 0);
-    const totalAssets = assets.reduce((acc, asset) => acc + asset.value, 0);
-    const totalLiabilities = liabilities.reduce((acc, liability) => acc + liability.amount, 0);
-    const netWorth = totalAssets - totalLiabilities;
-    const expenseCount = expenses.length;
-    const savingsProgress = savingsGoals.length > 0
-        ? savingsGoals.reduce((acc, goal) => acc + goal.currentAmount, 0) /
-        savingsGoals.reduce((acc, goal) => acc + goal.targetAmount, 0) * 100
-        : 0;
-
-    // Obtener iniciales del usuario
     const getInitials = () => {
-        if (!profile?.displayName) return '?';
-        const parts = profile.displayName.split(' ');
-        return parts.map(p => p[0]).join('').toUpperCase().slice(0, 2);
+        if (!profile?.displayName) return 'U';
+        return profile.displayName.charAt(0).toUpperCase();
     };
 
-    // Fecha de creación aproximada (primer gasto)
-    const memberSince = expenses.length > 0 && expenses[expenses.length - 1].createdAt
-        ? new Date(expenses[expenses.length - 1].createdAt as string).toLocaleDateString('es-MX', {
-            month: 'long',
-            year: 'numeric'
-        })
-        : 'Hoy';
+    // Stats
+    const totalExpenses = expenses.reduce((sum, item) => sum + item.amount, 0);
+    const expenseCount = expenses.length;
+    const totalSavingsGoals = savingsGoals.reduce((sum, goal) => sum + goal.targetAmount, 0);
+    const currentSavings = savingsGoals.reduce((sum, goal) => sum + goal.currentAmount, 0);
+    const savingsProgress = totalSavingsGoals > 0 ? (currentSavings / totalSavingsGoals) * 100 : 0;
+
+    if (isGuest) {
+        return <GuestProfile setCurrentPage={setCurrentPage} />;
+    }
 
     return (
-        <LoadingStateWrapper
-            loading={loadingProfile}
-            error={profileError}
-            onDismissError={clearProfileError}
-            loadingMessage="Cargando perfil..."
-        >
-            <>
-                <div className={styles.header}>
-                    <h2 className="section-title">Mi Perfil</h2>
-                    <button
-                        onClick={async () => {
-                            try {
-                                await authService.signOut();
-                            } catch (error) {
-                                console.log('Sesión cerrada exitosamente');
-                            }
-                        }}
-                        className={styles.logoutButton}
-                    >
-                        <LogOut size={16} /> Cerrar Sesión
-                    </button>
-                </div>
+        <PageContainer>
+            <div className={styles.container}>
+                <PageHeader
+                    title="Mi Perfil"
+                    subtitle="Gestiona tu cuenta y preferencias"
+                    icon={<User size={24} />}
+                    actions={
+                        <Button
+                            variant="danger"
+                            size="sm"
+                            onClick={authService.signOut}
+                            leftIcon={<LogOut size={16} />}
+                        >
+                            Cerrar Sesión
+                        </Button>
+                    }
+                />
 
-                {!profile ? (
-                    <div className={styles.errorContainer}>
-                        <p>Error al cargar el perfil. Intenta cerrar sesión y volver a iniciar.</p>
-                        <button onClick={() => authService.signOut()} className={styles.logoutButton}>
-                            <LogOut size={16} /> Cerrar Sesión
-                        </button>
-                    </div>
-                ) : (
-                    <div className={styles.profileContent}>
-                        {/* Card de Perfil con Avatar */}
-                        <div className={styles.profileCard}>
-                            <div className={styles.avatar}>
-                                {getInitials()}
-                            </div>
-                            <div className={styles.profileInfo}>
-                                <h3 className={styles.userName}>{profile.displayName}</h3>
-                                <span className={styles.userEmail}>{profile.email}</span>
-                                <span className={styles.memberSince}>
-                                    <Calendar size={12} /> Miembro desde {memberSince}
-                                </span>
-                            </div>
-                        </div>
-
-                        {/* Grid de Estadísticas */}
-                        <div className={styles.statsGrid}>
-                            <div className={styles.statCard}>
-                                <div className={styles.statIcon} style={{ background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444' }}>
-                                    <TrendingUp size={20} />
+                <LoadingStateWrapper loading={profileLoading} error={profileError}>
+                    {profile && (
+                        <>
+                            {/* Profile Header Card */}
+                            <Card className={styles.profileHeaderCard} padding="lg">
+                                <div className={styles.avatar}>
+                                    {getInitials()}
                                 </div>
-                                <div className={styles.statContent}>
-                                    <span className={styles.statValue}>{formatCurrency(totalExpenses)}</span>
-                                    <span className={styles.statLabel}>Total Gastado</span>
-                                </div>
-                            </div>
-
-                            <div className={styles.statCard}>
-                                <div className={styles.statIcon} style={{ background: 'rgba(34, 197, 94, 0.1)', color: '#22c55e' }}>
-                                    <DollarSign size={20} />
-                                </div>
-                                <div className={styles.statContent}>
-                                    <span className={styles.statValue}>{expenseCount}</span>
-                                    <span className={styles.statLabel}>Transacciones</span>
-                                </div>
-                            </div>
-
-                            <div className={styles.statCard}>
-                                <div className={styles.statIcon} style={{ background: 'rgba(59, 130, 246, 0.1)', color: '#3b82f6' }}>
-                                    <Wallet size={20} />
-                                </div>
-                                <div className={styles.statContent}>
-                                    <span className={`${styles.statValue} ${netWorth >= 0 ? styles.positive : styles.negative}`}>
-                                        {formatCurrency(netWorth)}
+                                <div className={styles.profileInfo}>
+                                    <h2 className={styles.userName}>{profile.displayName || 'Usuario'}</h2>
+                                    <span className={styles.userEmail}>{profile.email}</span>
+                                    <span className={styles.memberSince}>
+                                        <Calendar size={14} />
+                                        Miembro activo
                                     </span>
-                                    <span className={styles.statLabel}>Patrimonio Neto</span>
                                 </div>
+                            </Card>
+
+                            {/* Stats Grid */}
+                            <div className={styles.statsGrid}>
+                                <StatsCard
+                                    label="Total Gastado"
+                                    value={formatCurrency(totalExpenses)}
+                                    icon={<TrendingUp size={16} />}
+                                />
+                                <StatsCard
+                                    label="Patrimonio"
+                                    value={formatCurrency(netWorth)}
+                                    icon={<Wallet size={16} />}
+                                    status={netWorth >= 0 ? 'success' : 'danger'}
+                                />
+                                <StatsCard
+                                    label="Progreso Metas"
+                                    value={`${savingsProgress.toFixed(0)}%`}
+                                    icon={<PiggyBank size={16} />}
+                                />
+                                <StatsCard
+                                    label="Transacciones"
+                                    value={expenseCount.toString()}
+                                    icon={<User size={16} />}
+                                />
                             </div>
 
-                            <div className={styles.statCard}>
-                                <div className={styles.statIcon} style={{ background: 'rgba(168, 85, 247, 0.1)', color: '#a855f7' }}>
-                                    <PiggyBank size={20} />
+                            {/* Settings Form */}
+                            <div className={styles.settingsSection}>
+                                <div className={styles.sectionTitle}>
+                                    <Settings size={20} />
+                                    <span>Configuración</span>
                                 </div>
-                                <div className={styles.statContent}>
-                                    <span className={styles.statValue}>{savingsProgress.toFixed(0)}%</span>
-                                    <span className={styles.statLabel}>Ahorro Promedio</span>
-                                </div>
-                            </div>
-                        </div>
 
-                        {/* Formulario de Preferencias */}
-                        <div className={styles.settingsCard}>
-                            <div className={styles.settingsHeader}>
-                                <Settings size={18} />
-                                <h4>Preferencias</h4>
-                            </div>
-                            <form onSubmit={handleSave} className={styles.form}>
-                                <div className={styles.formRow}>
-                                    <div className={styles.formGroup}>
-                                        <label htmlFor="displayName">Nombre</label>
-                                        <input
-                                            id="displayName"
-                                            type="text"
+                                <Card padding="lg" className={styles.themeCard}>
+                                    <div className={styles.itemRow}>
+                                        <div className={styles.itemInfo}>
+                                            <span className={styles.itemLabel}>Apariencia</span>
+                                            <span className={styles.itemSub}>
+                                                {isDark ? 'Modo Oscuro' : 'Modo Claro'}
+                                            </span>
+                                        </div>
+                                        <button
+                                            type="button"
+                                            onClick={toggleTheme}
+                                            className={`${styles.toggleBtn} ${isDark ? styles.active : ''}`}
+                                        >
+                                            <div className={styles.toggleThumb}>
+                                                {isDark ? <Moon size={12} /> : <Sun size={12} />}
+                                            </div>
+                                        </button>
+                                    </div>
+                                </Card>
+
+                                <Card padding="lg">
+                                    <form onSubmit={handleSave} className={styles.settingsForm}>
+                                        <Input
+                                            label="Nombre de Usuario"
                                             value={displayName}
                                             onChange={(e) => setDisplayName(e.target.value)}
-                                            className={styles.input}
+                                            required
                                         />
-                                    </div>
-                                    <div className={styles.formGroup}>
-                                        <label htmlFor="currency">Moneda</label>
-                                        <select
-                                            id="currency"
-                                            value={currency}
-                                            onChange={(e) => setCurrency(e.target.value as UserProfile['currency'])}
-                                            className={styles.select}
-                                        >
-                                            {CURRENCY_OPTIONS.map(opt => (
-                                                <option key={opt.value} value={opt.value}>{opt.label}</option>
-                                            ))}
-                                        </select>
-                                    </div>
-                                </div>
-                                <div className={styles.actions}>
-                                    <button type="submit" className={styles.button}>Guardar Cambios</button>
-                                    {message && <span className={styles.savedMessage}>{message}</span>}
-                                </div>
-                            </form>
-                        </div>
 
-                        {/* Sección de Exportación */}
-                        <div className={styles.exportSection}>
-                            <ExportManager />
-                        </div>
-                    </div>
-                )}
-            </>
-        </LoadingStateWrapper>
+                                        {/* Create Custom Select if time permits, otherwise generic select styled */}
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                                            <label style={{ fontSize: '0.875rem', fontWeight: 500, color: 'var(--text-primary)' }}>Moneda</label>
+                                            <select
+                                                style={{
+                                                    padding: '10px',
+                                                    borderRadius: '8px',
+                                                    border: '1px solid var(--border-light)',
+                                                    backgroundColor: 'var(--bg-card)',
+                                                    color: 'var(--text-primary)'
+                                                }}
+                                                value={currency}
+                                                onChange={(e) => setCurrency(e.target.value as UserProfile['currency'])}
+                                            >
+                                                {CURRENCY_OPTIONS.map(opt => (
+                                                    <option key={opt.value} value={opt.value}>{opt.label}</option>
+                                                ))}
+                                            </select>
+                                        </div>
+
+                                        <div className={styles.formActions}>
+                                            <Button
+                                                type="submit"
+                                                isLoading={isSaving}
+                                                leftIcon={message ? <CheckCircle size={16} /> : undefined}
+                                                variant={message ? "outline" : "primary"} // Visual feedback
+                                            >
+                                                {message ? 'Guardado' : 'Guardar Cambios'}
+                                            </Button>
+                                            {message && <span className={styles.successMessage}>{message}</span>}
+                                        </div>
+                                    </form>
+                                </Card>
+                            </div>
+                        </>
+                    )}
+                </LoadingStateWrapper>
+            </div>
+        </PageContainer>
     );
 };
 
-// Componente MEJORADO para el perfil de un usuario INVITADO
+// Guest Profile Component
 const GuestProfile: React.FC<{ setCurrentPage: (page: Page) => void }> = ({ setCurrentPage }) => {
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState('');
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [isPasswordValid, setIsPasswordValid] = useState(false);
-
-    const getFriendlyErrorMessage = (errorCode: string): string => {
-        return "Error";
-    };
-
-    const handleGoogleSignUp = async () => {
-        setLoading(true);
-        setError('');
-        const result = await authService.signInWithGoogle();
-        if (!result.success) {
-            setError(getFriendlyErrorMessage(result.error as string));
-            setLoading(false);
-        } else {
-            setCurrentPage(PAGE_ROUTES.DASHBOARD);
-        }
-    };
-
-    const handleEmailSignUp = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setLoading(true);
-        setError('');
-
-        if (!isPasswordValid) {
-            setError('Por favor, ingresa una contraseña que cumpla con los requisitos de seguridad.');
-            setLoading(false);
-            return;
-        }
-
-        const result = await authService.signUpWithEmail(email, password);
-        if (!result.success) {
-            setError(getFriendlyErrorMessage(result.error as string));
-            setLoading(false);
-        } else {
-            setCurrentPage(PAGE_ROUTES.DASHBOARD);
-        }
-    };
-
+    // ... Simplified Guest Logic reusing Atoms
     return (
-        <>
-            <div className={styles.header}>
-                <h2 className="section-title">Crear Cuenta</h2>
-                <button onClick={() => authService.signOut()} className={styles.logoutButton}>
-                    <LogOut size={16} /> Salir del modo invitado
-                </button>
+        <PageContainer>
+            <div className={styles.guestContainer}>
+                <div className={styles.guestContent}>
+                    <h1>Modo Invitado</h1>
+                    <p style={{ color: 'var(--text-muted)', marginBottom: '2rem' }}>
+                        Crea una cuenta para guardar tus datos y acceder a todas las funciones.
+                    </p>
+                    <Card padding="lg">
+                        <Button
+                            fullWidth
+                            onClick={() => authService.signInWithGoogle()}
+                            variant="outline"
+                            style={{ marginBottom: '1rem' }}
+                        >
+                            Continuar con Google
+                        </Button>
+                        <div className={styles.divider}>O usa tu correo</div>
+                        <Button fullWidth onClick={() => setCurrentPage('login' as Page)}>
+                            Iniciar Sesión / Registrarse
+                        </Button>
+                    </Card>
+                </div>
             </div>
-            <div className={`${styles.form} ${styles.guestForm}`}>
-                <UserPlus size={48} className={styles.guestIcon} />
-                <h3>Guarda tu Progreso</h3>
-                <p>Crea una cuenta gratuita para guardar todos tus gastos y planificación financiera. ¡Tu información actual se conservará automáticamente!</p>
-
-                <form onSubmit={handleEmailSignUp} className={styles.guestActions}>
-                    <input className={styles.input} type="email" placeholder="Correo electrónico" value={email} onChange={e => setEmail(e.target.value)} required />
-                    <PasswordInput
-                        value={password}
-                        onChange={setPassword}
-                        placeholder="Crea una contraseña"
-                        showValidation={true}
-                        required
-                        className={styles.input}
-                        autoComplete="new-password"
-                        onValidationChange={setIsPasswordValid}
-                    />
-                    {error && <p className={styles.error}>{error}</p>}
-                    <button
-                        type="submit"
-                        className={styles.button}
-                        disabled={loading || !isPasswordValid}
-                    >
-                        {loading ? 'Creando...' : 'Crear cuenta con correo'}
-                    </button>
-                </form>
-
-                <div className={styles.divider}>o</div>
-                <button onClick={handleGoogleSignUp} className={styles.googleButton} disabled={loading}>
-                    Continuar con Google
-                </button>
-            </div>
-        </>
-    );
-};
-
-// Componente principal
-export const ProfilePage: React.FC<ProfilePageProps> = ({ isGuest, setCurrentPage }) => {
-    return (
-        <div className={styles.container}>
-            {isGuest
-                ? <GuestProfile setCurrentPage={setCurrentPage} />
-                : <RegisteredUserProfile />
-            }
-        </div>
+        </PageContainer>
     );
 };
