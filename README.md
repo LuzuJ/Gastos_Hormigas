@@ -1,317 +1,178 @@
-﻿# 🐜 Gastos Hormigas - Controla tus Finanzas Personales
+# 🐜 Gastos Hormigas & Micro-ERP SaaS
 
-> **¿Sabías que los pequeños gastos diarios pueden costarte $200+ al mes sin que te des cuenta?**
-
-**Gastos Hormigas** es tu compañero financiero personal que te ayuda a identificar, controlar y eliminar esos pequeños gastos que se "comen" tu presupuesto.
-
-## 🚀 ¡Pruébala Ahora!
-
-**🌐 [Abrir Gastos Hormigas](https://gestos-gastosv2.web.app)** - Sin instalación, sin registro obligatorio
-
-> 📱 **Funciona en cualquier dispositivo** - Móvil, tablet, computadora  
-> ⚡ **Sin descargas** - Se abre en tu navegador como una app nativa  
-> 🔒 **Privacidad total** - Tus datos nunca salen de tus dispositivos
-
-## 🐜 ¿Qué son los "Gastos Hormigas"?
-
-Son esos pequeños gastos diarios que parecen insignificantes, pero que se acumulan hasta convertirse en una fuga importante de dinero:
-
-- ☕ **Café del trabajo**: $3 diarios = **$90 al mes**
-- 🚗 **Parquímetros**: $5 por 15 veces = **$75 al mes** 
-- 🍫 **Snacks y dulces**: $2 por 20 veces = **$40 al mes**
-- 🎵 **Apps que no usas**: $10 × múltiples = **$50+ al mes**
-
-### 💸 **El Impacto Real**
-Estos "pequeños" gastos pueden sumar **$255+ al mes** = **$3,060+ al año**
-
-**¡Imagínate qué podrías hacer con esos $3,000 extra!**
-
-## ✨ ¿Cómo Te Ayuda Esta App?
-
-### 👀 **Visibilidad Total**
-- 📊 Ve EXACTAMENTE en qué gastas tu dinero
-- 📈 Gráficos que muestran tus patrones de gasto
-- 🔍 Identifica tus "gastos hormigas" más costosos
-
-### 🎯 **Control Inteligente**
-- 💰 Establece presupuestos realistas por categoría
-- 🚨 Recibe alertas antes de exceder tus límites
-- 📱 Registro súper rápido: ¡menos de 10 segundos!
-
-### 💡 **Insights Accionables**
-- 📅 Descubre cuándo gastas más
-- 🏷️ Categorías que revelan patrones ocultos  
-- 💾 Exporta datos para análisis más profundos
-
-### 🎖️ **Motivación Constante**
-- 🏆 Logros que celebran tus mejoras financieras
-- 📊 Dashboard que muestra tu progreso
-- 🎯 Metas de ahorro personalizables
-
-## 👥 ¿Para Quién Es Gastos Hormigas?
-
-### ✅ **Perfecto para ti si...**
-- 💭 Te preguntas "¿Dónde se me va el dinero?"
-- 😅 Tus gastos menores se salen de control
-- 📱 Quieres algo simple, sin complicaciones
-- 💡 Buscas insights reales sobre tus hábitos
-- 🎯 Quieres ahorrar pero no sabes por dónde empezar
-
-### 📖 **Historias Reales de Usuarios**
-
-**🍕 Sarah, 28 años - Marketing:**  
-*"Creía que gastaba $50/mes en delivery, pero eran $180. Ahora cocino más y ahorro $130 mensuales para mis vacaciones."*
-
-**👨‍💼 Carlos, 35 años - Ingeniero:**  
-*"Descubrí 7 suscripciones que no usaba. Cancelé $60/mes en servicios innecesarios."*
-
-**👩‍🎓 Ana, 22 años - Estudiante:**  
-*"El modo invitado me permitió probar sin compromiso. Ahora controlo mis gastos universitarios sin estrés."*
-
-## 🚀 Cómo Empezar (¡En 3 Minutos!)
-
-### 📱 **Paso 1: Prueba Sin Compromiso**
-1. **Haz clic en** [Abrir Gastos Hormigas](https://gestos-gastosv2.web.app)
-2. **Elige "Modo Invitado"** para probar sin registro
-3. **O regístrate** para sincronizar entre dispositivos
-
-### 💰 **Paso 2: Registra Tu Primer Gasto**
-1. **Toca el botón "+"** grande en la pantalla principal
-2. **Escribe la cantidad** (ej: $3.50)
-3. **Selecciona categoría** (Café, Transporte, Comida...)
-4. **Añade descripción** opcional ("Latte en Starbucks")
-5. **¡Listo!** Tu gasto se guarda al instante
-
-### 📊 **Paso 3: Descubre Tus Patrones**
-1. **Ve al Dashboard** para tu resumen del mes
-2. **Explora los gráficos** para ver tendencias
-3. **Revisa por categorías** cuáles son tus "gastos hormigas"
-4. **Usa filtros de fecha** para comparar períodos
-
-### 🎯 **Paso 4: Toma Control**
-1. **Crea presupuestos** basados en tu historial real
-2. **Establece alertas** para mantenerte en ruta
-3. **Revisa semanalmente** tu progreso
-4. **Ajusta según aprendas** sobre tus hábitos
-
-## 💪 Funciones Destacadas
-
-### 🔧 **Esenciales para el Control**
-- 📱 **PWA Instalable** - Úsala como app nativa
-- ⚡ **Modo Offline** - Funciona sin internet
-- 🔄 **Sincronización** - Datos seguros en la nube
-- 📱 **Responsive** - Perfecto en cualquier pantalla
-
-### 📊 **Análisis Inteligente**
-- 📈 **Gráficos Interactivos** - Tendencias visuales claras
-- 🏷️ **Categorización Automática** - IA que aprende tus patrones
-- 📅 **Filtros Avanzados** - Por fecha, categoría, monto
-- 📋 **Reportes Exportables** - Excel, CSV, PDF
-
-### 🎯 **Gestión de Presupuestos**
-- 💰 **Presupuestos Flexibles** - Por categoría o total
-- 🚨 **Alertas Inteligentes** - Antes de exceder límites  
-- 📊 **Seguimiento Visual** - Barras de progreso en tiempo real
-- 🔄 **Ajuste Automático** - Basado en patrones históricos
-
-### 🏆 **Gamificación Motivacional**
-- 🎖️ **Sistema de Logros** - Recompensas por hábitos saludables
-- 📊 **Dashboard Personal** - Tu progreso financiero
-- 🎯 **Metas de Ahorro** - Objetivos personalizables
-- 🔥 **Rachas de Disciplina** - Mantén el momentum
-
-## ❓ Preguntas Frecuentes
-
-### 🔒 **¿Es segura mi información financiera?**
-**¡Absolutamente!** Usamos encriptación de nivel bancario. Tu información nunca se comparte y cumple con los más altos estándares de seguridad digital.
-
-### 💰 **¿Cuánto cuesta?**
-**Gastos Hormigas es 100% GRATUITA.** Todas las funciones están disponibles sin costo, sin anuncios molestos, sin trucos.
-
-### 📱 **¿Necesito descargar algo?**
-**No es necesario.** Es una PWA (app web progresiva) que funciona en cualquier navegador. Opcionalmente puedes "instalarla" para acceso más rápido.
-
-### 🔄 **¿Mis datos se sincronizan entre dispositivos?**
-**Sí, automáticamente.** Si te registras, tus datos se sincronizan en tiempo real entre móvil, tablet y computadora.
-
-### 👥 **¿Qué es el "Modo Invitado"?**
-Te permite **probar TODAS las funciones sin registro**. Tus datos se guardan localmente. Perfecto para evaluar la app antes de comprometerte.
-
-### 📊 **¿Puedo exportar mis datos?**
-**¡Por supuesto!** Exporta en Excel, CSV o PDF para análisis externos, respaldos o compartir con tu contador.
-
-### 🏦 **¿Se conecta automáticamente con mi banco?**
-**Actualmente no.** El registro es manual para mayor privacidad y control. La conexión bancaria está en nuestro roadmap futuro.
-
-### 🌐 **¿Funciona offline?**
-**Sí, parcialmente.** Puedes registrar gastos sin internet. Se sincronizarán automáticamente cuando vuelvas a tener conexión.
+> **Plataforma Dual de Finanzas Personales y Contabilidad Empresarial con Partida Doble.**  
+> Diseñada para erradicar micro-fugas de dinero en <1 segundo y gestionar la contabilidad de microempresas con rigor profesional.
 
 ---
 
-## 💝 ¿Listo para Tomar Control de tus Finanzas?
+## 🌐 Enlaces del Proyecto
 
-### 🎯 **Tu Próximo Paso**
-**[👉 ABRIR GASTOS HORMIGAS AHORA](https://gestos-gastosv2.web.app)**
-
-> 🚀 **Comienza en modo invitado** - Sin compromisos, sin registro  
-> 📱 **Registra tu primer gasto** - Toma menos de 10 segundos  
-> 📊 **Descubre tus patrones** - Los insights te sorprenderán  
-> 💰 **Ahorra tu primer $100** - En menos de un mes
-
-**¿Preguntas? ¿Problemas? ¿Sugerencias?**  
-📧 [Contáctanos](mailto:jonathanluzuriaga224@gmail.com) - Respondemos en menos de 24 horas
+- **Repositorio GitHub:** [https://github.com/LuzuJ/Gastos_Hormigas.git](https://github.com/LuzuJ/Gastos_Hormigas.git)
+- **Despliegue Web (PWA):** [https://gestos-gastosv2.web.app](https://gestos-gastosv2.web.app)
+- **Stack:** React 19 • TypeScript • Vite • Supabase (PostgreSQL RLS)
 
 ---
 
-**Desarrollado con ❤️ para ayudarte a lograr libertad financiera**  
-*Por [LuzuJ](https://github.com/LuzuJ) - Sígueme para más proyectos útiles*
+## 📸 Vista General y Funcionalidades en Detalle
+
+### 1. 📊 Dashboard Principal y Safe-to-Spend Diario
+El centro de control inteligente calcula en tiempo real tu **Disponible Diario Seguro (Safe-to-Spend)**, evitando que comprometas el pago de arriendos o metas de ahorro. Incluye consejos de sabiduría financiera, diagnósticos automáticos y resumen de ingresos/gastos mensuales.
+
+<p align="center">
+  <img src="./image/readme/home.png" alt="Dashboard Principal - Safe to Spend" width="600" style="border-radius: 16px;" />
+</p>
 
 ---
 
-> 🔗 **Para desarrolladores**: [Documentación técnica](./TECHNICAL.md) | [Contribuir](./CONTRIBUTING.md)
+### 2. ⚡ Teclado Táctil Háptico de Captura Rápida (<1s)
+Elimina la fricción de los formularios tradicionales. Permite registrar micro-gastos en menos de un segundo con presets automáticos (`+$1`, `+$2`, `+$5`, `+$10`, `+$20`), selección directa de categoría (Café, Comida, Transporte, Antojos) y cuenta de débito asociada.
 
-## 👥 ¿Para quién es esta app?
+<p align="center">
+  <img src="./image/readme/calculator.png" alt="Teclado Háptico de Captura Rápida" width="480" style="border-radius: 16px;" />
+</p>
 
-### 🎯 **Perfecto para ti si...**
+---
 
-- 💭 **Te preguntas** "¿En qué se me va el dinero?"
-- 📱 **Quieres control** sin complicaciones ni registros tediosos
-- 💡 **Buscas insights** reales sobre tus hábitos de gasto
-- 🎯 **Deseas ahorrar** pero no sabes por dónde empezar
-- 📊 **Te gustan los datos** presentados de forma visual y clara
+### 3. 🔥 Radar de Fugas Hormiga y Diagnóstico de Fugas
+Identifica y cuantifica las pequeñas compras recurrentes que erosionan silenciosamente tu capital. Muestra estadísticas históricas, desglose porcentual por categorías e impacto proyectado a 30 días.
 
-### 📖 **Casos de uso reales**
+<p align="center">
+  <img src="./image/readme/fugas.png" alt="Radar de Fugas Hormiga" width="600" style="border-radius: 16px;" />
+</p>
 
-**🍕 Sarah, 28 años, Marketing:**  
-*"Pensaba que gastaba $50/mes en comida rápida, pero la app me mostró que eran $180. Ahora cocino más y ahorro $100 mensuales."*
+---
 
-**👨‍💼 Carlos, 35 años, Ingeniero:**  
-*"Tenía 7 suscripciones que no usaba. Gastos Hormigas me ayudó a identificarlas y cancelé $60/mes en servicios innecesarios."*
+### 4. 🎯 Gestor de Presupuestos por Categoría
+Permite establecer límites mensuales por rubro de gasto con barras de progreso visuales y alertas proactivas antes de que se agote el margen disponible.
 
-**👩‍🎓 Ana, 22 años, Estudiante:**  
-*"El modo invitado me permitió probar la app sin compromiso. Ahora uso los presupuestos para mis gastos universitarios."*
+<p align="center">
+  <img src="./image/readme/presupuesto.png" alt="Gestor de Presupuestos" width="600" style="border-radius: 16px;" />
+</p>
 
-## ✨ Características Principales
+---
 
-- 📱 **PWA Completa** - Instálala como app nativa
-- 💸 **Gestión de Gastos** - Registro rápido y categorización inteligente
-- 📊 **Dashboard Analítico** - Métricas financieras en tiempo real
-- 🎯 **Presupuestos** - Planificación y seguimiento automático
-- 🔒 **Seguridad** - Autenticación robusta y datos encriptados
-- 🌙 **Modo Oscuro** - Diseño adaptativo y accesible
-- 👥 **Modo Invitado** - Prueba sin registro
+### 5. 🏦 Bóvedas de Ahorro y Patrimonio
+Sistema de ahorro programado con depósitos directos desde tus cuentas activas. Protege el dinero destinado a fondos de emergencia, inversiones o metas a mediano y largo plazo.
 
-## 🚀 Guía Rápida de Uso
+<p align="center">
+  <img src="./image/readme/metas.png" alt="Bóvedas de Ahorro y Metas" width="600" style="border-radius: 16px;" />
+</p>
 
-### 📱 **Paso 1: Accede a la App**
-1. Visita [gestos-gastosv2.web.app](https://gestos-gastosv2.web.app)
-2. **Prueba sin registro** con el modo invitado, o
-3. **Crea tu cuenta** para sincronización completa
+---
 
-### 💰 **Paso 2: Registra tus Gastos**
-1. Toca el botón **"+"** para agregar un gasto
-2. Ingresa la cantidad y selecciona la categoría
-3. Añade una descripción opcional
-4. ¡Listo! Tu gasto se registra instantáneamente
+### 6. 🏢 Modo Empresa: Micro-ERP Contable con Partida Doble
+Diseñado para pequeños negocios, freelancers y startups. Incorpora un **Libro Diario (General Ledger)** tabular con cumplimiento estricto de partida doble ($\sum \text{Débitos} = \sum \text{Créditos}$), plan de cuentas contables, centros de costo y directorio de proveedores/clientes.
 
-### 📊 **Paso 3: Analiza tus Datos**
-1. **Dashboard Principal**: Ve tu resumen financiero
-2. **Gráficos Interactivos**: Analiza tendencias y patrones
-3. **Categorías**: Descubre dónde gastas más
-4. **Filtros por Fecha**: Compara diferentes períodos
+<p align="center">
+  <img src="./image/readme/fugas_erp.png" alt="Modo Empresa y Micro-ERP Contable" width="600" style="border-radius: 16px;" />
+</p>
 
-### 🎯 **Paso 4: Crea Presupuestos**
-1. Ve a la sección **"Presupuestos"**
-2. Establece límites por categoría
-3. Recibe alertas cuando te acerques al límite
-4. Ajusta según tus objetivos
+---
 
-### 💡 **Pro Tips**
-- 🔄 **Automatiza**: Configura gastos recurrentes
-- 📱 **Instala**: Agrega la app a tu pantalla de inicio
-- 🌙 **Personaliza**: Cambia al modo oscuro para mayor comodidad
-- 💾 **Exporta**: Descarga tus datos en Excel/CSV
+## 🏛️ Arquitectura Dual-Core
+
+```
+                       ┌──────────────────────────────────────────────┐
+                       │           Gastos Hormigas SaaS Platform      │
+                       └──────────────────────┬───────────────────────┘
+                                              │
+                    ┌─────────────────────────┴─────────────────────────┐
+                    ▼                                                   ▼
+       ┌──────────────────────────┐                        ┌──────────────────────────┐
+       │   👤 MODO PERSONAL       │                        │   🏢 MODO EMPRESA / ERP  │
+       ├──────────────────────────┤                        ├──────────────────────────┤
+       │ • Teclado Táctil <1s     │                        │ • Partida Doble Real     │
+       │ • Radar de Fugas Hormiga │                        │ • Libro Diario Tabular   │
+       │ • Safe-to-Spend Diario   │                        │ • Plan de Cuentas        │
+       │ • Bóvedas de Ahorro      │                        │ • Centros de Costo       │
+       │ • Presupuestos por Cat.  │                        │ • Terceros / Proveedores │
+       └──────────────────────────┘                        └──────────────────────────┘
+                    │                                                   │
+                    └─────────────────────────┬─────────────────────────┘
+                                              ▼
+                       ┌──────────────────────────────────────────────┐
+                       │    Motor de Persistencia Híbrida             │
+                       │    • LocalStorage / Offline Cache (0ms)      │
+                       │    • Supabase PostgreSQL + RLS + RPC         │
+                       └──────────────────────────────────────────────┘
+```
+
+---
 
 ## 🛠️ Stack Tecnológico
 
-**Frontend:** React 19, TypeScript, Vite, Tailwind CSS  
-**Backend:** Firebase (Auth, Firestore, Hosting)  
-**Testing:** Vitest, Testing Library  
-**PWA:** Service Workers, Push Notifications
-
-## ❓ Preguntas Frecuentes
-
-### 🔒 **¿Es segura mi información financiera?**
-Sí, completamente. Utilizamos Firebase Authentication y encriptación de datos. Tu información nunca se comparte con terceros y cumplimos con estándares de seguridad bancaria.
-
-### 💰 **¿La app es gratuita?**
-Sí, Gastos Hormigas es 100% gratuita. Todas las funciones principales están disponibles sin costo.
-
-### 📱 **¿Necesito instalar algo?**
-No es necesario. Es una PWA que funciona en cualquier navegador. Opcionalmente puedes "instalarla" como app nativa para un acceso más rápido.
-
-### 🔄 **¿Puedo sincronizar entre dispositivos?**
-Sí, si te registras con una cuenta, tus datos se sincronizan automáticamente entre todos tus dispositivos.
-
-### 👥 **¿Qué es el modo invitado?**
-Te permite probar todas las funciones sin crear una cuenta. Los datos se guardan localmente en tu dispositivo.
-
-### 📊 **¿Puedo exportar mis datos?**
-Sí, puedes exportar todos tus datos en formatos Excel (XLSX) y CSV para análisis externos o respaldos.
-
-### 🏦 **¿Se conecta con mi banco?**
-Actualmente no, pero está en nuestro roadmap. Por ahora el registro es manual para mayor control y privacidad.
-
-## 🚀 Desarrollo
-
-### Instalación
-
-`ash
-# Clonar repositorio
-git clone https://github.com/LuzuJ/Gastos_Hormigas.git
-cd Gastos_Hormigas
-
-# Instalar dependencias
-npm install
-
-# Desarrollo local
-npm run dev
-
-# Ejecutar tests
-npm test
-
-# Build para producción
-npm run build
-`
-
-### Configuración Firebase
-
-1. Crear proyecto en [Firebase Console](https://console.firebase.google.com)
-2. Configurar Authentication (Email/Password)
-3. Crear base de datos Firestore
-4. Copiar configuración a .env:
-
-`env
-VITE_FIREBASE_API_KEY=tu_api_key
-VITE_FIREBASE_AUTH_DOMAIN=tu_auth_domain
-VITE_FIREBASE_PROJECT_ID=tu_project_id
-VITE_FIREBASE_STORAGE_BUCKET=tu_storage_bucket
-VITE_FIREBASE_MESSAGING_SENDER_ID=tu_sender_id
-VITE_FIREBASE_APP_ID=tu_app_id
-`
-
-##  Contribuir
-
-1. Fork del proyecto
-2. Crear rama para tu feature (git checkout -b feature/AmazingFeature)
-3. Commit cambios (git commit -m 'Add: Amazing Feature')
-4. Push a la rama (git push origin feature/AmazingFeature)
-5. Abrir Pull Request
-
-##  Licencia
-
-Este proyecto está bajo la Licencia MIT - ver [LICENSE](LICENSE) para detalles.
+| Capa | Tecnologías |
+| :--- | :--- |
+| **Frontend Core** | React 19, TypeScript, Vite |
+| **Diseño & UI** | Vanilla CSS Glassmorphism, CSS Variables, Lucide Icons, Plus Jakarta Sans & JetBrains Mono |
+| **Base de Datos** | PostgreSQL (Supabase) con 11 tablas relacionales y esquemas tipados |
+| **Seguridad** | Supabase Auth (OAuth Google, Email/Password), Row Level Security (RLS) multi-inquilino |
+| **Lógica Backend** | Procedimientos almacenados PL/pgSQL (`RPC record_simple_entry`) para transacciones atómicas |
+| **Resiliencia** | Arquitectura *Offline-First* con fallback automático a `localStorage` |
 
 ---
 
-**Desarrollado con  por [LuzuJ](https://github.com/LuzuJ)**
+## 🔒 Esquema de Base de Datos y Seguridad (Supabase)
+
+La base de datos relacional implementa aislamiento estricto por usuario y espacio de trabajo:
+
+```sql
+profiles                  --> Perfiles de usuario y configuración de moneda
+workspaces                --> Espacios de trabajo (Personal o Business)
+workspace_members         --> Control de acceso y roles (Owner, Admin, Member)
+accounts                  --> Cuentas financieras (Activo, Pasivo, Patrimonio)
+categories                --> Categorías de ingresos, gastos y costos
+cost_centers              --> Centros de costo empresariales
+contacts                  --> Directorio de clientes y proveedores
+journal_entries           --> Encabezados de asientos contables
+journal_entry_lines       --> Líneas de detalle de partida doble (debit / credit)
+recurring_rules           --> Automatización de gastos e ingresos recurrentes
+savings_vaults            --> Bóvedas de ahorro y metas
+```
+
+---
+
+## 🚀 Guía de Instalación y Desarrollo Local
+
+### Requisitos Previos
+- **Node.js** (versión 18 o superior)
+- **npm** o **pnpm**
+
+### 1. Clonar el Repositorio
+```bash
+git clone https://github.com/LuzuJ/Gastos_Hormigas.git
+cd Gastos_Hormigas
+```
+
+### 2. Instalar Dependencias
+```bash
+npm install
+```
+
+### 3. Variables de Entorno
+Crea un archivo `.env` en la raíz del proyecto con tus credenciales de Supabase:
+```env
+VITE_SUPABASE_URL=https://tu-proyecto.supabase.co
+VITE_SUPABASE_ANON_KEY=tu-anon-key-de-supabase
+```
+
+### 4. Ejecutar Servidor de Desarrollo
+```bash
+npm run dev
+```
+Abre tu navegador en `http://localhost:5173/`.
+
+### 5. Compilar para Producción
+```bash
+npm run build
+```
+
+---
+
+## 📄 Licencia
+
+Este proyecto está bajo la Licencia **MIT**. Consulta el archivo `LICENSE` para más detalles.
+
+---
+
+**Desarrollado por [LuzuJ](https://github.com/LuzuJ)**
